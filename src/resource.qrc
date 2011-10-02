@@ -1,0 +1,18 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <file>icon/application_icon.png</file>
+
+        <file>icon/settings_editor.png</file>
+        <file>icon/settings_general.png</file>
+
+        <file>icon/menu_new.png</file>
+        <file>icon/menu_exit.png</file>
+        <file>icon/menu_import.png</file>
+        <file>icon/menu_save.png</file>
+        <file>icon/menu_save_as.png</file>
+        <file>icon/menu_settings.png</file>
+        <file>icon/menu_find_and_replace.png</file>
+        <file>icon/menu_check_spelling.png</file>
+    </qresource>
+</RCC>

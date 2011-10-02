@@ -1,0 +1,7 @@
+Makefile*
+object_script*
+build/
+dist/
+/src/qrc_resource.cpp
+/src/debug/
+/src/release/
