@@ -19,29 +19,38 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_EXTRA_RULES_H
-#define OPEN_EBOOK_EDITOR_EXTRA_RULES_H
+#include "DeviceConfiguration.h"
+#include <QDebug>
+#include <QFile>
 
-#include <QMap>
-#include <MetadataEnum.h>
-
-class QStringList;
-class QString;
-
-class Dictionary
+DeviceConfiguration::DeviceConfiguration()
 {
-public:
-    static const QStringList& wordsToSkipOnSpellCheck();
-    static const QMap<QString, QString>& languageCodes();
-    static bool skipSpellCheck(const QString &word);
-    static QString bookMetaDataLabel(MetaData metadata);
+    QFile file(":/device/kindle3/HtmlValidation.def");
+     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+         return;
+     }
 
-private:
-    static QStringList m_wordsToSkipOnSpellCheck;
-    static QMap<QString, QString> m_languageCodes;
+     while (!file.atEnd()) {
+         QString line(file.readLine());
+         //TODO: it should be real XML parser.
+         //TODO: every element should also has information about valid attributes.
+         line.remove("<element>").remove("</element>").remove("\r").remove("\n");
+         qDebug() << "adding" << line;
+         m_validHTMLTags.push_back(line);
+     }
+}
 
-    static QStringList initWordsToSkipOnSpellCheck();
-    static QMap<QString, QString> initLanguageCodes();
-};
+DeviceConfiguration::~DeviceConfiguration()
+{
+}
 
-#endif /* OPEN_EBOOK_EDITOR_EXTRA_RULES_H */
+DeviceConfiguration& DeviceConfiguration::instance()
+{
+    static DeviceConfiguration instance;
+    return instance;
+}
+
+QStringList DeviceConfiguration::getValidHTMLTags()
+{
+    return m_validHTMLTags;
+}

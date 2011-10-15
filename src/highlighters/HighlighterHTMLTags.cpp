@@ -20,16 +20,14 @@
  ************************************************************************/
 
 #include "HighlighterHTMLTags.h"
-#include "book/Book.h"
 #include <QDebug>
 #include <QString>
 #include <QRegExp>
 #include <QBrush>
 #include <QColor>
 
-#include <Book.h>
 #include <Preferences.h>
-#include <MobiFileObject.h>
+#include <DeviceConfiguration.h>
 
 HighlighterHTMLTags::HighlighterHTMLTags()
 {
@@ -42,9 +40,6 @@ HighlighterHTMLTags::~HighlighterHTMLTags()
 QVector<AbstractHighlighter::CharFormat> HighlighterHTMLTags::highlightBlock(const QString &text)
 {
     QVector<AbstractHighlighter::CharFormat> result;
-    if (!Book::instance().getRequireHTMLValidation()) {
-        return result;
-    }
     if (!Preferences::instance().getValue(Preferences::PROP_HIGHLIGHTER_HTML_TAGS, false).toBool()) {
         return result;
     }
@@ -64,7 +59,7 @@ QVector<AbstractHighlighter::CharFormat> HighlighterHTMLTags::highlightBlock(con
     QRegExp rx("<(\\s*)/?(\\s*)([A-Za-z0-9]*)(\\s)*/?(\\s)*>");
     rx.setMinimal(true);
 
-    QStringList validTags = Book::instance().getValidHTMLTags();
+    QStringList validTags = DeviceConfiguration::instance().getValidHTMLTags();
     int index = text.indexOf(rx);
     while (index >= 0) {
         int length = rx.matchedLength();

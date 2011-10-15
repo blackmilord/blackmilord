@@ -19,29 +19,21 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_EXTRA_RULES_H
-#define OPEN_EBOOK_EDITOR_EXTRA_RULES_H
+#ifndef OPEN_EBOOK_EDITOR_DEVICE_CONFIGURATION_H
+#define	OPEN_EBOOK_EDITOR_DEVICE_CONFIGURATION_H
 
-#include <QMap>
-#include <MetadataEnum.h>
+#include <QStringList>
 
-class QStringList;
-class QString;
-
-class Dictionary
+class DeviceConfiguration
 {
+    DeviceConfiguration();
+    ~DeviceConfiguration();
 public:
-    static const QStringList& wordsToSkipOnSpellCheck();
-    static const QMap<QString, QString>& languageCodes();
-    static bool skipSpellCheck(const QString &word);
-    static QString bookMetaDataLabel(MetaData metadata);
-
+    static DeviceConfiguration& instance();
+    QStringList getValidHTMLTags();
 private:
-    static QStringList m_wordsToSkipOnSpellCheck;
-    static QMap<QString, QString> m_languageCodes;
-
-    static QStringList initWordsToSkipOnSpellCheck();
-    static QMap<QString, QString> initLanguageCodes();
+    QStringList m_validHTMLTags;
 };
 
-#endif /* OPEN_EBOOK_EDITOR_EXTRA_RULES_H */
+
+#endif /* OPEN_EBOOK_EDITOR_DEVICE_CONFIGURATION_H */

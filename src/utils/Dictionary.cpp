@@ -24,7 +24,6 @@
 #include <QString>
 
 QStringList Dictionary::m_wordsToSkipOnSpellCheck = initWordsToSkipOnSpellCheck();
-QStringList Dictionary::m_validHTMLTags = initValidHTMLTags();
 QMap<QString, QString> Dictionary::m_languageCodes = initLanguageCodes();
 
 bool Dictionary::skipSpellCheck(const QString &word)
@@ -67,11 +66,6 @@ QString Dictionary::bookMetaDataLabel(MetaData metadata)
     return QString();
 }
 
-const QStringList& Dictionary::validHTMLTags()
-{
-    return m_validHTMLTags;
-}
-
 const QStringList& Dictionary::wordsToSkipOnSpellCheck()
 {
     return m_wordsToSkipOnSpellCheck;
@@ -93,78 +87,6 @@ QStringList Dictionary::initWordsToSkipOnSpellCheck()
     result.push_back(" ");
     result.push_back("<");
     result.push_back(">");
-    return result;
-}
-
-QStringList Dictionary::initValidHTMLTags()
-{
-    QStringList result;
-    result.push_back("a");
-    result.push_back("area");
-    result.push_back("b");
-    result.push_back("base");
-    result.push_back("big");
-    result.push_back("blockquote");
-    result.push_back("body");
-    result.push_back("br");
-    result.push_back("caption");
-    result.push_back("center");
-    result.push_back("cite");
-    result.push_back("code");
-    result.push_back("dd");
-    result.push_back("del");
-    result.push_back("dfn");
-    result.push_back("dir");
-    result.push_back("div");
-    result.push_back("dl");
-    result.push_back("dr");
-    result.push_back("em");
-    result.push_back("font");
-    result.push_back("head");
-    result.push_back("h1");
-    result.push_back("h2");
-    result.push_back("h3");
-    result.push_back("h4");
-    result.push_back("h5");
-    result.push_back("h6");
-    result.push_back("hr");
-    result.push_back("html");
-    result.push_back("i");
-    result.push_back("img");
-    result.push_back("ins");
-    result.push_back("kbd");
-    result.push_back("li");
-    result.push_back("link");
-    result.push_back("listing");
-    result.push_back("map");
-    result.push_back("menu");
-    result.push_back("meta");
-    result.push_back("object");
-    result.push_back("ol");
-    result.push_back("p");
-    result.push_back("param");
-    result.push_back("plaintext");
-    result.push_back("pre");
-    result.push_back("q");
-    result.push_back("s");
-    result.push_back("samp");
-    result.push_back("small");
-    result.push_back("span");
-    result.push_back("strike");
-    result.push_back("strong");
-    result.push_back("style");
-    result.push_back("sub");
-    result.push_back("sup");
-    result.push_back("table");
-    result.push_back("td");
-    result.push_back("th");
-    result.push_back("title");
-    result.push_back("tr");
-    result.push_back("tt");
-    result.push_back("u");
-    result.push_back("ul");
-    result.push_back("var");
-    result.push_back("xmp");
     return result;
 }
 

@@ -62,16 +62,12 @@ public:
     void setFileName(const QString fileName);
 
     QString getWhy() const;
-    bool getRequireHTMLValidation() const;
-    QStringList getValidHTMLTags() const;
 
 public slots:
     void setText(const QString& text);
     void setCursorPosition(int position);
     void setSelection(int selectionStart, int selectionEnd);
     void setMetadata(MetaData metadata, const QVariant &data);
-    void setRequireHTMLValidation(bool requireHTMLValidation);
-    void setValidHTMLTags(const QStringList &validHTMLTags);
     void setWhy(const QString &why);
 
 signals:
@@ -106,8 +102,6 @@ private:
     bool m_fileOpened;
     QString m_fileName;
     QString m_why;
-    bool m_requireHTMLValidation;
-    QStringList m_validHTMLTags;
 
     BackupManager m_backupManager;
 };

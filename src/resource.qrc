@@ -14,5 +14,7 @@
         <file>icon/menu_settings.png</file>
         <file>icon/menu_find_and_replace.png</file>
         <file>icon/menu_check_spelling.png</file>
+
+        <file>device/kindle3/HtmlValidation.def</file>
     </qresource>
 </RCC>

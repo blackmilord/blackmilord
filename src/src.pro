@@ -28,7 +28,8 @@ INCLUDEPATH +=  . \
 		utils/ \
 		book/ \
 		book/mobi/ \
-		highlighters/
+		highlighters/ \
+                device
 
 SOURCES += main.cpp
 SOURCES += MainWindow.cpp
@@ -60,6 +61,7 @@ SOURCES += options/OptionsWindow.cpp
 SOURCES += options/EditorPage.cpp
 SOURCES += options/MainPage.cpp
 SOURCES += options/Preferences.cpp
+SOURCES += device/DeviceConfiguration.cpp
 
 HEADERS += Version.h
 HEADERS += MainWindow.h
@@ -92,6 +94,7 @@ HEADERS += options/EditorPage.h
 HEADERS += options/MainPage.h
 HEADERS += options/IPageWidget.h
 HEADERS += options/Preferences.h
+HEADERS += device/DeviceConfiguration.h
 
 DESTDIR = ../dist/$$DESTPREFIX
 OBJECTS_DIR = ../build/$$DESTPREFIX

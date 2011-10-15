@@ -57,11 +57,6 @@ bool MobiFileObject::openFile(const QString &fileName)
     }
     QDataStream data(&file);
 
-    //This need to be set before reading text
-    //Consider some minor architecture changes maybe.
-    Book::instance().setRequireHTMLValidation(true);
-    Book::instance().setValidHTMLTags(Dictionary::validHTMLTags());
-
     //read Database header
     if (!m_databaseHeader.read(data)) {
         Book::instance().setWhy(m_databaseHeader.why());
@@ -123,8 +118,6 @@ bool MobiFileObject::openFile(const QString &fileName)
 
 bool MobiFileObject::newFile()
 {
-    Book::instance().setRequireHTMLValidation(true);
-    Book::instance().setValidHTMLTags(Dictionary::validHTMLTags());
     return true;
 }
 

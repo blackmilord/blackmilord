@@ -116,8 +116,6 @@ void Book::reset()
 
     m_fileName.clear();
     m_why.clear();
-    m_requireHTMLValidation = false;
-    m_validHTMLTags.clear();
 }
 
 bool Book::isFileOpened()
@@ -278,24 +276,4 @@ QString Book::getWhy() const
 void Book::setWhy(const QString &why)
 {
     m_why = why;
-}
-
-bool Book::getRequireHTMLValidation() const
-{
-    return m_requireHTMLValidation;
-}
-
-void Book::setRequireHTMLValidation(bool requireHTMLValidation)
-{
-    m_requireHTMLValidation = requireHTMLValidation;
-}
-
-QStringList Book::getValidHTMLTags() const
-{
-    return m_validHTMLTags;
-}
-
-void Book::setValidHTMLTags(const QStringList &validHTMLTags)
-{
-    m_validHTMLTags = validHTMLTags;
 }
