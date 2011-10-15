@@ -19,56 +19,26 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_ABSTRACT_HIGHLIGHTER_H
-#define OPEN_EBOOK_EDITOR_ABSTRACT_HIGHLIGHTER_H
+#ifndef OPEN_EBOOK_EDITOR_HIGHLIGHT_EVENT_H
+#define OPEN_EBOOK_EDITOR_HIGHLIGHT_EVENT_H
 
-#include <QObject>
-#include <QTextCharFormat>
-#include <QMutex>
-#include <Preferences.h>
+#include <QEvent>
+#include <QString>
 
-
-class QString;
-
-class AbstractHighlighter
+class HighlightEvent :
+    public QEvent
 {
 public:
-
-    struct CharFormat
-    {
-        CharFormat() :
-            m_start(0),
-            m_count(0)
-        {
-        }
-
-        CharFormat(int start, int count, const QTextCharFormat &format) :
-            m_format(format),
-            m_start(start),
-            m_count(count)
-        {
-        }
-
-        QTextCharFormat m_format;
-        int m_start;
-        int m_count;
-    };
-
-    typedef QVector<CharFormat> FormatList;
-    typedef QVector<FormatList> MultiFormatList;
-    typedef QSharedPointer<QVector<FormatList> > MultiFormatListPtr;
-    typedef FormatList::const_iterator FormatListIterator;
-    typedef MultiFormatList::const_iterator MultiFormatListIterator;
-
-    AbstractHighlighter();
-    virtual ~AbstractHighlighter();
-
-    virtual FormatList highlightBlock(const QString &text) = 0;
-    virtual QString getOptionCheckBoxCaption() const = 0;
-    virtual Preferences::PropertyName getPropertyName() const = 0;
-    virtual void applySettings() = 0;
+    HighlightEvent(int blockIndex, const QString &text);
+    virtual ~HighlightEvent();
+    QString getText() const;
+    int getBlockIndex() const;
+    static QEvent::Type getType() { return m_type; }
+private:
+    int m_blockIndex;
+    QString m_text;
 protected:
-    mutable QMutex m_mutex;
+    static QEvent::Type m_type;
 };
 
-#endif
+#endif /* OPEN_EBOOK_EDITOR_HIGHLIGHT_EVENT_H */

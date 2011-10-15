@@ -234,7 +234,6 @@ void MainWindow::fileOpened()
 
 void MainWindow::saveFile()
 {
-    Book::instance().setText(m_editor->toPlainText());
     QString fileName = Book::instance().getFileName();
     if (fileName.isEmpty()) {
         fileName = QFileDialog::getSaveFileName(this,
@@ -394,9 +393,6 @@ void MainWindow::updateMenuEnable(bool fileOpened)
 void MainWindow::contentsChange(int position, int charsRemoved, int charsAdded)
 {
     Q_UNUSED(charsRemoved);
-    const QTextBlock &firstBlock = m_editor->document()->findBlock(position);
-    const QTextBlock &lastBlock = m_editor->document()->findBlock(position + charsAdded);
-    for (int i = firstBlock.blockNumber(); i <= lastBlock.blockNumber(); ++i) {
-        HighlighterManagerFactory::instance().highlightBlock(i);
-    }
+    qDebug() << position << charsRemoved << charsAdded;
+    HighlighterManagerFactory::instance().registerBlockHighlight(position, position + charsAdded, false);
 }

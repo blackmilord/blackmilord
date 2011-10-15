@@ -35,7 +35,6 @@ DeviceConfiguration::DeviceConfiguration()
          //TODO: it should be real XML parser.
          //TODO: every element should also has information about valid attributes.
          line.remove("<element>").remove("</element>").remove("\r").remove("\n");
-         qDebug() << "adding" << line;
          m_validHTMLTags.push_back(line);
      }
 }

@@ -19,56 +19,28 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_ABSTRACT_HIGHLIGHTER_H
-#define OPEN_EBOOK_EDITOR_ABSTRACT_HIGHLIGHTER_H
+#include "HighlightEventResponse.h"
 
-#include <QObject>
-#include <QTextCharFormat>
-#include <QMutex>
-#include <Preferences.h>
+QEvent::Type HighlightEventResponse::m_type =
+    static_cast<QEvent::Type>(QEvent::registerEventType());
 
-
-class QString;
-
-class AbstractHighlighter
+HighlightEventResponse::HighlightEventResponse(int blockIndex) :
+    QEvent(m_type),
+    m_blockIndex(blockIndex),
+    m_results(new QVector<AbstractHighlighter::FormatList>())
 {
-public:
+}
 
-    struct CharFormat
-    {
-        CharFormat() :
-            m_start(0),
-            m_count(0)
-        {
-        }
+HighlightEventResponse::~HighlightEventResponse()
+{
+}
 
-        CharFormat(int start, int count, const QTextCharFormat &format) :
-            m_format(format),
-            m_start(start),
-            m_count(count)
-        {
-        }
+AbstractHighlighter::MultiFormatListPtr HighlightEventResponse::getResults() const
+{
+    return m_results;
+}
 
-        QTextCharFormat m_format;
-        int m_start;
-        int m_count;
-    };
-
-    typedef QVector<CharFormat> FormatList;
-    typedef QVector<FormatList> MultiFormatList;
-    typedef QSharedPointer<QVector<FormatList> > MultiFormatListPtr;
-    typedef FormatList::const_iterator FormatListIterator;
-    typedef MultiFormatList::const_iterator MultiFormatListIterator;
-
-    AbstractHighlighter();
-    virtual ~AbstractHighlighter();
-
-    virtual FormatList highlightBlock(const QString &text) = 0;
-    virtual QString getOptionCheckBoxCaption() const = 0;
-    virtual Preferences::PropertyName getPropertyName() const = 0;
-    virtual void applySettings() = 0;
-protected:
-    mutable QMutex m_mutex;
-};
-
-#endif
+int HighlightEventResponse::getBlockIndex() const
+{
+    return m_blockIndex;
+}

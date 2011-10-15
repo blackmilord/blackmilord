@@ -19,26 +19,30 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_HIGHLIGHT_EVENT_H
-#define OPEN_EBOOK_EDITOR_HIGHLIGHT_EVENT_H
+#ifndef OPEN_EBOOK_EDITOR_HIGHLIGHT_EVENT_RESPONSE_H
+#define OPEN_EBOOK_EDITOR_HIGHLIGHT_EVENT_RESPONSE_H
 
 #include <QEvent>
 #include <QString>
+#include <QVector>
+#include <QSharedPointer>
 
-class HighlightEvent :
+#include "AbstractHighlighter.h"
+
+class HighlightEventResponse :
     public QEvent
 {
 public:
-    HighlightEvent(int blockIndex, const QString &text);
-    virtual ~HighlightEvent();
-    QString getText() const;
+    HighlightEventResponse(int blockIndex);
+    virtual ~HighlightEventResponse();
     int getBlockIndex() const;
+    AbstractHighlighter::MultiFormatListPtr getResults() const;
     static QEvent::Type getType() { return m_type; }
 private:
     int m_blockIndex;
-    QString m_text;
+    QSharedPointer<QVector<AbstractHighlighter::FormatList> > m_results;
 protected:
     static QEvent::Type m_type;
 };
 
-#endif
+#endif /* OPEN_EBOOK_EDITOR_HIGHLIGHT_EVENT_RESPONSE_H */

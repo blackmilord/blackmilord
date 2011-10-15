@@ -21,7 +21,8 @@
 
 #include "AbstractHighlighter.h"
 
-AbstractHighlighter::AbstractHighlighter()
+AbstractHighlighter::AbstractHighlighter() :
+    m_mutex(QMutex::Recursive)
 {
 }
 

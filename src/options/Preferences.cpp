@@ -97,7 +97,8 @@ void Preferences::initPropertiesMap()
     Q_ASSERT(m_propertyMap.size() == PROPERTY_NAME_SIZE);
 }
 
-Preferences::Preferences()
+Preferences::Preferences() :
+    m_mutex(QMutex::Recursive)
 {
     initPropertiesMap();
     qDebug() << "Loading preferences...";

@@ -24,11 +24,11 @@
 
 #include <QObject>
 #include <QSharedPointer>
-#include <QVector>
+#include <QList>
 #include <QEvent>
+#include "AbstractHighlighter.h"
 
 class QPlainTextEdit;
-class AbstractHighlighter;
 class HighlighterThread;
 
 class HighlighterManager :
@@ -39,14 +39,17 @@ class HighlighterManager :
     explicit HighlighterManager(QPlainTextEdit *editor);
     virtual ~HighlighterManager();
 public:
-    void highlightBlock(int blockIndex);
+    void registerBlockHighlight(int start, int end, bool important);
+    void startBlockHighlight();
     QVector<AbstractHighlighter*> getHighlighters() const { return m_highlighters; }
 
 protected:
-    void highlightBlockPrivate(int blockIndex);
+    void highlightBlockPrivate(int blockIndex, const AbstractHighlighter::MultiFormatList &formatting);
     void customEvent(QEvent *event);
 
 private:
+    QList<int> m_queue;
+    bool m_inProgress;
     QVector<AbstractHighlighter*> m_highlighters;
     QPlainTextEdit *m_editor;
     HighlighterThread *m_highlighterThread;

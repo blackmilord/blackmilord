@@ -25,6 +25,7 @@
 #include <QRegExp>
 #include <QBrush>
 #include <QColor>
+#include <QMutexLocker>
 
 #include <Preferences.h>
 #include <DeviceConfiguration.h>
@@ -35,10 +36,12 @@ HighlighterHTMLTags::HighlighterHTMLTags()
 
 HighlighterHTMLTags::~HighlighterHTMLTags()
 {
+    QMutexLocker lock(&m_mutex);
 }
 
 QVector<AbstractHighlighter::CharFormat> HighlighterHTMLTags::highlightBlock(const QString &text)
 {
+    QMutexLocker lock(&m_mutex);
     QVector<AbstractHighlighter::CharFormat> result;
     if (!Preferences::instance().getValue(Preferences::PROP_HIGHLIGHTER_HTML_TAGS, false).toBool()) {
         return result;
@@ -85,11 +88,13 @@ QVector<AbstractHighlighter::CharFormat> HighlighterHTMLTags::highlightBlock(con
 
 QString HighlighterHTMLTags::getOptionCheckBoxCaption() const
 {
+    QMutexLocker lock(&m_mutex);
     return QObject::tr("Highlight HTML tags");
 }
 
 Preferences::PropertyName HighlighterHTMLTags::getPropertyName() const
 {
+    QMutexLocker lock(&m_mutex);
     return Preferences::PROP_HIGHLIGHTER_HTML_TAGS;
 }
 

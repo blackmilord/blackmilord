@@ -22,7 +22,12 @@
 #include "HighlighterThread.h"
 #include <QDebug>
 #include <QEvent>
-#include "HighlightEvent.h"
+#include <QApplication>
+
+#include "event/HighlightEvent.h"
+#include "event/HighlightEventResponse.h"
+#include "HighlighterManager.h"
+#include "AbstractHighlighter.h"
 
 HighlighterThread::HighlighterThread(QObject * parent) :
     QThread(parent)
@@ -40,9 +45,21 @@ void HighlighterThread::highlightBlock()
 void HighlighterThread::customEvent(QEvent *event)
 {
     if (event->type() == HighlightEvent::getType()) {
-        qDebug() << "highlighter thread event"
-                 << static_cast<HighlightEvent*>(event)->getBlockIndex()
-                 << static_cast<HighlightEvent*>(event)->getText();
+        event->accept();
+        HighlightEvent *highlightEvent = static_cast<HighlightEvent*>(event);
+        QVector<AbstractHighlighter*> highlighters =
+            HighlighterManagerFactory::instance().getHighlighters();
+
+        HighlightEventResponse *responseEvent =
+            new HighlightEventResponse(highlightEvent->getBlockIndex());
+
+        foreach(AbstractHighlighter* highlighter, highlighters) {
+            responseEvent->getResults()->push_back(
+                highlighter->highlightBlock(highlightEvent->getText()));
+        }
+
+        QApplication::postEvent(parent(), responseEvent);
+        
     }
     else {
         event->ignore();
