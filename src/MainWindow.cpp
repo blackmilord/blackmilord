@@ -189,7 +189,6 @@ void MainWindow::createFile()
 
 void MainWindow::fileCreated()
 {
-    //m_editor->setPlainText(Book::instance().getText());
     m_editor->setEnabled(true);
     updateMenuEnable(true);
     setWindowTitle(false);
@@ -224,7 +223,6 @@ void MainWindow::openMobiFile()
 
 void MainWindow::fileOpened()
 {
-    //m_editor->setPlainText(Book::instance().getText());
     m_editor->setEnabled(true);
     updateMenuEnable(true);
     setWindowTitle(false);
@@ -298,6 +296,7 @@ void MainWindow::fileClosed()
     m_editor->setEnabled(false);
     m_editor->document()->setModified(false);
     setWindowTitle(false);
+    HighlighterManagerFactory::instance().cancelBlockHighlight();
 }
 
 void MainWindow::showHowToUseAspellWindow()
@@ -393,6 +392,12 @@ void MainWindow::updateMenuEnable(bool fileOpened)
 void MainWindow::contentsChange(int position, int charsRemoved, int charsAdded)
 {
     Q_UNUSED(charsRemoved);
-    qDebug() << position << charsRemoved << charsAdded;
-    HighlighterManagerFactory::instance().registerBlockHighlight(position, position + charsAdded, false);
+    if (Book::instance().isFileOpened()) {
+        HighlighterManagerFactory::instance().registerBlockHighlight(position, position + charsAdded, true);
+    }
+    else {
+        //Opening in progress, use rehighlight instead
+        //rehighlight has set whole document to be rehighlighted with low priority
+        HighlighterManagerFactory::instance().rehighlight();
+    }
 }

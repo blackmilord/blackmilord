@@ -40,11 +40,13 @@ class HighlighterManager :
     virtual ~HighlighterManager();
 public:
     void registerBlockHighlight(int start, int end, bool important);
-    void startBlockHighlight();
+    void cancelBlockHighlight();
+    void rehighlight();
     QVector<AbstractHighlighter*> getHighlighters() const { return m_highlighters; }
 
 protected:
-    void highlightBlockPrivate(int blockIndex, const AbstractHighlighter::MultiFormatList &formatting);
+    void startBlockHighlight();
+    void highlightBlock(int blockIndex, const AbstractHighlighter::MultiFormatList &formatting);
     void customEvent(QEvent *event);
 
 private:

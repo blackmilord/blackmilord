@@ -55,9 +55,9 @@ Book& Book::instance()
 bool Book::openFile(const QString &fileName)
 {
     Q_ASSERT(!isFileOpened());
-    m_fileOpened = true;
     bool result = AbstractBookFactory::getObject()->openFile(fileName);
     if (result) {
+        m_fileOpened = true;
         emit fileLoaded();
     }
     return result;
@@ -91,9 +91,9 @@ bool Book::closeFile()
 bool Book::newFile()
 {
     reset();
-    m_fileOpened = true;
     bool result = AbstractBookFactory::getObject()->newFile();
     if (result) {
+        m_fileOpened = true;
         emit fileCreated();
     }
     return result;

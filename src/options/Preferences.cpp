@@ -39,14 +39,12 @@ void Preferences::setValue(PropertyName key, const QVariant &value)
     {
         QMutexLocker lock(&m_mutex);
         m_settings->setValue(m_propertyMap[key], value);
-#ifdef QT_GUI_LIB
         if (key == PROP_EDITOR_FONT_FAMILY || key == PROP_EDITOR_FONT_SIZE) {
             m_defaultFontEditor.setFamily(
                     getValue(PROP_EDITOR_FONT_FAMILY, "Arial").toString());
             m_defaultFontEditor.setPointSize(
                     getValue(PROP_EDITOR_FONT_SIZE, 12).toInt());
         }
-#endif
     }
     emit settingsChanged();
 }
@@ -57,13 +55,11 @@ QVariant Preferences::getValue(PropertyName key, const QVariant &defaultValue)
     return m_settings->value(m_propertyMap[key], defaultValue);
 }
 
-#ifdef QT_GUI_LIB
 QFont Preferences::getDefaultFontEditor()
 {
     QMutexLocker lock(&m_mutex);
     return m_defaultFontEditor;
 }
-#endif
 
 Preferences& Preferences::instance()
 {
@@ -115,12 +111,10 @@ Preferences::Preferences() :
     if (needDefault) {
         createDefaultConfig();
     }
-#ifdef QT_GUI_LIB
     m_defaultFontEditor.setFamily(
             getValue(PROP_EDITOR_FONT_FAMILY, "Arial").toString());
     m_defaultFontEditor.setPointSize(
             getValue(PROP_EDITOR_FONT_SIZE, 12).toInt());
-#endif
     setValue(PROP_SETTINGS_VERSION, OPEN_EBOOK_EDITOR_VERSION);
 }
 

@@ -58,7 +58,7 @@ void HighlighterManager::applySettings()
     foreach(AbstractHighlighter* highlighter, m_highlighters) {
         highlighter->applySettings();
     }
-    //TODO: rehighlight();
+    rehighlight();
 }
 
 void HighlighterManager::startBlockHighlight()
@@ -91,13 +91,18 @@ void HighlighterManager::registerBlockHighlight(int start, int end, bool importa
     startBlockHighlight();
 }
 
+void HighlighterManager::cancelBlockHighlight()
+{
+    m_queue.clear();
+}
+
 void HighlighterManager::customEvent(QEvent *event)
 {
     if (event->type() == HighlightEventResponse::getType()) {
         event->accept();
         HighlightEventResponse *responseEvent =
                 static_cast<HighlightEventResponse*>(event);
-        highlightBlockPrivate(responseEvent->getBlockIndex(), *responseEvent->getResults());
+        highlightBlock(responseEvent->getBlockIndex(), *responseEvent->getResults());
         m_inProgress = false;
         startBlockHighlight();
     }
@@ -106,13 +111,17 @@ void HighlighterManager::customEvent(QEvent *event)
     }
 }
 
-void HighlighterManager::highlightBlockPrivate(int blockIndex, const AbstractHighlighter::MultiFormatList &formatting)
+void HighlighterManager::rehighlight()
+{
+    //TODO: implement
+}
+
+void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighter::MultiFormatList &formatting)
 {
     QSet<int> steps;
     const QTextBlock &block = m_editor->document()->findBlockByNumber(blockIndex);
     bool signalsBlockedEditor = m_editor->blockSignals(true);
     bool signalsBlockedDocument = m_editor->document()->blockSignals(true);
-    qDebug() << block.text();
     steps << 0 << block.text().length();
     foreach(const AbstractHighlighter::FormatList &formats, formatting) {
         foreach(const AbstractHighlighter::CharFormat &format, formats) {
@@ -152,6 +161,9 @@ void HighlighterManager::highlightBlockPrivate(int blockIndex, const AbstractHig
         cursor.setPosition(cursorPositionOffset + end, QTextCursor::KeepAnchor);
         cursor.setCharFormat(newFormat);
     }
+    QTextCharFormat defaultFormat;
+    defaultFormat.setFont(Preferences::instance().getDefaultFontEditor());
+    cursor.setCharFormat(defaultFormat);
     m_editor->blockSignals(signalsBlockedEditor);
     m_editor->document()->blockSignals(signalsBlockedDocument);
 }
