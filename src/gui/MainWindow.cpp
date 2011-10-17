@@ -26,14 +26,13 @@
 #include <QKeySequence>
 #include <QFileDialog>
 #include <QString>
-#include <QPlainTextEdit>
 #include <QVBoxLayout>
 #include <QApplication>
-#include <QSyntaxHighlighter>
 #include <QMessageBox>
 #include <QDesktopWidget>
 
-#include "AspellWrapper.h"
+#include <PlainTextEditor.h>
+#include <AspellWrapper.h>
 #include <HighlighterManager.h>
 #include <Book.h>
 #include <FindReplaceWindow.h>
@@ -61,12 +60,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     QVBoxLayout *centralLayout = new QVBoxLayout;
     centralWidget->setLayout(centralLayout);
 
-    m_editor = new QPlainTextEdit(this);
+    m_editor = new PlainTextEditor(this);
     m_editor->setEnabled(false);
     centralLayout->addWidget(m_editor);
     setCentralWidget(centralWidget);
 
-    HighlighterManagerFactory::createInstance(m_editor);
     Book::createInstance(m_editor);
 
     //Menu
@@ -137,8 +135,6 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
             this, SLOT(applySettings()));
     connect(m_editor, SIGNAL(modificationChanged(bool)),
             this, SLOT(setWindowTitle(bool)));
-    connect(m_editor->document(), SIGNAL(contentsChange(int, int, int)),
-            this, SLOT(contentsChange(int, int, int)));
 
     //Other things
     QApplication::setWindowIcon(QIcon(":/icon/application_icon.png"));
@@ -386,18 +382,5 @@ void MainWindow::updateMenuEnable(bool fileOpened)
 {
     foreach(QAction *action, menuBar()->findChildren<QAction *>("enable_on_open")) {
         action->setEnabled(fileOpened);
-    }
-}
-
-void MainWindow::contentsChange(int position, int charsRemoved, int charsAdded)
-{
-    Q_UNUSED(charsRemoved);
-    if (Book::instance().isFileOpened()) {
-        HighlighterManagerFactory::instance().registerBlockHighlight(position, position + charsAdded, true);
-    }
-    else {
-        //Opening in progress, use rehighlight instead
-        //rehighlight has set whole document to be rehighlighted with low priority
-        HighlighterManagerFactory::instance().rehighlight();
     }
 }

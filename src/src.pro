@@ -34,6 +34,7 @@ INCLUDEPATH +=  . \
 
 SOURCES += main.cpp
 SOURCES += gui/MainWindow.cpp
+SOURCES += gui/PlainTextEditor.cpp
 SOURCES += book/Book.cpp
 SOURCES += book/AbstractBook.cpp
 SOURCES += book/BackupManager.cpp
@@ -67,6 +68,7 @@ SOURCES += device/DeviceConfiguration.cpp
 
 HEADERS += Version.h
 HEADERS += gui/MainWindow.h
+HEADERS += gui/PlainTextEditor.h
 HEADERS += book/Book.h
 HEADERS += book/AbstractBook.h
 HEADERS += book/BackupManager.h

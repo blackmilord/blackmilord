@@ -79,7 +79,6 @@ void HighlighterManager::registerBlockHighlight(int start, int end, bool importa
     }
     const QTextBlock &firstBlock = m_editor->document()->findBlock(start);
     const QTextBlock &lastBlock = m_editor->document()->findBlock(end);
-    qDebug() << start << end << m_editor->toPlainText().length() << firstBlock.blockNumber() << lastBlock.blockNumber();
     for (int i = firstBlock.blockNumber(); i <= lastBlock.blockNumber(); ++i) {
         if (important) {
             m_queue.push_back(i);

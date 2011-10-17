@@ -26,9 +26,7 @@
 #include <QSettings>
 #include <QMap>
 #include <QMutex>
-#ifdef QT_GUI_LIB
 #include <QFont>
-#endif
 
 class QVariant;
 class QString;
@@ -60,9 +58,7 @@ public:
     void setValue(PropertyName key, const QVariant &value);
     QVariant getValue(PropertyName key, const QVariant &defaultValue);
     void saveLastDir(const QString &dir);
-#ifdef QT_GUI_LIB
     QFont getDefaultFontEditor();
-#endif
 private:
     void createDefaultConfig();
     void initPropertiesMap();
@@ -71,9 +67,7 @@ private:
     QMap<PropertyName, QString> m_propertyMap;
     QSettings *m_settings;
     QString m_configFile;
-#ifdef QT_GUI_LIB
     QFont m_defaultFontEditor;
-#endif
 signals:
     void settingsChanged();
 };
