@@ -89,7 +89,7 @@ bool MobiFileObject::openFile(const QString &fileName)
             return false;
         }
     }
-    
+
     if (!readTextRecords(data)) {
         file.close();
         return false;

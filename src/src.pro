@@ -23,17 +23,17 @@ win32 {
 }
 
 INCLUDEPATH +=  . \
-		options/ \
-		dialogs/ \
-		utils/ \
-		book/ \
-		book/mobi/ \
-		highlighters/ \
-                device
+                options/ \
+                dialogs/ \
+                utils/ \
+                book/ \
+                book/mobi/ \
+                highlighters/ \
+                device \
+                gui
 
 SOURCES += main.cpp
-SOURCES += MainWindow.cpp
-SOURCES += AspellWrapper.cpp
+SOURCES += gui/MainWindow.cpp
 SOURCES += book/Book.cpp
 SOURCES += book/AbstractBook.cpp
 SOURCES += book/BackupManager.cpp
@@ -45,6 +45,7 @@ SOURCES += book/mobi/MOBIHeader.cpp
 SOURCES += book/mobi/EXTHHeader.cpp
 SOURCES += book/mobi/EXTHHeaderEntry.cpp
 SOURCES += book/mobi/MobiCodec.cpp
+SOURCES += utils/AspellWrapper.cpp
 SOURCES += utils/Dictionary.cpp
 SOURCES += utils/Formatting.cpp
 SOURCES += dialogs/HowToUseAspellWindow.cpp
@@ -65,8 +66,7 @@ SOURCES += options/Preferences.cpp
 SOURCES += device/DeviceConfiguration.cpp
 
 HEADERS += Version.h
-HEADERS += MainWindow.h
-HEADERS += AspellWrapper.h
+HEADERS += gui/MainWindow.h
 HEADERS += book/Book.h
 HEADERS += book/AbstractBook.h
 HEADERS += book/BackupManager.h
@@ -78,6 +78,7 @@ HEADERS += book/mobi/MOBIHeader.h
 HEADERS += book/mobi/EXTHHeader.h
 HEADERS += book/mobi/EXTHHeaderEntry.h
 HEADERS += book/mobi/MobiCodec.h
+HEADERS += utils/AspellWrapper.h
 HEADERS += utils/Dictionary.h
 HEADERS += utils/Formatting.h
 HEADERS += dialogs/HowToUseAspellWindow.h

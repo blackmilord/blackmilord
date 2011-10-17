@@ -85,7 +85,7 @@ MetaDataWindow::MetaDataWindow(QWidget *parent) :
     setMinimumHeight(300);
     setMinimumWidth(300);
     setWindowTitle(tr("Metadata editor"));
-    
+
     connect(&Book::instance(), SIGNAL(metadataChanged()), this, SLOT(metadataChanged()));
     metadataChanged();
 }
@@ -96,7 +96,7 @@ MetaDataWindow::~MetaDataWindow()
 
 void MetaDataWindow::apply()
 {
-    
+
 }
 
 void MetaDataWindow::ok()

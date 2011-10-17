@@ -49,7 +49,7 @@ private:
     FindReplaceWindow *m_findReplaceWindow;
     OptionsWindow *m_optionsWindow;
     MetaDataWindow *m_metadataWindow;
-    
+
     void resizeEvent(QResizeEvent *event);
     void moveEvent(QMoveEvent *event);
     void changeEvent(QEvent *event);

@@ -294,7 +294,7 @@ void SpellCheckingWindow::change()
                     replacement;
         Book::instance().setText(
                 Book::instance().getText().replace(m_wordStartPos,
-                        m_wordEndPos - m_wordStartPos, 
+                        m_wordEndPos - m_wordStartPos,
                         replacement));
 
     }
@@ -321,7 +321,7 @@ void SpellCheckingWindow::changeAll()
         Book::instance().getText().mid(position).replace(m_currentWord, replacement));
 
     Book::instance().setCursorPosition(position);
-    
+
     findNextWord();
 }
 

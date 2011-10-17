@@ -190,7 +190,7 @@ void FindReplaceWindow::replace()
             return;
         }
     }
-    
+
     Book::instance().setText(
         Book::instance().getText().replace(
             Book::instance().getSelectionStart(),

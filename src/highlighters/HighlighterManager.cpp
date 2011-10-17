@@ -125,7 +125,7 @@ void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighte
     steps << 0 << block.text().length();
     foreach(const AbstractHighlighter::FormatList &formats, formatting) {
         foreach(const AbstractHighlighter::CharFormat &format, formats) {
-            steps << format.m_start << format.m_start + format.m_count;            
+            steps << format.m_start << format.m_start + format.m_count;
         }
     }
     QList<int> stepList = steps.toList();

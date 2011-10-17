@@ -284,7 +284,7 @@ void MainWindow::closeFile()
         {
             saveFile();
         }
-                
+
     }
     Book::instance().closeFile();
 }
