@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_MOBI_CODEC_H
-#define	OPEN_EBOOK_EDITOR_MOBI_CODEC_H
+#ifndef BLACK_MILORD_MOBI_CODEC_H
+#define BLACK_MILORD_MOBI_CODEC_H
 
 class QByteArray;
 
@@ -29,4 +29,4 @@ public:
     static QByteArray DecodePalmDoc(const QByteArray &compressed);
 };
 
-#endif /*OPEN_EBOOK_EDITOR_CODEC_H*/
+#endif /*BLACK_MILORD_CODEC_H*/

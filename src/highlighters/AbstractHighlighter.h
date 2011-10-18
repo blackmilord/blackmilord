@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_ABSTRACT_HIGHLIGHTER_H
-#define OPEN_EBOOK_EDITOR_ABSTRACT_HIGHLIGHTER_H
+#ifndef BLACK_MILORD_ABSTRACT_HIGHLIGHTER_H
+#define BLACK_MILORD_ABSTRACT_HIGHLIGHTER_H
 
 #include <QObject>
 #include <QTextCharFormat>
@@ -71,4 +71,4 @@ protected:
     mutable QMutex m_mutex;
 };
 
-#endif
+#endif /* BLACK_MILORD_ABSTRACT_HIGHLIGHTER_H */

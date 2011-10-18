@@ -115,7 +115,7 @@ Preferences::Preferences() :
             getValue(PROP_EDITOR_FONT_FAMILY, "Arial").toString());
     m_defaultFontEditor.setPointSize(
             getValue(PROP_EDITOR_FONT_SIZE, 12).toInt());
-    setValue(PROP_SETTINGS_VERSION, OPEN_EBOOK_EDITOR_VERSION);
+    setValue(PROP_SETTINGS_VERSION, BLACK_MILORD_VERSION);
 }
 
 Preferences::~Preferences()

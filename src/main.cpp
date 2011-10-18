@@ -21,7 +21,7 @@
 
 #include <QApplication>
 #include <QDebug>
-#include "MainWindow.h"
+#include <MainWindow.h>
 #include <Book.h>
 
 void processArguments(int argc, char *argv[])

@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_BOOK_H
-#define	OPEN_EBOOK_EDITOR_BOOK_H
+#ifndef BLACK_MILORD_BOOK_H
+#define BLACK_MILORD_BOOK_H
 
 #include <QDateTime>
 #include <MobiFileObject.h>
@@ -106,4 +106,4 @@ private:
     BackupManager m_backupManager;
 };
 
-#endif
+#endif /* BLACK_MILORD_BOOK_H */

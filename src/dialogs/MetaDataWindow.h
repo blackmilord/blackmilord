@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_METADATA_WINDOW_H
-#define	OPEN_EBOOK_EDITOR_METADATA_WINDOW_H
+#ifndef BLACK_MILORD_METADATA_WINDOW_H
+#define BLACK_MILORD_METADATA_WINDOW_H
 
 #include <QDialog>
 
@@ -48,4 +48,4 @@ private:
     void reloadMetadata();
 };
 
-#endif /* OPEN_EBOOK_EDITOR_METADATA_WINDOW_H */
+#endif /* BLACK_MILORD_METADATA_WINDOW_H */

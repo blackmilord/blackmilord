@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_HIGHLIGHTER_HTML_H
-#define	OPEN_EBOOK_EDITOR_HIGHLIGHTER_HTML_H
+#ifndef BLACK_MILORD_HIGHLIGHTER_HTML_H
+#define BLACK_MILORD_HIGHLIGHTER_HTML_H
 
 #include "AbstractHighlighter.h"
 
@@ -39,4 +39,4 @@ public:
     virtual void applySettings();
 };
 
-#endif /* OPEN_EBOOK_EDITOR_HIGHLIGHTER_HTML_H */
+#endif /* BLACK_MILORD_HIGHLIGHTER_HTML_H */

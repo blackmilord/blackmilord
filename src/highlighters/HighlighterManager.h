@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_HIGHLIGHTER_MANAGER_H
-#define OPEN_EBOOK_EDITOR_HIGHLIGHTER_MANAGER_H
+#ifndef BLACK_MILORD_HIGHLIGHTER_MANAGER_H
+#define BLACK_MILORD_HIGHLIGHTER_MANAGER_H
 
 #include <QObject>
 #include <QSharedPointer>
@@ -73,4 +73,4 @@ private:
     static HighlighterManager* m_instance;
 };
 
-#endif
+#endif /* BLACK_MILORD_HIGHLIGHTER_MANAGER_H */

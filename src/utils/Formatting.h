@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_FORMATTING_H
-#define	OPEN_EBOOK_EDITOR_FORMATTING_H
+#ifndef BLACK_MILORD_FORMATTING_H
+#define BLACK_MILORD_FORMATTING_H
 
 class QString;
 
@@ -30,4 +30,4 @@ public:
     static QString formatHTMLContent(const QString &text);
 };
 
-#endif /* OPEN_EBOOK_EDITOR_FORMATTING_H */
+#endif /* BLACK_MILORD_FORMATTING_H */

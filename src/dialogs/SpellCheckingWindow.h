@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_SPELL_CHECKING_WINDOW_H
-#define	OPEN_EBOOK_EDITOR_SPELL_CHECKING_WINDOW_H
+#ifndef BLACK_MILORD_SPELL_CHECKING_WINDOW_H
+#define BLACK_MILORD_SPELL_CHECKING_WINDOW_H
 
 #include <QDialog>
 #include <QTextBoundaryFinder>
@@ -82,4 +82,4 @@ protected:
     void applyEditMode();
 };
 
-#endif /* OPEN_EBOOK_EDITOR_SPELL_CHECKING_WINDOW_H */
+#endif /* BLACK_MILORD_SPELL_CHECKING_WINDOW_H */

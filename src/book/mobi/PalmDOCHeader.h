@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_PALM_DOC_HEADER_H
-#define	OPEN_EBOOK_EDITOR_PALM_DOC_HEADER_H
+#ifndef BLACK_MILORD_PALM_DOC_HEADER_H
+#define BLACK_MILORD_PALM_DOC_HEADER_H
 
 #include <QtGlobal>
 #include <QString>
@@ -79,4 +79,4 @@ private:
     QString m_why;
 };
 
-#endif
+#endif /* BLACK_MILORD_PALM_DOC_HEADER_H */

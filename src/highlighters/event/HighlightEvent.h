@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_HIGHLIGHT_EVENT_H
-#define OPEN_EBOOK_EDITOR_HIGHLIGHT_EVENT_H
+#ifndef BLACK_MILORD_HIGHLIGHT_EVENT_H
+#define BLACK_MILORD_HIGHLIGHT_EVENT_H
 
 #include <QEvent>
 #include <QString>
@@ -41,4 +41,4 @@ protected:
     static QEvent::Type m_type;
 };
 
-#endif /* OPEN_EBOOK_EDITOR_HIGHLIGHT_EVENT_H */
+#endif /* BLACK_MILORD_HIGHLIGHT_EVENT_H */

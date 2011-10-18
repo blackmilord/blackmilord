@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_PREFERENCES_H
-#define OPEN_EBOOK_EDITOR_PREFERENCES_H
+#ifndef BLACK_MILORD_PREFERENCES_H
+#define BLACK_MILORD_PREFERENCES_H
 
 #include <QObject>
 #include <QSettings>
@@ -72,4 +72,4 @@ signals:
     void settingsChanged();
 };
 
-#endif /* OPEN_EBOOK_EDITOR_PREFERENCES_H */
+#endif /* BLACK_MILORD_PREFERENCES_H */

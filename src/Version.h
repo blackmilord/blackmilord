@@ -19,9 +19,9 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_VERSION_H
-#define OPEN_EBOOK_EDITOR_VERSION_H
+#ifndef BLACK_MILORD_VERSION_H
+#define BLACK_MILORD_VERSION_H
 
-const double OPEN_EBOOK_EDITOR_VERSION = 0.1;
+const double BLACK_MILORD_VERSION = 0.1;
 
-#endif
+#endif /* BLACK_MILORD_VERSION_H */

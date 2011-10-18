@@ -20,7 +20,7 @@
  ************************************************************************/
 
 #ifndef BLACK_MILORD_PLAIN_TEXT_EDITOR_H
-#define	BLACK_MILORD_PLAIN_TEXT_EDITOR_H
+#define BLACK_MILORD_PLAIN_TEXT_EDITOR_H
 
 #include <QPlainTextEdit>
 

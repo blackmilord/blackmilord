@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_FIND_REPLACE_WINDOW_H
-#define	OPEN_EBOOK_EDITOR_FIND_REPLACE_WINDOW_H
+#ifndef BLACK_MILORD_FIND_REPLACE_WINDOW_H
+#define BLACK_MILORD_FIND_REPLACE_WINDOW_H
 
 #include <QDialog>
 
@@ -55,4 +55,4 @@ protected:
     void showEvent(QShowEvent *event);
 };
 
-#endif /* OPEN_EBOOK_EDITOR_FIND_REPLACE_WINDOW_H */
+#endif /* BLACK_MILORD_FIND_REPLACE_WINDOW_H */

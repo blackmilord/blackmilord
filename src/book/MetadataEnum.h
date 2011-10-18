@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_METADATA_ENUM_H
-#define	OPEN_EBOOK_EDITOR_METADATA_ENUM_H
+#ifndef BLACK_MILORD_METADATA_ENUM_H
+#define BLACK_MILORD_METADATA_ENUM_H
 
 enum MetaData
 {
@@ -37,5 +37,4 @@ enum MetaData
 
 };
 
-#endif /* OPEN_EBOOK_EDITOR_METADATA_ENUM_H */
-
+#endif /* BLACK_MILORD_METADATA_ENUM_H */

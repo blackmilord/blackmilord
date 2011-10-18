@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_MOBI_HEADER_H
-#define	OPEN_EBOOK_EDITOR_MOBI_HEADER_H
+#ifndef BLACK_MILORD_MOBI_HEADER_H
+#define BLACK_MILORD_MOBI_HEADER_H
 
 #include <QString>
 #include <QtGlobal>
@@ -171,4 +171,4 @@ private:
     QString m_why;
 };
 
-#endif /* OPEN_EBOOK_EDITOR_MOBI_HEADER_H */
+#endif /* BLACK_MILORD_MOBI_HEADER_H */

@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_DATABASE_RECORD_INFO_ENTRY_H
-#define	OPEN_EBOOK_EDITOR_DATABASE_RECORD_INFO_ENTRY_H
+#ifndef BLACK_MILORD_DATABASE_RECORD_INFO_ENTRY_H
+#define BLACK_MILORD_DATABASE_RECORD_INFO_ENTRY_H
 
 #include <QtGlobal>
 
@@ -47,4 +47,4 @@ public:
 };
 
 
-#endif /* OPEN_EBOOK_EDITOR_DATABASE_RECORD_INFO_ENTRY_H */
+#endif /* BLACK_MILORD_DATABASE_RECORD_INFO_ENTRY_H */

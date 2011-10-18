@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_HIGHLIGHTER_THREAD_H
-#define OPEN_EBOOK_EDITOR_HIGHLIGHTER_THREAD_H
+#ifndef BLACK_MILORD_HIGHLIGHTER_THREAD_H
+#define BLACK_MILORD_HIGHLIGHTER_THREAD_H
 
 #include <QThread>
 
@@ -35,4 +35,4 @@ protected:
     void highlightBlock();
     void customEvent(QEvent *event);};
 
-#endif /* OPEN_EBOOK_EDITOR_HIGHLIGHTER_THREAD_H */
+#endif /* BLACK_MILORD_HIGHLIGHTER_THREAD_H */

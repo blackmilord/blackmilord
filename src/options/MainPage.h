@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_MAIN_PAGE_H
-#define OPEN_EBOOK_EDITOR_MAIN_PAGE_H
+#ifndef BLACK_MILORD_MAIN_PAGE_H
+#define BLACK_MILORD_MAIN_PAGE_H
 
 #include <QWidget>
 #include "IPageWidget.h"
@@ -47,4 +47,4 @@ private:
     void showEvent(QShowEvent *event);
 };
 
-#endif /* OPEN_EBOOK_EDITOR_MAIN_PAGE_H */
+#endif /* BLACK_MILORD_MAIN_PAGE_H */

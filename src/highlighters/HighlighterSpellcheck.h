@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_HIGHLIGHTER_SPELLING_ERROR_H
-#define	OPEN_EBOOK_EDITOR_HIGHLIGHTER_SPELLING_ERROR_H
+#ifndef BLACK_MILORD_HIGHLIGHTER_SPELLING_ERROR_H
+#define BLACK_MILORD_HIGHLIGHTER_SPELLING_ERROR_H
 
 #include <QTextBoundaryFinder>
 #include "AbstractHighlighter.h"
@@ -40,4 +40,4 @@ public:
     virtual void applySettings();
 };
 
-#endif /* OPEN_EBOOK_EDITOR_HIGHLIGHTER_SPELLING_ERROR_H */
+#endif /* BLACK_MILORD_HIGHLIGHTER_SPELLING_ERROR_H */

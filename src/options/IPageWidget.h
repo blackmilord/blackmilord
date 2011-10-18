@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_I_PAGE_WIDGET_H
-#define OPEN_EBOOK_EDITOR_I_PAGE_WIDGET_H
+#ifndef BLACK_MILORD_I_PAGE_WIDGET_H
+#define BLACK_MILORD_I_PAGE_WIDGET_H
 
 class QListWidget;
 class QStackedWidget;
@@ -32,4 +32,4 @@ public:
     virtual void apply() = 0;
 };
 
-#endif /* OPEN_EBOOK_EDITOR_I_PAGE_WIDGET_H */
+#endif /* BLACK_MILORD_I_PAGE_WIDGET_H */

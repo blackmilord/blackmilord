@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_ASPELL_WRAPPER_H
-#define	OPEN_EBOOK_EDITOR_ASPELL_WRAPPER_H
+#ifndef BLACK_MILORD_ASPELL_WRAPPER_H
+#define BLACK_MILORD_ASPELL_WRAPPER_H
 
 #include <QGlobalStatic>
 #ifdef Q_WS_WIN
@@ -115,4 +115,4 @@ public slots:
     void changeLanguage(const QString &code);
 };
 
-#endif /* OPEN_EBOOK_EDITOR_ASPELL_WRAPPER_H */
+#endif /* BLACK_MILORD_ASPELL_WRAPPER_H */

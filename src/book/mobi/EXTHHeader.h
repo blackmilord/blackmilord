@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_EXTH_HEADER_H
-#define	OPEN_EBOOK_EDITOR_EXTH_HEADER_H
+#ifndef BLACK_MILORD_EXTH_HEADER_H
+#define BLACK_MILORD_EXTH_HEADER_H
 
 class QString;
 class QDataStream;
@@ -96,4 +96,4 @@ private:
 
 };
 
-#endif /* OPEN_EBOOK_EDITOR_EXTH_HEADER_H */
+#endif /* BLACK_MILORD_EXTH_HEADER_H */

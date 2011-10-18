@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_EDITOR_PAGE_H
-#define OPEN_EBOOK_EDITOR_EDITOR_PAGE_H
+#ifndef BLACK_MILORD_EDITOR_PAGE_H
+#define BLACK_MILORD_EDITOR_PAGE_H
 
 #include <QWidget>
 #include <QVector>
@@ -51,4 +51,4 @@ private slots:
 };
 
 
-#endif /* OPEN_EBOOK_EDITOR_EDITOR_PAGE_H */
+#endif /* BLACK_MILORD_EDITOR_PAGE_H */

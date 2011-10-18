@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_EXTH_HEADER_ENTRY_H
-#define	OPEN_EBOOK_EDITOR_EXTH_HEADER_ENTRY_H
+#ifndef BLACK_MILORD_EXTH_HEADER_ENTRY_H
+#define BLACK_MILORD_EXTH_HEADER_ENTRY_H
 
 #include <QtGlobal>
 
@@ -50,4 +50,4 @@ private:
     char *m_data;
 };
 
-#endif /* OPEN_EBOOK_EDITOR_EXTH_HEADER_ENTRY_H */
+#endif /* BLACK_MILORD_EXTH_HEADER_ENTRY_H */

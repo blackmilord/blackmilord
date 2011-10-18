@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BOOKBACKUP_H
-#define BOOKBACKUP_H
+#ifndef BLACK_MILORD_BACKUP_MANAGER_H
+#define BLACK_MILORD_BACKUP_MANAGER_H
 
 class QString;
 
@@ -32,4 +32,4 @@ public:
     bool create(const QString &fileName);
 };
 
-#endif
+#endif /* BLACK_MILORD_BACKUP_MANAGER_H */

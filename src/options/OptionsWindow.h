@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_OPTIONS_WINDOW_H
-#define OPEN_EBOOK_EDITOR_OPTIONS_WINDOW_H
+#ifndef BLACK_MILORD_OPTIONS_WINDOW_H
+#define BLACK_MILORD_OPTIONS_WINDOW_H
 
 #include <QDialog>
 #include <QWidget>
@@ -52,4 +52,4 @@ private slots:
     void ok();
 };
 
-#endif /* OPEN_EBOOK_EDITOR_OPTIONS_WINDOW_H */
+#endif /* BLACK_MILORD_OPTIONS_WINDOW_H */

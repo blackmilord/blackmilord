@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_ABSTRACT_BOOK_H
-#define	OPEN_EBOOK_EDITOR_ABSTRACT_BOOK_H
+#ifndef BLACK_MILORD_ABSTRACT_BOOK_H
+#define BLACK_MILORD_ABSTRACT_BOOK_H
 
 #include <QSharedPointer>
 
@@ -44,4 +44,4 @@ public:
     static AbstractBookPtr getObject();
 };
 
-#endif
+#endif /* BLACK_MILORD_ABSTRACT_BOOK_H */

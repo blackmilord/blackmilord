@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_MOBIFILE_H
-#define	OPEN_EBOOK_EDITOR_MOBIFILE_H
+#ifndef BLACK_MILORD_MOBIFILE_H
+#define BLACK_MILORD_MOBIFILE_H
 
 #include <QObject>
 #include <QList>
@@ -78,5 +78,5 @@ private:
     friend class HeaderDiff;
 };
 
-#endif	/* OPEN_EBOOK_EDITOR_MOBIFILE_H */
+#endif /* BLACK_MILORD_MOBIFILE_H */
 

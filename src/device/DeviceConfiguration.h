@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_DEVICE_CONFIGURATION_H
-#define	OPEN_EBOOK_EDITOR_DEVICE_CONFIGURATION_H
+#ifndef BLACK_MILORD_DEVICE_CONFIGURATION_H
+#define BLACK_MILORD_DEVICE_CONFIGURATION_H
 
 #include <QStringList>
 
@@ -36,4 +36,4 @@ private:
 };
 
 
-#endif /* OPEN_EBOOK_EDITOR_DEVICE_CONFIGURATION_H */
+#endif /* BLACK_MILORD_DEVICE_CONFIGURATION_H */

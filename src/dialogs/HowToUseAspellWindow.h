@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_HOW_TO_USE_ASPELL_WINDOW_H
-#define	OPEN_EBOOK_EDITOR_HOW_TO_USE_ASPELL_WINDOW_H
+#ifndef BLACK_MILORD_HOW_TO_USE_ASPELL_WINDOW_H
+#define BLACK_MILORD_HOW_TO_USE_ASPELL_WINDOW_H
 
 #include <QDialog>
 
@@ -32,4 +32,4 @@ public:
     ~HowToUseAspellWindow();
 };
 
-#endif /* OPEN_EBOOK_EDITOR_HOW_TO_USE_ASPELL_WINDOW_H */
+#endif /* BLACK_MILORD_HOW_TO_USE_ASPELL_WINDOW_H */

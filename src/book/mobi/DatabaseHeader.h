@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_DATABASE_HEADER_H
-#define	OPEN_EBOOK_EDITOR_DATABASE_HEADER_H
+#ifndef BLACK_MILORD_DATABASE_HEADER_H
+#define BLACK_MILORD_DATABASE_HEADER_H
 
 #include <QVector>
 
@@ -110,7 +110,7 @@ private:
     quint32 m_sortInfoID;
     char m_type[TYPE_LENGTH+1];
     char m_creator[CREATOR_LENGTH+1];
-    //	used internally to identify record
+    //used internally to identify record
     quint32 m_uniqueIDseed;
     //Only used when in-memory on Palm OS. Always set to zero in stored files.
     quint32 m_nextRecordListID;
@@ -120,4 +120,4 @@ private:
     QString m_why;
 };
 
-#endif /* OPEN_EBOOK_EDITOR_DATABASE_HEADER_H */
+#endif /* BLACK_MILORD_DATABASE_HEADER_H */

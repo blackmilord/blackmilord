@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef OPEN_EBOOK_EDITOR_EXTRA_RULES_H
-#define OPEN_EBOOK_EDITOR_EXTRA_RULES_H
+#ifndef BLACK_MILORD_EXTRA_RULES_H
+#define BLACK_MILORD_EXTRA_RULES_H
 
 #include <QMap>
 #include <MetadataEnum.h>
@@ -44,4 +44,4 @@ private:
     static QMap<QString, QString> initLanguageCodes();
 };
 
-#endif /* OPEN_EBOOK_EDITOR_EXTRA_RULES_H */
+#endif /* BLACK_MILORD_EXTRA_RULES_H */

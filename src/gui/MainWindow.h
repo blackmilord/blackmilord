@@ -20,7 +20,7 @@
  ************************************************************************/
 
 #ifndef BLACK_MILORD_MAIN_WINDOW_H
-#define	BLACK_MILORD_MAIN_WINDOW_H
+#define BLACK_MILORD_MAIN_WINDOW_H
 
 #include <QMainWindow>
 #include <QVector>
@@ -75,5 +75,5 @@ private slots:
     void setWindowTitle(bool modified);
 };
 
-#endif	/* OPEN_EBOOK_EDITOR_MAINWINDOW_H */
+#endif /* BLACK_MILORD_MAIN_WINDOW_H */
 
