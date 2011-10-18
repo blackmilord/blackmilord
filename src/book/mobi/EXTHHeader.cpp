@@ -144,6 +144,8 @@ void EXTHHeader::storeRecord(EXTHHeaderEntry &entry)
     removeRecord(entry.getType());
     m_records.push_back(entry);
     m_recordCount = m_records.size();
+    //FIXME: called second time (first time in removeRecord
+    m_headerLength = recalculateSize();
 }
 
 void EXTHHeader::removeRecord(quint32 type)
@@ -153,6 +155,7 @@ void EXTHHeader::removeRecord(quint32 type)
         if (it->getType() == type) {
             m_records.erase(it);
             m_recordCount = m_records.size();
+            m_headerLength = recalculateSize();
             return;
         }
     }

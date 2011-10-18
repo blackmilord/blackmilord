@@ -48,8 +48,9 @@ MetaDataWindow::MetaDataWindow(QWidget *parent) :
     buttonLayout->addWidget(applyButton);
     buttonLayout->addWidget(cancelButton);
 
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(okButton, SIGNAL(clicked()), this, SLOT(ok()));
     connect(applyButton, SIGNAL(clicked()), this, SLOT(apply()));
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(close()));
 
     dataLayout->addWidget(new QLabel(Dictionary::bookMetaDataLabel(METADATA_AUTHOR)), 0, 0);
     dataLayout->addWidget(m_author = new QLineEdit(), 0 , 1);
@@ -66,10 +67,6 @@ MetaDataWindow::MetaDataWindow(QWidget *parent) :
     dataLayout->addWidget(new QLabel(Dictionary::bookMetaDataLabel(METADATA_SUBJECT)), 4, 0);
     dataLayout->addWidget(m_subject = new QLineEdit(), 4 , 1);
 
-    dataLayout->setColumnMinimumWidth(0, 75);
-    dataLayout->setColumnStretch(0, 0);
-    dataLayout->setColumnStretch(1, 1);
-
     /*
     METADATA_VERSION,
     METADATA_CREATION_DATE,
@@ -77,6 +74,10 @@ MetaDataWindow::MetaDataWindow(QWidget *parent) :
     METADATA_LAST_BACKUP_DATE,
     METADATA_MODIFICATION_NUMBER
     */
+
+    dataLayout->setColumnMinimumWidth(0, 75);
+    dataLayout->setColumnStretch(0, 0);
+    dataLayout->setColumnStretch(1, 1);
 
     layout->addLayout(dataLayout);
     layout->addStretch(1);
@@ -86,7 +87,6 @@ MetaDataWindow::MetaDataWindow(QWidget *parent) :
     setMinimumWidth(300);
     setWindowTitle(tr("Metadata editor"));
 
-    connect(&Book::instance(), SIGNAL(metadataChanged()), this, SLOT(metadataChanged()));
     metadataChanged();
 }
 
@@ -96,13 +96,24 @@ MetaDataWindow::~MetaDataWindow()
 
 void MetaDataWindow::apply()
 {
-
+    Book::instance().setMetadata(METADATA_AUTHOR, m_author->text());
+    Book::instance().setMetadata(METADATA_PUBLISHER, m_publisher->text());
+    Book::instance().setMetadata(METADATA_DESCRIPTION, m_description->text());
+    Book::instance().setMetadata(METADATA_ISBN, m_isbn->text());
+    Book::instance().setMetadata(METADATA_SUBJECT, m_subject->text());
 }
 
 void MetaDataWindow::ok()
 {
     apply();
     close();
+}
+
+void MetaDataWindow::showEvent(QShowEvent *event)
+{
+    QDialog::showEvent(event);
+    metadataChanged();
+    m_author->setFocus();
 }
 
 void MetaDataWindow::metadataChanged()

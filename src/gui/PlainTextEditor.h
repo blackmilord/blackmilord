@@ -35,6 +35,10 @@ public:
 protected:
     void contextMenuEvent(QContextMenuEvent * event);
 
+public slots:
+    void redo();
+    void undo();
+
 private slots:
     void contentsChange(int position, int charsRemoved, int charsAdded);
     void applyHint(QAction *action);

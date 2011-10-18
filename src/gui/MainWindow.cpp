@@ -214,7 +214,6 @@ void MainWindow::openMobiFile()
                 tr("Cannot open file"),
                 Book::instance().getWhy());
     }
-    Book::instance().setFileName(fileName);
 }
 
 void MainWindow::fileOpened()

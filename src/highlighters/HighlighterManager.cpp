@@ -21,10 +21,10 @@
 
 #include "HighlighterManager.h"
 #include <QDebug>
-#include <QPlainTextEdit>
 #include <QApplication>
 #include <QTextBlock>
 
+#include <PlainTextEditor.h>
 #include "AbstractHighlighter.h"
 #include "HighlighterHTMLTags.h"
 #include "HighlighterSpellcheck.h"
@@ -32,7 +32,7 @@
 #include "event/HighlightEvent.h"
 #include "event/HighlightEventResponse.h"
 
-HighlighterManager::HighlighterManager(QPlainTextEdit *editor) :
+HighlighterManager::HighlighterManager(PlainTextEditor *editor) :
     m_inProgress(false),
     m_editor(editor),
     m_highlighterThread(new HighlighterThread(this))
@@ -175,7 +175,7 @@ HighlighterManager& HighlighterManagerFactory::instance()
     return *m_instance;
 }
 
-void HighlighterManagerFactory::createInstance(QPlainTextEdit *editor)
+void HighlighterManagerFactory::createInstance(PlainTextEditor *editor)
 {
     Q_ASSERT(m_instance == NULL);
     m_instance = new HighlighterManager(editor);

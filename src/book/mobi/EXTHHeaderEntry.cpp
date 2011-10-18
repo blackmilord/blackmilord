@@ -101,12 +101,13 @@ void EXTHHeaderEntry::setLength(quint32 length)
 void EXTHHeaderEntry::setValue(const QString &value)
 {
     Q_ASSERT(m_data == NULL);
-    m_data = new char[value.toAscii().size()];
-    memcpy(m_data, value.toAscii().data(), value.toAscii().size());
-    m_recordLength = 8 + value.toAscii().size();
+    int size = value.toUtf8().size();
+    m_data = new char[size];
+    memcpy(m_data, value.toUtf8().data(), size);
+    m_recordLength = 8 + size;
 }
 
 QString EXTHHeaderEntry::getValue() const
 {
-    return QString(QByteArray(m_data, m_recordLength - 8));
+    return QString::fromUtf8(m_data, m_recordLength - 8);
 }

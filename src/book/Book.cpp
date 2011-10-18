@@ -24,13 +24,14 @@
 #include <QStringList>
 #include <QDebug>
 #include <QVariant>
-#include <QPlainTextEdit>
+
+#include <PlainTextEditor.h>
 #include <Preferences.h>
 #include "AbstractBook.h"
 
 Book* Book::m_instance = NULL;
 
-Book::Book(QPlainTextEdit *editor) :
+Book::Book(PlainTextEditor *editor) :
     m_editor(editor)
 {
     reset();
@@ -40,7 +41,7 @@ Book::~Book()
 {
 }
 
-void Book::createInstance(QPlainTextEdit *editor)
+void Book::createInstance(PlainTextEditor *editor)
 {
     Q_ASSERT(m_instance == NULL);
     m_instance = new Book(editor);
@@ -57,6 +58,7 @@ bool Book::openFile(const QString &fileName)
     Q_ASSERT(!isFileOpened());
     bool result = AbstractBookFactory::getObject()->openFile(fileName);
     if (result) {
+        m_fileName = fileName;
         m_fileOpened = true;
         emit fileLoaded();
     }

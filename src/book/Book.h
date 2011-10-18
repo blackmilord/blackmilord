@@ -29,16 +29,16 @@
 
 class QString;
 class QVariant;
-class QPlainTextEdit;
+class PlainTextEditor;
 
 class Book : public QObject
 {
     Q_OBJECT
-    Book(QPlainTextEdit *editor);
+    Book(PlainTextEditor *editor);
     ~Book();
 
 public:
-    static void createInstance(QPlainTextEdit *editor);
+    static void createInstance(PlainTextEditor *editor);
     static Book& instance();
 
     bool openFile(const QString &fileName);
@@ -84,7 +84,7 @@ private:
     void reset();
 
     static Book *m_instance;
-    QPlainTextEdit *m_editor;
+    PlainTextEditor *m_editor;
 
     //book metadata
     QString m_author;

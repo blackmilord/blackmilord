@@ -142,6 +142,7 @@ bool MobiFileObject::saveFile(const QString &fileName)
         QList<QByteArray> textRecords = prepareTextRecords();
         int currentRecordNumber = 0;
         QString fullName = Book::instance().getMetadata(METADATA_SUBJECT).toString();
+        int fullNameSize = fullName.toUtf8().size();
 
         m_databaseHeader.setDatabaseName(fullName);
         m_databaseHeader.setModificationDate(QDateTime::currentDateTime());
@@ -153,19 +154,19 @@ bool MobiFileObject::saveFile(const QString &fileName)
         m_palmDOCHeader.setTextLength(encodedTextSize());
         m_palmDOCHeader.setTextRecordCount(textRecords.size());
 
-        m_MOBIHeader.setFullNameOffset(
-                m_palmDOCHeader.size() +
-                m_MOBIHeader.size() +
-                m_EXTHHeader.size());
-        m_MOBIHeader.setFullNameLength(fullName.length());
-        m_MOBIHeader.setFirstImageRecordIndex(1 + textRecords.size());
-        m_MOBIHeader.setFirstNonTextRecordIndex(1 + textRecords.size());
-
         m_EXTHHeader.setAuthor(Book::instance().getMetadata(METADATA_AUTHOR).toString());
         m_EXTHHeader.setIsbn(Book::instance().getMetadata(METADATA_ISBN).toString());
         m_EXTHHeader.setPublisher(Book::instance().getMetadata(METADATA_PUBLISHER).toString());
         m_EXTHHeader.setSubject(Book::instance().getMetadata(METADATA_SUBJECT).toString());
         m_EXTHHeader.setDescription(Book::instance().getMetadata(METADATA_DESCRIPTION).toString());
+
+        m_MOBIHeader.setFullNameOffset(
+                m_palmDOCHeader.size() +
+                m_MOBIHeader.size() +
+                m_EXTHHeader.size());
+        m_MOBIHeader.setFullNameLength(fullNameSize);
+        m_MOBIHeader.setFirstImageRecordIndex(1 + textRecords.size());
+        m_MOBIHeader.setFirstNonTextRecordIndex(1 + textRecords.size());
 
         //Write Database header
         if (!m_databaseHeader.write(data)) {
@@ -197,10 +198,11 @@ bool MobiFileObject::saveFile(const QString &fileName)
         }
 
         //header record: full name at the end
-        data.writeRawData(fullName.toAscii().data(), fullName.toAscii().size());
+        data.writeRawData(fullName.toUtf8().data(), fullNameSize);
         data << static_cast<qint8>(0);
         data << static_cast<qint8>(0);
-        int toWrite = (4 - ((fullName.toAscii().size() + 2) % 4)) % 4;
+        fullNameSize += 2;
+        int toWrite = (4 - (fullNameSize % 4)) % 4;
         for (int i = 0; i < toWrite; ++i) {
             data << static_cast<qint8>(0);
         }

@@ -28,7 +28,7 @@
 #include <QEvent>
 #include "AbstractHighlighter.h"
 
-class QPlainTextEdit;
+class PlainTextEditor;
 class HighlighterThread;
 
 class HighlighterManager :
@@ -36,7 +36,7 @@ class HighlighterManager :
 {
     Q_OBJECT
 
-    explicit HighlighterManager(QPlainTextEdit *editor);
+    explicit HighlighterManager(PlainTextEditor *editor);
     virtual ~HighlighterManager();
 public:
     void registerBlockHighlight(int start, int end, bool important);
@@ -53,7 +53,7 @@ private:
     QList<int> m_queue;
     bool m_inProgress;
     QVector<AbstractHighlighter*> m_highlighters;
-    QPlainTextEdit *m_editor;
+    PlainTextEditor *m_editor;
     HighlighterThread *m_highlighterThread;
 
 private slots:
@@ -68,7 +68,7 @@ class HighlighterManagerFactory
 {
 public:
     static HighlighterManager& instance();
-    static void createInstance(QPlainTextEdit *editor);
+    static void createInstance(PlainTextEditor *editor);
 private:
     static HighlighterManager* m_instance;
 };

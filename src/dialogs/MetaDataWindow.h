@@ -29,9 +29,13 @@ class QLineEdit;
 class MetaDataWindow : public QDialog
 {
     Q_OBJECT
+
 public:
-    MetaDataWindow(QWidget *parent = 0);
+    explicit MetaDataWindow(QWidget *parent = 0);
     ~MetaDataWindow();
+
+protected:
+    void showEvent(QShowEvent *event);
 
 private slots:
     void apply();
@@ -44,8 +48,6 @@ private:
     QLineEdit *m_description;
     QLineEdit *m_isbn;
     QLineEdit *m_subject;
-
-    void reloadMetadata();
 };
 
 #endif /* BLACK_MILORD_METADATA_WINDOW_H */

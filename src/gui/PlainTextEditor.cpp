@@ -81,6 +81,14 @@ void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
     delete menu;
 }
 
+void PlainTextEditor::redo()
+{
+}
+
+void PlainTextEditor::undo()
+{
+}
+
 void PlainTextEditor::contentsChange(int position, int charsRemoved, int charsAdded)
 {
     Q_UNUSED(charsRemoved);
