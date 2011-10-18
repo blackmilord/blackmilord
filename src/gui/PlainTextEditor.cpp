@@ -33,11 +33,18 @@ PlainTextEditor::PlainTextEditor(QWidget * parent) :
     HighlighterManagerFactory::createInstance(this);
     connect(document(), SIGNAL(contentsChange(int, int, int)),
         this, SLOT(contentsChange(int, int, int)));
+    connect(document(), SIGNAL(contentsChanged()),
+        this, SLOT(contentsChanged()));
     setUndoRedoEnabled(false);
 }
 
 PlainTextEditor::~PlainTextEditor()
 {
+}
+
+int PlainTextEditor::firstVisibleBlock() const
+{
+    return QPlainTextEdit::firstVisibleBlock().blockNumber();
 }
 
 void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
@@ -89,11 +96,18 @@ void PlainTextEditor::undo()
 {
 }
 
+void PlainTextEditor::contentsChanged()
+{
+    if (toPlainText().isEmpty()) {
+        HighlighterManagerFactory::instance().cancelHighlighting();
+    }
+}
+
 void PlainTextEditor::contentsChange(int position, int charsRemoved, int charsAdded)
 {
     Q_UNUSED(charsRemoved);
     if (Book::instance().isFileOpened()) {
-        HighlighterManagerFactory::instance().registerBlockHighlight(position, position + charsAdded, true);
+        HighlighterManagerFactory::instance().registerBlockToHighlight(position, position + charsAdded, true);
     }
     else {
         //Opening in progress, use rehighlight instead

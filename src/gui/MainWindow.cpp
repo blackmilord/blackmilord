@@ -33,7 +33,6 @@
 
 #include <PlainTextEditor.h>
 #include <AspellWrapper.h>
-#include <HighlighterManager.h>
 #include <Book.h>
 #include <FindReplaceWindow.h>
 #include <HowToUseAspellWindow.h>
@@ -291,7 +290,6 @@ void MainWindow::fileClosed()
     m_editor->setEnabled(false);
     m_editor->document()->setModified(false);
     setWindowTitle(false);
-    HighlighterManagerFactory::instance().cancelBlockHighlight();
 }
 
 void MainWindow::showHowToUseAspellWindow()

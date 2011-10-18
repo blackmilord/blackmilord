@@ -61,18 +61,48 @@ void HighlighterManager::applySettings()
     rehighlight();
 }
 
-void HighlighterManager::startBlockHighlight()
+bool HighlighterManager::startLazyBlockHighlight(int blockNumber)
 {
-    if (m_queue.isEmpty() || m_inProgress) {
-        return;
+    QTextBlock block = m_editor->document()->findBlockByNumber(blockNumber);
+    if (NULL == block.userData()) {
+        return false;
     }
-    m_inProgress = true;
-    int blockIndex = m_queue.takeFirst();
-    QApplication::postEvent(m_highlighterThread, new HighlightEvent(
-        blockIndex, m_editor->document()->findBlockByNumber(blockIndex).text()));
+    if (static_cast<BlockData*>(block.userData())->needRehighlight()) {
+        static_cast<BlockData*>(block.userData())->setNeedRehighlight(false);
+        m_inProgress = true;
+        QApplication::postEvent(m_highlighterThread, new HighlightEvent(
+            blockNumber, block.text()));
+        return true;
+    }
+    return false;
 }
 
-void HighlighterManager::registerBlockHighlight(int start, int end, bool important)
+void HighlighterManager::startBlockHighlight()
+{
+    if (m_inProgress) {
+        return;
+    }
+    if (!m_queue.isEmpty()) {
+        m_inProgress = true;
+        int blockIndex = m_queue.takeFirst();
+        QApplication::postEvent(m_highlighterThread, new HighlightEvent(
+            blockIndex, m_editor->document()->findBlockByNumber(blockIndex).text()));
+    }
+    int blockCount = m_editor->blockCount();
+    int firstVisible = m_editor->firstVisibleBlock();
+    for (int i = firstVisible; i < blockCount; ++i) {
+        if (startLazyBlockHighlight(i)) {
+            return;
+        }
+    }
+    for (int i = 0; i < firstVisible; ++i) {
+        if (startLazyBlockHighlight(i)) {
+            return;
+        }
+    }
+}
+
+void HighlighterManager::registerBlockToHighlight(int start, int end, bool important)
 {
     if (m_editor->toPlainText().length() < end) {
         end = m_editor->toPlainText().length();
@@ -84,15 +114,27 @@ void HighlighterManager::registerBlockHighlight(int start, int end, bool importa
             m_queue.push_back(i);
         }
         else {
-            m_queue.push_back(i);
+            QTextBlock block = m_editor->document()->findBlockByNumber(i);
+            if (NULL != block.userData()) {
+                block.setUserData(new BlockData());
+            }
+            static_cast<BlockData*>(block.userData())->setNeedRehighlight(false);
         }
     }
     startBlockHighlight();
 }
 
-void HighlighterManager::cancelBlockHighlight()
+void HighlighterManager::cancelHighlighting()
 {
+    qDebug() << "cancel highlighting";
     m_queue.clear();
+    int blockCount = m_editor->blockCount();
+    for (int i = 0; i < blockCount; ++i) {
+        QTextBlock block = m_editor->document()->findBlockByNumber(i);
+        if (NULL != block.userData()) {
+            static_cast<BlockData*>(block.userData())->setNeedRehighlight(false);
+        }
+    }
 }
 
 void HighlighterManager::customEvent(QEvent *event)
@@ -112,7 +154,15 @@ void HighlighterManager::customEvent(QEvent *event)
 
 void HighlighterManager::rehighlight()
 {
-    //TODO: implement
+    int blockCount = m_editor->blockCount();
+    for (int i = 0; i < blockCount; ++i) {
+        QTextBlock block = m_editor->document()->findBlockByNumber(i);
+        if (NULL == block.userData()) {
+            block.setUserData(new BlockData());
+        }
+        static_cast<BlockData*>(block.userData())->setNeedRehighlight(true);
+    }
+    startBlockHighlight();
 }
 
 void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighter::MultiFormatList &formatting)
@@ -165,6 +215,11 @@ void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighte
     cursor.setCharFormat(defaultFormat);
     m_editor->blockSignals(signalsBlockedEditor);
     m_editor->document()->blockSignals(signalsBlockedDocument);
+}
+
+QVector<AbstractHighlighter*> HighlighterManager::getHighlighters() const
+{
+    return m_highlighters;
 }
 
 HighlighterManager* HighlighterManagerFactory::m_instance = NULL;

@@ -39,13 +39,14 @@ class HighlighterManager :
     explicit HighlighterManager(PlainTextEditor *editor);
     virtual ~HighlighterManager();
 public:
-    void registerBlockHighlight(int start, int end, bool important);
-    void cancelBlockHighlight();
+    void registerBlockToHighlight(int start, int end, bool important);
+    void cancelHighlighting();
     void rehighlight();
-    QVector<AbstractHighlighter*> getHighlighters() const { return m_highlighters; }
+    QVector<AbstractHighlighter*> getHighlighters() const;
 
 protected:
     void startBlockHighlight();
+    inline bool startLazyBlockHighlight(int blockNumber);
     void highlightBlock(int blockIndex, const AbstractHighlighter::MultiFormatList &formatting);
     void customEvent(QEvent *event);
 

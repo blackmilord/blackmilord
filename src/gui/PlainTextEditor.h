@@ -23,6 +23,7 @@
 #define BLACK_MILORD_PLAIN_TEXT_EDITOR_H
 
 #include <QPlainTextEdit>
+#include <QTextBlockUserData>
 
 class PlainTextEditor :
     public QPlainTextEdit
@@ -32,6 +33,8 @@ public:
     explicit PlainTextEditor(QWidget * parent = 0);
     ~PlainTextEditor();
 
+    int firstVisibleBlock() const;
+
 protected:
     void contextMenuEvent(QContextMenuEvent * event);
 
@@ -40,8 +43,37 @@ public slots:
     void undo();
 
 private slots:
+    void contentsChanged();
     void contentsChange(int position, int charsRemoved, int charsAdded);
     void applyHint(QAction *action);
 };
+
+class BlockData :
+    public QTextBlockUserData
+{
+public:
+    BlockData() :
+        m_needRehighlight(false)
+    {
+    }
+
+    ~BlockData()
+    {
+    }
+
+    bool needRehighlight()
+    {
+        return m_needRehighlight;
+    }
+
+    void setNeedRehighlight(bool needRehighlight)
+    {
+        m_needRehighlight = needRehighlight;
+    }
+
+private:
+    bool m_needRehighlight;
+};
+
 
 #endif /* BLACK_MILORD_PLAIN_TEXT_EDITOR_H */
