@@ -184,11 +184,12 @@ void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighte
     int cursorPositionOffset = cursor.position();
     int start = 0;
     int end = stepList.takeFirst();
+    bool newFormatSet = false;
     while (!stepList.isEmpty()) {
         start = end;
         end = stepList.takeFirst();
         QTextCharFormat newFormat;
-        bool newFormatSet = false;
+        newFormatSet = false;
         foreach(const AbstractHighlighter::FormatList &formats, formatting) {
             foreach(const AbstractHighlighter::CharFormat &format, formats) {
                 if (format.m_start <= start && format.m_start + format.m_count >= end) {
@@ -210,9 +211,6 @@ void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighte
         cursor.setPosition(cursorPositionOffset + end, QTextCursor::KeepAnchor);
         cursor.setCharFormat(newFormat);
     }
-    QTextCharFormat defaultFormat;
-    defaultFormat.setFont(Preferences::instance().getDefaultFontEditor());
-    cursor.setCharFormat(defaultFormat);
     m_editor->blockSignals(signalsBlockedEditor);
     m_editor->document()->blockSignals(signalsBlockedDocument);
 }

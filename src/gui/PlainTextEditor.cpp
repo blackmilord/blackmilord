@@ -83,7 +83,7 @@ void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
             }
         }
     }
-    
+
     menu->exec(event->globalPos());
     delete menu;
 }
