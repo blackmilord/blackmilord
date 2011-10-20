@@ -88,7 +88,10 @@ private:
     void addNewRedoCommand(RedoUndoCommand* command = NULL);
     RedoUndoCommand* popRedoCommand();
     void commit();
-    void insert(int position, QChar charAdded);
+    void adding(int position, const QChar &charAdded);
+    void insert(int position, const QString &textAdded);
+    void replace(int position, const QString &textRemoved, const QString &textAdded);
+    void remove(int position, const QString &textRemoved);
 
 private slots:
     void cursorPositionChanged();
