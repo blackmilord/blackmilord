@@ -24,6 +24,7 @@
 
 #include <QPlainTextEdit>
 #include <QTextBlockUserData>
+#include "PlainTextEditorUndoStack.h"
 
 class PlainTextEditor :
     public QPlainTextEdit
@@ -31,12 +32,19 @@ class PlainTextEditor :
     Q_OBJECT
 public:
     explicit PlainTextEditor(QWidget * parent = 0);
-    ~PlainTextEditor();
+    virtual ~PlainTextEditor();
 
     int firstVisibleBlock() const;
 
 protected:
     void contextMenuEvent(QContextMenuEvent * event);
+
+private:
+    PlainTextEditorUndoStack m_undoStack;
+
+signals:
+    void canUndo(bool);
+    void canRedo(bool);
 
 public slots:
     void redo();
@@ -46,6 +54,8 @@ private slots:
     void contentsChanged();
     void contentsChange(int position, int charsRemoved, int charsAdded);
     void applyHint(QAction *action);
+    void canUndoSlot(bool value);
+    void canRedoSlot(bool value);
 };
 
 class BlockData :

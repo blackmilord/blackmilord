@@ -28,8 +28,8 @@ class HowToUseAspellWindow : public QDialog
 {
     Q_OBJECT
 public:
-    HowToUseAspellWindow(QWidget *parent = 0);
-    ~HowToUseAspellWindow();
+    explicit HowToUseAspellWindow(QWidget *parent = 0);
+    virtual ~HowToUseAspellWindow();
 };
 
 #endif /* BLACK_MILORD_HOW_TO_USE_ASPELL_WINDOW_H */

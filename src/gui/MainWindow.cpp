@@ -99,6 +99,16 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
 
     menu = menuBar()->addMenu(tr("&Edit"));
 
+    QAction *undoAction = menu->addAction(tr("&Undo"), m_editor,
+        SLOT(undo()), QKeySequence(Qt::CTRL + Qt::Key_Z));
+    undoAction->setEnabled(false);
+
+    QAction *redoAction = menu->addAction(tr("&Redo"), m_editor,
+        SLOT(redo()), QKeySequence(Qt::CTRL + Qt::Key_Y));
+    redoAction->setEnabled(false);
+
+    menu->addSeparator();
+
     action = menu->addAction(tr("Metadata"), this, SLOT(showMetadataWindow()));
     action->setObjectName("enable_on_open");
 
@@ -134,6 +144,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
             this, SLOT(applySettings()));
     connect(m_editor, SIGNAL(modificationChanged(bool)),
             this, SLOT(setWindowTitle(bool)));
+    connect(m_editor, SIGNAL(canRedo(bool)),
+            redoAction, SLOT(setEnabled(bool)));
+    connect(m_editor, SIGNAL(canUndo(bool)),
+            undoAction, SLOT(setEnabled(bool)));
 
     //Other things
     QApplication::setWindowIcon(QIcon(":/icon/application_icon.png"));

@@ -28,13 +28,18 @@
 #include <Book.h>
 
 PlainTextEditor::PlainTextEditor(QWidget * parent) :
-    QPlainTextEdit(parent)
+    QPlainTextEdit(parent),
+    m_undoStack(this)
 {
     HighlighterManagerFactory::createInstance(this);
     connect(document(), SIGNAL(contentsChange(int, int, int)),
         this, SLOT(contentsChange(int, int, int)));
     connect(document(), SIGNAL(contentsChanged()),
         this, SLOT(contentsChanged()));
+    connect(&m_undoStack, SIGNAL(canUndo(bool)),
+        this, SLOT(canUndoSlot(bool)));
+    connect(&m_undoStack, SIGNAL(canRedo(bool)),
+        this, SLOT(canRedoSlot(bool)));
     setUndoRedoEnabled(false);
 }
 
@@ -90,10 +95,12 @@ void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
 
 void PlainTextEditor::redo()
 {
+    m_undoStack.redo();
 }
 
 void PlainTextEditor::undo()
 {
+    m_undoStack.undo();
 }
 
 void PlainTextEditor::contentsChanged()
@@ -123,4 +130,15 @@ void PlainTextEditor::applyHint(QAction *action)
         cursor.select(QTextCursor::WordUnderCursor);
         cursor.insertText(action->text());
     }
+}
+
+void PlainTextEditor::canUndoSlot(bool value)
+{
+    qDebug() << "can undo" << value;
+    emit canUndo(value);
+}
+
+void PlainTextEditor::canRedoSlot(bool value)
+{
+    emit canRedo(value);
 }

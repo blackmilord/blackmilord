@@ -34,8 +34,9 @@ class FindReplaceWindow : public QDialog
 {
     Q_OBJECT
 public:
-    FindReplaceWindow(QWidget *parent = 0);
-    ~FindReplaceWindow();
+    explicit FindReplaceWindow(QWidget *parent = 0);
+    virtual ~FindReplaceWindow();
+
 private:
     void saveValues();
     QComboBox *m_findWhat;

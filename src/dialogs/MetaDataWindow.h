@@ -32,7 +32,7 @@ class MetaDataWindow : public QDialog
 
 public:
     explicit MetaDataWindow(QWidget *parent = 0);
-    ~MetaDataWindow();
+    virtual ~MetaDataWindow();
 
 protected:
     void showEvent(QShowEvent *event);

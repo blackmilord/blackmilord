@@ -38,8 +38,8 @@ class SpellCheckingWindow : public QDialog
 {
     Q_OBJECT
 public:
-    SpellCheckingWindow(QWidget *parent = 0);
-    ~SpellCheckingWindow();
+    explicit SpellCheckingWindow(QWidget *parent = 0);
+    virtual ~SpellCheckingWindow();
 
 private:
     void loadLanguages();
