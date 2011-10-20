@@ -43,7 +43,6 @@ class PlainTextEditorUndoStack : public QObject
         };
 
         RedoUndoCommand() :
-            m_commited(false),
             m_position(0),
             m_textAdded(new QString("")),
             m_textRemoved(new QString("")),
@@ -56,7 +55,6 @@ class PlainTextEditorUndoStack : public QObject
             delete m_textAdded;
             delete m_textRemoved;
         }
-        bool m_commited;
         int m_position;
         QString *m_textAdded;
         QString *m_textRemoved;
@@ -79,6 +77,7 @@ private:
     QChar m_after;
     int m_position;
     QString m_selection;
+    int m_maxStackSize;
 
     QList<RedoUndoCommand*> m_undoCommands;
     QList<RedoUndoCommand*> m_redoCommands;
@@ -89,6 +88,7 @@ private:
     RedoUndoCommand* popRedoCommand();
     void commit();
     void adding(int position, const QChar &charAdded);
+    void deleting(int position, const QChar &charDeleted, bool backSpace);
     void insert(int position, const QString &textAdded);
     void replace(int position, const QString &textRemoved, const QString &textAdded);
     void remove(int position, const QString &textRemoved);

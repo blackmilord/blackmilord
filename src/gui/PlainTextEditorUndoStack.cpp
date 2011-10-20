@@ -27,7 +27,8 @@
 
 PlainTextEditorUndoStack::PlainTextEditorUndoStack(PlainTextEditor *editor) :
     m_editor(editor),
-    m_position(0)
+    m_position(0),
+    m_maxStackSize(100)
 {
     connect(m_editor, SIGNAL(cursorPositionChanged()),
         this, SLOT(cursorPositionChanged()));
@@ -150,10 +151,10 @@ void PlainTextEditorUndoStack::contentsChange(int position, int charsRemoved, in
     }
     else if (charsAdded == 0 && charsRemoved == 1) {  //char remoed
         if (position == m_position - 1) {   //backspace button
-            qDebug() << "backspace, deleted" << m_before ;
+            deleting(position, m_before, true);
         }
         else if (position == m_position) {  //delete button
-            qDebug() << "delete, deleted" << m_after;
+            deleting(position, m_after, false);
         }
         else {
             Q_ASSERT(false);
@@ -200,6 +201,9 @@ void PlainTextEditorUndoStack::addNewUndoCommand(RedoUndoCommand* command)
         command = new RedoUndoCommand();
     }
     m_undoCommands.push_front(command);
+    if (m_undoCommands.size() > m_maxStackSize) {
+        delete m_undoCommands.takeLast();
+    }
     emit canUndo(canUndo());
 }
 
@@ -216,6 +220,9 @@ void PlainTextEditorUndoStack::addNewRedoCommand(RedoUndoCommand* command)
         command = new RedoUndoCommand();
     }
     m_redoCommands.push_front(command);
+    if (m_redoCommands.size() > m_maxStackSize) {
+        delete m_redoCommands.takeLast();
+    }
     emit canRedo(canRedo());
 }
 
@@ -230,7 +237,6 @@ void PlainTextEditorUndoStack::commit()
 {
     qDebug() << "commit";
     if (m_undoCommands.first()->m_type != RedoUndoCommand::UNKNOWN) {
-        m_undoCommands.first()->m_commited = true;
         addNewUndoCommand();
     }
 }
@@ -258,6 +264,27 @@ void PlainTextEditorUndoStack::adding(int position, const QChar &charAdded)
     if (charAdded == '\n') {
         commit();
     }
+}
+
+void PlainTextEditorUndoStack::deleting(int position, const QChar &charDeleted, bool backSpace)
+{
+    qDebug() << "deleting" << charDeleted;
+
+    RedoUndoCommand *command = m_undoCommands.first();
+
+    if ((command->m_type != RedoUndoCommand::UNKNOWN && command->m_type != RedoUndoCommand::DELETE) ||
+        (command->m_type == RedoUndoCommand::DELETE && backSpace && command->m_position - command->m_textRemoved->size() != position))
+    {
+        commit();
+        command = m_undoCommands.first();
+    }
+
+    if (command->m_type == RedoUndoCommand::UNKNOWN) {
+        command->m_type = RedoUndoCommand::DELETE;
+        command->m_position = position;
+    }
+
+    command->m_textRemoved->append(charDeleted);
 }
 
 void PlainTextEditorUndoStack::insert(int position, const QString &textAdded)

@@ -7,6 +7,7 @@ RESOURCES = resource.qrc
 QMAKE_CXXFLAGS += -Werror -Wextra
 
 CONFIG(debug, debug|release) {
+    QMAKE_CXXFLAGS += -ggdb -O0
     DESTPREFIX = "debug"
 }
 else {
