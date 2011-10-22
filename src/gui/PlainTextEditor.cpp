@@ -103,6 +103,11 @@ void PlainTextEditor::undo()
     m_undoStack.undo();
 }
 
+void PlainTextEditor::clearRedoUndoHistory()
+{
+    m_undoStack.clear();
+}
+
 void PlainTextEditor::contentsChanged()
 {
     if (toPlainText().isEmpty()) {
@@ -134,7 +139,6 @@ void PlainTextEditor::applyHint(QAction *action)
 
 void PlainTextEditor::canUndoSlot(bool value)
 {
-    qDebug() << "can undo" << value;
     emit canUndo(value);
 }
 

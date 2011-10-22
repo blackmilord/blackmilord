@@ -34,14 +34,15 @@
 
 HighlighterManager::HighlighterManager(PlainTextEditor *editor) :
     m_inProgress(false),
+    m_needToApplySettings(false),
     m_editor(editor),
     m_highlighterThread(new HighlighterThread(this))
 {
-    m_highlighterThread->start();
     m_highlighters.push_back(new HighlighterHTMLTags());
     m_highlighters.push_back(new HighlighterSpellcheck());
     connect(&Preferences::instance(), SIGNAL(settingsChanged()),
             this, SLOT(applySettings()));
+    m_highlighterThread->start();
 }
 
 HighlighterManager::~HighlighterManager()
@@ -55,10 +56,16 @@ HighlighterManager::~HighlighterManager()
 
 void HighlighterManager::applySettings()
 {
-    foreach(AbstractHighlighter* highlighter, m_highlighters) {
-        highlighter->applySettings();
+    if (!m_inProgress) {
+        m_needToApplySettings = false;
+        foreach(AbstractHighlighter* highlighter, m_highlighters) {
+            highlighter->applySettings();
+        }
+        rehighlight();
     }
-    rehighlight();
+    else {
+        m_needToApplySettings = true;
+    }
 }
 
 bool HighlighterManager::startLazyBlockHighlight(int blockNumber)
@@ -70,7 +77,7 @@ bool HighlighterManager::startLazyBlockHighlight(int blockNumber)
     if (static_cast<BlockData*>(block.userData())->needRehighlight()) {
         static_cast<BlockData*>(block.userData())->setNeedRehighlight(false);
         m_inProgress = true;
-        QApplication::postEvent(m_highlighterThread, new HighlightEvent(
+        QApplication::postEvent(m_highlighterThread->getWorker(), new HighlightEvent(
             blockNumber, block.text()));
         return true;
     }
@@ -82,10 +89,13 @@ void HighlighterManager::startBlockHighlight()
     if (m_inProgress) {
         return;
     }
+    if (m_needToApplySettings) {
+        applySettings();
+    }
     if (!m_queue.isEmpty()) {
         m_inProgress = true;
         int blockIndex = m_queue.takeFirst();
-        QApplication::postEvent(m_highlighterThread, new HighlightEvent(
+        QApplication::postEvent(m_highlighterThread->getWorker(), new HighlightEvent(
             blockIndex, m_editor->document()->findBlockByNumber(blockIndex).text()));
     }
     int blockCount = m_editor->blockCount();
@@ -154,6 +164,7 @@ void HighlighterManager::customEvent(QEvent *event)
 
 void HighlighterManager::rehighlight()
 {
+    m_queue.clear();
     int blockCount = m_editor->blockCount();
     for (int i = 0; i < blockCount; ++i) {
         QTextBlock block = m_editor->document()->findBlockByNumber(i);

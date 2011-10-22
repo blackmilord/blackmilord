@@ -21,43 +21,43 @@
 
 #include "Preferences.h"
 #include <QDebug>
+#include <QThread>
 #include <QSettings>
 #include <QFile>
 #include <QDir>
-#include <QMutexLocker>
-
+#include <QVariant>
+#include <QString>
 #include <Version.h>
 
-void Preferences::saveLastDir(const QString &dir)
+void Preferences::saveLastUsedDirectory(const QString &dir)
 {
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
     setValue(PROP_LAST_USED_DIRECTORY, dir.left(
             dir.lastIndexOf(QDir::separator())));
 }
 
 void Preferences::setValue(PropertyName key, const QVariant &value)
 {
-    {
-        QMutexLocker lock(&m_mutex);
-        m_settings->setValue(m_propertyMap[key], value);
-        if (key == PROP_EDITOR_FONT_FAMILY || key == PROP_EDITOR_FONT_SIZE) {
-            m_defaultFontEditor.setFamily(
-                    getValue(PROP_EDITOR_FONT_FAMILY, "Arial").toString());
-            m_defaultFontEditor.setPointSize(
-                    getValue(PROP_EDITOR_FONT_SIZE, 12).toInt());
-        }
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(m_propertyMap[key], value);
+    if (key == PROP_EDITOR_FONT_FAMILY || key == PROP_EDITOR_FONT_SIZE) {
+        m_defaultFontEditor.setFamily(
+                getValue(PROP_EDITOR_FONT_FAMILY, "Arial").toString());
+        m_defaultFontEditor.setPointSize(
+                getValue(PROP_EDITOR_FONT_SIZE, 12).toInt());
     }
     emit settingsChanged();
 }
 
 QVariant Preferences::getValue(PropertyName key, const QVariant &defaultValue)
 {
-    QMutexLocker lock(&m_mutex);
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
     return m_settings->value(m_propertyMap[key], defaultValue);
 }
 
 QFont Preferences::getDefaultFontEditor()
 {
-    QMutexLocker lock(&m_mutex);
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
     return m_defaultFontEditor;
 }
 
@@ -94,7 +94,7 @@ void Preferences::initPropertiesMap()
 }
 
 Preferences::Preferences() :
-    m_mutex(QMutex::Recursive)
+    m_threadGuard(QThread::currentThread())
 {
     initPropertiesMap();
     qDebug() << "Loading preferences...";

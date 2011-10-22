@@ -29,7 +29,6 @@
 #include <aspell.h>
 #include <QString>
 #include <QStringList>
-#include <QMap>
 #include <QList>
 #include <QPair>
 #include <QMutex>

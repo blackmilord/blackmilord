@@ -22,7 +22,6 @@
 #include "HighlighterSpellcheck.h"
 #include <QDebug>
 #include <QString>
-#include <QMutexLocker>
 
 #include <Preferences.h>
 #include <AspellWrapper.h>
@@ -30,23 +29,16 @@
 
 HighlighterSpellcheck::HighlighterSpellcheck()
 {
+    applySettings();
 }
 
 HighlighterSpellcheck::~HighlighterSpellcheck()
 {
-    QMutexLocker lock(&m_mutex);
 }
 
 QVector<AbstractHighlighter::CharFormat> HighlighterSpellcheck::highlightBlock(const QString &text)
 {
-    QMutexLocker lock(&m_mutex);
     QVector<AbstractHighlighter::CharFormat> result;
-    if (!Preferences::instance().getValue(Preferences::PROP_HIGHLIGHTER_SPELLCHECK, false).toBool()) {
-        return result;
-    }
-    if (!ASpellWrapper::instance().isLoaded()) {
-        return result;
-    }
     QTextCharFormat errorFormat;
     errorFormat.setFontUnderline(true);
     errorFormat.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
@@ -109,16 +101,16 @@ QVector<AbstractHighlighter::CharFormat> HighlighterSpellcheck::highlightBlock(c
 
 QString HighlighterSpellcheck::getOptionCheckBoxCaption() const
 {
-    QMutexLocker lock(&m_mutex);
     return QObject::tr("Highlight spelling errors");
 }
 
 Preferences::PropertyName HighlighterSpellcheck::getPropertyName() const
 {
-    QMutexLocker lock(&m_mutex);
     return Preferences::PROP_HIGHLIGHTER_SPELLCHECK;
 }
 
 void HighlighterSpellcheck::applySettings()
 {
+    m_enabled = Preferences::instance().getValue(Preferences::PROP_HIGHLIGHTER_SPELLCHECK, false).toBool();
+    m_enabled &= ASpellWrapper::instance().isLoaded();
 }

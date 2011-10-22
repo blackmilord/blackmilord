@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <QEvent>
 #include <QApplication>
+#include <QtCore/qmetatype.h>
 
 #include "event/HighlightEvent.h"
 #include "event/HighlightEventResponse.h"
@@ -30,19 +31,40 @@
 #include "AbstractHighlighter.h"
 
 HighlighterThread::HighlighterThread(QObject * parent) :
-    QThread(parent)
+    QThread(parent),
+    m_worker(NULL)
 {
 }
 
 HighlighterThread::~HighlighterThread()
 {
+    delete m_worker;
 }
 
-void HighlighterThread::highlightBlock()
+void HighlighterThread::run()
+{
+    m_worker = new HighlighterWorker(NULL);
+    exec();
+}
+
+HighlighterWorker* HighlighterThread::getWorker()
+{
+    Q_ASSERT(m_worker != NULL);
+    return m_worker;
+}
+
+HighlighterWorker::HighlighterWorker(QObject *parent) :
+    QObject(parent)
+{
+
+}
+
+HighlighterWorker::~HighlighterWorker()
 {
 }
 
-void HighlighterThread::customEvent(QEvent *event)
+
+void HighlighterWorker::customEvent(QEvent *event)
 {
     if (event->type() == HighlightEvent::getType()) {
         event->accept();
@@ -54,12 +76,14 @@ void HighlighterThread::customEvent(QEvent *event)
             new HighlightEventResponse(highlightEvent->getBlockIndex());
 
         foreach(AbstractHighlighter* highlighter, highlighters) {
-            responseEvent->getResults()->push_back(
-                highlighter->highlightBlock(highlightEvent->getText()));
+            if (highlighter->isEnabled()) {
+                responseEvent->getResults()->push_back(
+                    highlighter->highlightBlock(highlightEvent->getText()));
+            }
         }
 
-        QApplication::postEvent(parent(), responseEvent);
-        
+        QApplication::postEvent(&HighlighterManagerFactory::instance(), responseEvent);
+
     }
     else {
         event->ignore();

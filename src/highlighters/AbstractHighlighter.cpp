@@ -22,10 +22,15 @@
 #include "AbstractHighlighter.h"
 
 AbstractHighlighter::AbstractHighlighter() :
-    m_mutex(QMutex::Recursive)
+    m_enabled(false)
 {
 }
 
 AbstractHighlighter::~AbstractHighlighter()
 {
+}
+
+bool AbstractHighlighter::isEnabled()
+{
+    return m_enabled;
 }

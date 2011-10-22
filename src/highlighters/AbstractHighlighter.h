@@ -67,8 +67,9 @@ public:
     virtual QString getOptionCheckBoxCaption() const = 0;
     virtual Preferences::PropertyName getPropertyName() const = 0;
     virtual void applySettings() = 0;
+    virtual bool isEnabled();
 protected:
-    mutable QMutex m_mutex;
+    bool m_enabled;
 };
 
 #endif /* BLACK_MILORD_ABSTRACT_HIGHLIGHTER_H */

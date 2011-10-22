@@ -42,6 +42,9 @@ PlainTextEditorUndoStack::PlainTextEditorUndoStack(PlainTextEditor *editor) :
 
 PlainTextEditorUndoStack::~PlainTextEditorUndoStack()
 {
+    clear();
+    //clear adds one empty undo command, it needs to be removed.
+    delete popUndoCommand();
 }
 
 void PlainTextEditorUndoStack::clear()
@@ -49,8 +52,16 @@ void PlainTextEditorUndoStack::clear()
     foreach(RedoUndoCommand* command, m_undoCommands) {
         delete command;
     }
+    foreach(RedoUndoCommand* command, m_redoCommands) {
+        delete command;
+    }
     m_undoCommands.clear();
+    m_redoCommands.clear();
+
     addNewUndoCommand();
+
+    emit canRedo(false);
+    emit canUndo(false);
 }
 
 void PlainTextEditorUndoStack::undo()
@@ -78,7 +89,7 @@ void PlainTextEditorUndoStack::undo()
         }
         case RedoUndoCommand::REPLACE:
         {
-            qDebug() << "undo replace" << *command->m_textAdded << "->" << *command->m_textRemoved;
+            //qDebug() << "undo replace" << *command->m_textAdded << "->" << *command->m_textRemoved;
             QTextCursor cursor(m_editor->document());
             cursor.setPosition(command->m_position);
             cursor.setPosition(command->m_position + command->m_textAdded->size(), QTextCursor::KeepAnchor);
@@ -87,7 +98,7 @@ void PlainTextEditorUndoStack::undo()
         }
         case RedoUndoCommand::DELETE:
         {
-            qDebug() << "undo remove" << *command->m_textRemoved;
+            //qDebug() << "undo remove" << *command->m_textRemoved;
             QTextCursor cursor(m_editor->document());
             cursor.setPosition(command->m_position);
             cursor.insertText(*command->m_textRemoved);
@@ -129,6 +140,10 @@ void PlainTextEditorUndoStack::contentsChange(int position, int charsRemoved, in
 
     if (charsAdded == 1 && charsRemoved == 0) {       //char added
         Q_ASSERT(position == m_position);
+        //qt clames it added 1 char when document became empty
+        if (text.isEmpty() && position == 0) {
+            return;
+        }
         adding(position, text.at(position));
     }
     else if (charsAdded > 1 && charsRemoved == 0) {   //pasting text
@@ -235,7 +250,7 @@ PlainTextEditorUndoStack::RedoUndoCommand* PlainTextEditorUndoStack::popRedoComm
 
 void PlainTextEditorUndoStack::commit()
 {
-    qDebug() << "commit";
+    //qDebug() << "commit";
     if (m_undoCommands.first()->m_type != RedoUndoCommand::UNKNOWN) {
         addNewUndoCommand();
     }
@@ -243,7 +258,7 @@ void PlainTextEditorUndoStack::commit()
 
 void PlainTextEditorUndoStack::adding(int position, const QChar &charAdded)
 {
-    qDebug() << "adding" << charAdded;
+    //qDebug() << "adding" << charAdded;
 
     RedoUndoCommand *command = m_undoCommands.first();
 
@@ -268,7 +283,7 @@ void PlainTextEditorUndoStack::adding(int position, const QChar &charAdded)
 
 void PlainTextEditorUndoStack::deleting(int position, const QChar &charDeleted, bool backSpace)
 {
-    qDebug() << "deleting" << charDeleted;
+    //qDebug() << "deleting" << charDeleted;
 
     RedoUndoCommand *command = m_undoCommands.first();
 
@@ -281,15 +296,15 @@ void PlainTextEditorUndoStack::deleting(int position, const QChar &charDeleted, 
 
     if (command->m_type == RedoUndoCommand::UNKNOWN) {
         command->m_type = RedoUndoCommand::DELETE;
-        command->m_position = position;
     }
 
-    command->m_textRemoved->append(charDeleted);
+    command->m_position = position;
+    command->m_textRemoved->prepend(charDeleted);
 }
 
 void PlainTextEditorUndoStack::insert(int position, const QString &textAdded)
 {
-    qDebug() << "insert" << textAdded;
+    //qDebug() << "insert" << textAdded;
 
     commit();
 
@@ -303,7 +318,7 @@ void PlainTextEditorUndoStack::insert(int position, const QString &textAdded)
 
 void PlainTextEditorUndoStack::replace(int position, const QString &textRemoved, const QString &textAdded)
 {
-    qDebug() << "replace" << textRemoved << "->" << textAdded;
+    //qDebug() << "replace" << textRemoved << "->" << textAdded;
 
     commit();
 
@@ -318,7 +333,7 @@ void PlainTextEditorUndoStack::replace(int position, const QString &textRemoved,
 
 void PlainTextEditorUndoStack::remove(int position, const QString &textRemoved)
 {
-    qDebug() << "remove" << textRemoved;
+    //qDebug() << "remove" << textRemoved;
 
     commit();
 

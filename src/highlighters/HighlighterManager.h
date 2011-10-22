@@ -53,6 +53,7 @@ protected:
 private:
     QList<int> m_queue;
     bool m_inProgress;
+    bool m_needToApplySettings;
     QVector<AbstractHighlighter*> m_highlighters;
     PlainTextEditor *m_editor;
     HighlighterThread *m_highlighterThread;

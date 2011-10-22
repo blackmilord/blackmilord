@@ -24,6 +24,17 @@
 
 #include <QThread>
 
+class HighlighterWorker :
+    public QObject
+{
+    explicit HighlighterWorker(QObject *parent = 0);
+    virtual ~HighlighterWorker();
+protected:
+    void customEvent(QEvent *event);
+
+    friend class HighlighterThread;
+};
+
 class HighlighterThread :
     public QThread
 {
@@ -31,8 +42,11 @@ class HighlighterThread :
 public:
     explicit HighlighterThread(QObject *parent = 0);
     virtual ~HighlighterThread();
+    HighlighterWorker* getWorker();
 protected:
-    void highlightBlock();
-    void customEvent(QEvent *event);};
+    void run();
+private:
+    HighlighterWorker *m_worker;
+};
 
 #endif /* BLACK_MILORD_HIGHLIGHTER_THREAD_H */

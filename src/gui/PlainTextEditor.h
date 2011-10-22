@@ -49,6 +49,7 @@ signals:
 public slots:
     void redo();
     void undo();
+    void clearRedoUndoHistory();
 
 private slots:
     void contentsChanged();

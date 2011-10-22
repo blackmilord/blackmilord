@@ -221,7 +221,7 @@ void MainWindow::openMobiFile()
     if (fileName.isNull()) {
         return;
     }
-    Preferences::instance().saveLastDir(fileName);
+    Preferences::instance().saveLastUsedDirectory(fileName);
     if (!Book::instance().openFile(fileName)) {
         QMessageBox::warning(this,
                 tr("Cannot open file"),
@@ -249,7 +249,7 @@ void MainWindow::saveFile()
         if (fileName.isEmpty()) {
             return;
         }
-        Preferences::instance().saveLastDir(fileName);
+        Preferences::instance().saveLastUsedDirectory(fileName);
         Book::instance().setFileName(fileName);
     }
     if (!Book::instance().saveFile())
@@ -269,7 +269,7 @@ void MainWindow::saveFileAs()
     if (fileName.isEmpty()) {
         return;
     }
-    Preferences::instance().saveLastDir(fileName);
+    Preferences::instance().saveLastUsedDirectory(fileName);
     Book::instance().setFileName(fileName);
     saveFile();
 }
@@ -300,7 +300,6 @@ void MainWindow::closeFile()
 void MainWindow::fileClosed()
 {
     updateMenuEnable(false);
-    m_editor->clear();
     m_editor->setEnabled(false);
     m_editor->document()->setModified(false);
     setWindowTitle(false);

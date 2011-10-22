@@ -25,11 +25,11 @@
 #include <QObject>
 #include <QSettings>
 #include <QMap>
-#include <QMutex>
 #include <QFont>
 
 class QVariant;
 class QString;
+class QThread;
 
 class Preferences : public QObject
 {
@@ -57,13 +57,13 @@ public:
     static Preferences& instance();
     void setValue(PropertyName key, const QVariant &value);
     QVariant getValue(PropertyName key, const QVariant &defaultValue);
-    void saveLastDir(const QString &dir);
+    void saveLastUsedDirectory(const QString &dir);
     QFont getDefaultFontEditor();
 private:
     void createDefaultConfig();
     void initPropertiesMap();
 
-    QMutex m_mutex;
+    QThread *m_threadGuard;
     QMap<PropertyName, QString> m_propertyMap;
     QSettings *m_settings;
     QString m_configFile;

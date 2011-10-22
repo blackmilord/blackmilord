@@ -85,6 +85,8 @@ bool Book::saveFile()
 
 bool Book::closeFile()
 {
+    setText("");
+    m_editor->clearRedoUndoHistory();
     reset();
     emit fileClosed();
     return true;
@@ -207,7 +209,9 @@ void Book::setText(const QString& text)
 {
     const QString &old = getText();
     if (old.length() != text.length() || old != text) {
-        m_editor->setPlainText(text);
+        QTextCursor cursor = m_editor->textCursor();
+        cursor.select(QTextCursor::Document);
+        cursor.insertText(text);
     }
 }
 
