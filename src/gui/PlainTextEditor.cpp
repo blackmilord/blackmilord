@@ -55,18 +55,19 @@ int PlainTextEditor::firstVisibleBlock() const
 void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
 {
     QMenu *menu = new QMenu();
-    QAction *action = menu->addAction(tr("Redo"));
-    action->setEnabled(false);
-    action = menu->addAction(tr("Undo"));
-    action->setEnabled(false);
+
+    QAction *action = menu->addAction(tr("Undo"), this, SLOT(undo()), QKeySequence::Undo);
+    action->setEnabled(m_undoStack.canUndo());
+    action = menu->addAction(tr("Redo"), this, SLOT(redo()), QKeySequence::Redo);
+    action->setEnabled(m_undoStack.canRedo());
 
     menu->addSeparator();
-    menu->addAction(tr("Copy"), this, SLOT(copy()), QKeySequence(Qt::Key_C + Qt::CTRL));
-    menu->addAction(tr("Cut"), this, SLOT(cut()), QKeySequence(Qt::Key_X + Qt::CTRL));
-    menu->addAction(tr("Paste"), this, SLOT(paste()), QKeySequence(Qt::Key_V + Qt::CTRL));
+    menu->addAction(tr("Copy"), this, SLOT(copy()), QKeySequence::Copy);
+    menu->addAction(tr("Cut"), this, SLOT(cut()), QKeySequence::Cut);
+    menu->addAction(tr("Paste"), this, SLOT(paste()), QKeySequence::Paste);
 
     menu->addSeparator();
-    menu->addAction(tr("Select All"), this, SLOT(selectAll()), QKeySequence(Qt::Key_A + Qt::CTRL));
+    menu->addAction(tr("Select All"), this, SLOT(selectAll()), QKeySequence::SelectAll);
 
     QTextCursor cursor = textCursor();
     if (!cursor.hasSelection()) {

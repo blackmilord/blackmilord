@@ -23,6 +23,7 @@
 #define BLACK_MILORD_PLAIN_TEXT_EDITOR_UNDO_STACK_H
 
 #include <QObject>
+#include <QList>
 
 class PlainTextEditor;
 class QTextCursor;
@@ -82,6 +83,8 @@ private:
     QList<RedoUndoCommand*> m_undoCommands;
     QList<RedoUndoCommand*> m_redoCommands;
 
+    void clearUndoCommands();
+    void clearRedoCommands();
     void addNewUndoCommand(RedoUndoCommand* command = NULL);
     RedoUndoCommand* popUndoCommand();
     void addNewRedoCommand(RedoUndoCommand* command = NULL);

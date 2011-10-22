@@ -49,19 +49,27 @@ PlainTextEditorUndoStack::~PlainTextEditorUndoStack()
 
 void PlainTextEditorUndoStack::clear()
 {
+    clearRedoCommands();
+    clearUndoCommands();
+    addNewUndoCommand();
+}
+
+void PlainTextEditorUndoStack::clearUndoCommands()
+{
     foreach(RedoUndoCommand* command, m_undoCommands) {
         delete command;
     }
+    m_undoCommands.clear();
+    emit canUndo(false);
+}
+
+void PlainTextEditorUndoStack::clearRedoCommands()
+{
     foreach(RedoUndoCommand* command, m_redoCommands) {
         delete command;
     }
-    m_undoCommands.clear();
     m_redoCommands.clear();
-
-    addNewUndoCommand();
-
     emit canRedo(false);
-    emit canUndo(false);
 }
 
 void PlainTextEditorUndoStack::undo()
@@ -74,7 +82,6 @@ void PlainTextEditorUndoStack::undo()
         Q_ASSERT(canUndo());
         command = popUndoCommand();
     }
-
     disconnect(m_editor->document(), SIGNAL(contentsChange(int, int, int)),
         this, SLOT(contentsChange(int, int, int)));
 
@@ -124,6 +131,47 @@ bool PlainTextEditorUndoStack::canUndo()
 void PlainTextEditorUndoStack::redo()
 {
     Q_ASSERT(canRedo());
+
+    RedoUndoCommand* command = popRedoCommand();
+    Q_ASSERT(command->m_type != RedoUndoCommand::UNKNOWN);
+
+    disconnect(m_editor->document(), SIGNAL(contentsChange(int, int, int)),
+        this, SLOT(contentsChange(int, int, int)));
+
+    switch (command->m_type) {
+        case RedoUndoCommand::INSERT:
+        {
+            QTextCursor cursor(m_editor->document());
+            cursor.setPosition(command->m_position);
+            cursor.insertText(*command->m_textAdded);
+            break;
+        }
+        case RedoUndoCommand::REPLACE:
+        {
+            //qDebug() << "undo replace" << *command->m_textAdded << "->" << *command->m_textRemoved;
+            QTextCursor cursor(m_editor->document());
+            cursor.setPosition(command->m_position);
+            cursor.setPosition(command->m_position + command->m_textRemoved->size(), QTextCursor::KeepAnchor);
+            cursor.insertText(*command->m_textAdded);
+            break;
+        }
+        case RedoUndoCommand::DELETE:
+        {
+            //qDebug() << "undo remove" << *command->m_textRemoved;
+            QTextCursor cursor(m_editor->document());
+            cursor.setPosition(command->m_position);
+            cursor.setPosition(command->m_position + command->m_textRemoved->size(), QTextCursor::KeepAnchor);
+            cursor.removeSelectedText();
+            break;
+        }
+        default:
+            Q_ASSERT(false);
+    }
+
+    connect(m_editor->document(), SIGNAL(contentsChange(int, int, int)),
+        this, SLOT(contentsChange(int, int, int)));
+
+    addNewUndoCommand(command);
 }
 
 bool PlainTextEditorUndoStack::canRedo()
@@ -134,7 +182,9 @@ bool PlainTextEditorUndoStack::canRedo()
 
 void PlainTextEditorUndoStack::contentsChange(int position, int charsRemoved, int charsAdded)
 {
-    qDebug() << position << charsRemoved << charsAdded;
+    //qDebug() << position << charsRemoved << charsAdded;
+
+    clearRedoCommands();
 
     const QString &text = m_editor->toPlainText();
 
@@ -212,9 +262,13 @@ void PlainTextEditorUndoStack::selectionChanged()
 
 void PlainTextEditorUndoStack::addNewUndoCommand(RedoUndoCommand* command)
 {
+    if (!m_undoCommands.isEmpty() && command != NULL && m_undoCommands.first()->m_type == RedoUndoCommand::UNKNOWN) {
+        delete m_undoCommands.takeFirst();
+    }
     if (NULL == command) {
         command = new RedoUndoCommand();
     }
+    Q_ASSERT(m_undoCommands.isEmpty() || m_undoCommands.first()->m_type != RedoUndoCommand::UNKNOWN);
     m_undoCommands.push_front(command);
     if (m_undoCommands.size() > m_maxStackSize) {
         delete m_undoCommands.takeLast();
