@@ -16,5 +16,9 @@
         <file>resource/icon/menu_check_spelling.png</file>
 
         <file>device/kindle3/HtmlValidation.def</file>
+
+        <file>resource/about.html</file>
+        <file>resource/authors.html</file>
+        <file>resource/licence.html</file>
     </qresource>
 </RCC>

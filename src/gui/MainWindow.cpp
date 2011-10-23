@@ -40,6 +40,7 @@
 #include <FindReplaceWindow.h>
 #include <OptionsWindow.h>
 #include <MetaDataWindow.h>
+#include <AboutWindow.h>
 #include <Preferences.h>
 
 namespace {
@@ -52,7 +53,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     m_spellCheckingWindow(NULL),
     m_findReplaceWindow(NULL),
     m_optionsWindow(NULL),
-    m_metadataWindow(NULL)
+    m_metadataWindow(NULL),
+    m_aboutWindow(NULL)
 {
     //Widgets
     QWidget *centralWidget = new QWidget(this);
@@ -130,6 +132,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
 
     menu = menuBar()->addMenu(tr("&Options"));
     menu->addAction(QIcon(":/resource/icon/menu_settings.png"), "&Settings", this, SLOT(showOptionsWindow()));
+
+    menu = menuBar()->addMenu(tr("&Help"));
+    menu->addAction("&About", this, SLOT(showAboutWindow()));
 
     //Connections
     connect(&Book::instance(), SIGNAL(fileLoaded()),
@@ -346,6 +351,14 @@ void MainWindow::showMetadataWindow()
         m_metadataWindow = new MetaDataWindow(this);
     }
     m_metadataWindow->show();
+}
+
+void MainWindow::showAboutWindow()
+{
+    if (!m_aboutWindow) {
+        m_aboutWindow = new AboutWindow(this);
+    }
+    m_aboutWindow->show();
 }
 
 void MainWindow::setWindowTitle(bool modified)
