@@ -120,7 +120,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
 
     if (ASpellWrapper::instance().isLoaded()) {
         action = menu->addAction(QIcon(":/icon/menu_check_spelling.png"), tr("Check &spelling"), this,
-                SLOT(showSpellCheckingWindow()), QKeySequence::(Qt::Key_F7));
+                SLOT(showSpellCheckingWindow()), QKeySequence(Qt::Key_F7));
         action->setObjectName("enable_on_open");
     }
     else {

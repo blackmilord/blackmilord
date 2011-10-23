@@ -37,6 +37,7 @@ public:
     int firstVisibleBlock() const;
 
 protected:
+    bool eventFilter(QObject *watched, QEvent *event);
     void contextMenuEvent(QContextMenuEvent * event);
 
 private:

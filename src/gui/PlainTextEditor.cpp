@@ -41,6 +41,7 @@ PlainTextEditor::PlainTextEditor(QWidget * parent) :
     connect(&m_undoStack, SIGNAL(canRedo(bool)),
         this, SLOT(canRedoSlot(bool)));
     setUndoRedoEnabled(false);
+    installEventFilter(this);
 }
 
 PlainTextEditor::~PlainTextEditor()
@@ -50,6 +51,29 @@ PlainTextEditor::~PlainTextEditor()
 int PlainTextEditor::firstVisibleBlock() const
 {
     return QPlainTextEdit::firstVisibleBlock().blockNumber();
+}
+
+bool PlainTextEditor::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == this) {
+        if (event->type() == QEvent::KeyPress) {
+            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+            if (keyEvent->matches(QKeySequence::Undo)) {
+                if (m_undoStack.canUndo()) {
+                    undo();
+                }
+                return true;
+            }
+            else if (keyEvent->matches(QKeySequence::Redo)) {
+                if (m_undoStack.canRedo()) {
+                    redo();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+    return QPlainTextEdit::eventFilter(watched, event);
 }
 
 void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
