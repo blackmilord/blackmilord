@@ -104,7 +104,7 @@ FindReplaceWindow::FindReplaceWindow(QWidget *parent) :
 
     setLayout(layout);
     setWindowTitle(tr("Find and Replace"));
-    setWindowIcon(QIcon(":/icon/menu_find_and_replace.png"));
+    setWindowIcon(QIcon(":/resource/icon/menu_find_and_replace.png"));
 }
 
 void FindReplaceWindow::showEvent(QShowEvent *event)

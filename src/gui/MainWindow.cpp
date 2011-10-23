@@ -69,22 +69,22 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     //Menu
     QMenu *menu = menuBar()->addMenu(tr("&File"));
     QAction *action;
-    action = menu->addAction(QIcon(":/icon/menu_new.png"), tr("&New"), this,
+    action = menu->addAction(QIcon(":/resource/icon/menu_new.png"), tr("&New"), this,
             SLOT(createFile()), QKeySequence::New);
 
     menu->addSeparator();
-    QMenu *submenu = menu->addMenu(QIcon(":/icon/menu_import.png"), "&Import");
+    QMenu *submenu = menu->addMenu(QIcon(":/resource/icon/menu_import.png"), "&Import");
 
     action = submenu->addAction(tr("&Open Mobi file"), this,
             SLOT(openMobiFile()), QKeySequence::Open);
 
     menu->addSeparator();
 
-    action = menu->addAction(QIcon(":/icon/menu_save.png"), tr("&Save"), this,
+    action = menu->addAction(QIcon(":/resource/icon/menu_save.png"), tr("&Save"), this,
             SLOT(saveFile()), QKeySequence::Save);
     action->setObjectName("enable_on_open");
 
-    action = menu->addAction(QIcon(":/icon/menu_save_as.png"), tr("&Save As..."), this,
+    action = menu->addAction(QIcon(":/resource/icon/menu_save_as.png"), tr("&Save As..."), this,
             SLOT(saveFileAs()), QKeySequence::SaveAs);
     action->setObjectName("enable_on_open");
 
@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
 
     menu->addSeparator();
 
-    menu->addAction(QIcon(":/icon/menu_exit.png"), tr("E&xit"), QApplication::instance(),
+    menu->addAction(QIcon(":/resource/icon/menu_exit.png"), tr("E&xit"), QApplication::instance(),
             SLOT(quit()), QKeySequence::Quit);
 
     menu = menuBar()->addMenu(tr("&Edit"));
@@ -114,12 +114,12 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
 
     menu->addSeparator();
 
-    action = menu->addAction(QIcon(":/icon/menu_find_and_replace.png"), "&Find and Replace", this,
+    action = menu->addAction(QIcon(":/resource/icon/menu_find_and_replace.png"), "&Find and Replace", this,
             SLOT(showFindReplaceWindow()), QKeySequence::Find);
     action->setObjectName("enable_on_open");
 
     if (ASpellWrapper::instance().isLoaded()) {
-        action = menu->addAction(QIcon(":/icon/menu_check_spelling.png"), tr("Check &spelling"), this,
+        action = menu->addAction(QIcon(":/resource/icon/menu_check_spelling.png"), tr("Check &spelling"), this,
                 SLOT(showSpellCheckingWindow()), QKeySequence(Qt::Key_F7));
         action->setObjectName("enable_on_open");
     }
@@ -129,7 +129,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     }
 
     menu = menuBar()->addMenu(tr("&Options"));
-    menu->addAction(QIcon(":/icon/menu_settings.png"), "&Settings", this, SLOT(showOptionsWindow()));
+    menu->addAction(QIcon(":/resource/icon/menu_settings.png"), "&Settings", this, SLOT(showOptionsWindow()));
 
     //Connections
     connect(&Book::instance(), SIGNAL(fileLoaded()),
@@ -150,7 +150,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
             undoAction, SLOT(setEnabled(bool)));
 
     //Other things
-    QApplication::setWindowIcon(QIcon(":/icon/application_icon.png"));
+    QApplication::setWindowIcon(QIcon(":/resource/icon/application_icon.png"));
     setWindowTitle(false);
 
     updateMenuEnable(false);

@@ -113,7 +113,7 @@ SpellCheckingWindow::SpellCheckingWindow(QWidget *parent) :
 
     setLayout(layout);
     setWindowTitle(tr("Spelling"));
-    setWindowIcon(QIcon(":/icon/menu_check_spelling.png"));
+    setWindowIcon(QIcon(":/resource/icon/menu_check_spelling.png"));
 }
 
 SpellCheckingWindow::~SpellCheckingWindow()

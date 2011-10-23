@@ -68,7 +68,7 @@ void MainPage::registerPage(QListWidget *contentsWidget, QStackedWidget *pagesWi
     mainButton->setText(tr("Main"));
     mainButton->setTextAlignment(Qt::AlignHCenter);
     mainButton->setFlags(Qt::ItemIsEnabled);
-    mainButton->setIcon(QIcon(":/icon/settings_general.png"));
+    mainButton->setIcon(QIcon(":/resource/icon/settings_general.png"));
 }
 
 void MainPage::apply()

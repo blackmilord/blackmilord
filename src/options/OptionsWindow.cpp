@@ -82,7 +82,7 @@ OptionsWindow::OptionsWindow(QWidget *parent) :
     mainLayout->addLayout(buttonsLayout, 0);
     setLayout(mainLayout);
     setWindowTitle((tr("Settings")));
-    setWindowIcon(QIcon(":/icon/menu_settings.png"));
+    setWindowIcon(QIcon(":/resource/icon/menu_settings.png"));
 }
 
 void OptionsWindow::changePage(QListWidgetItem *current, QListWidgetItem *previous)

@@ -83,7 +83,7 @@ void EditorPage::registerPage(QListWidget *contentsWidget, QStackedWidget *pages
     editorButton->setText(tr("Editor"));
     editorButton->setTextAlignment(Qt::AlignHCenter);
     editorButton->setFlags(Qt::ItemIsEnabled);
-    editorButton->setIcon(QIcon(":/icon/settings_editor.png"));
+    editorButton->setIcon(QIcon(":/resource/icon/settings_editor.png"));
 }
 
 void EditorPage::apply()
