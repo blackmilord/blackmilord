@@ -191,35 +191,31 @@ void FindReplaceWindow::replace()
         }
     }
 
-    Book::instance().setText(
-        Book::instance().getText().replace(
-            Book::instance().getSelectionStart(),
-            Book::instance().getSelectionEnd() - Book::instance().getSelectionStart(),
-            m_replaceWith->currentText()));
-
-    Book::instance().setCursorPosition(Book::instance().getSelectionEnd());
+    Book::instance().replace(
+        Book::instance().getSelectionStart(),
+        Book::instance().getSelectionEnd() - Book::instance().getSelectionStart(),
+        m_replaceWith->currentText());
 
     find();
 }
 
 void FindReplaceWindow::replaceAll()
 {
-/*
     saveValues();
     if (m_findWhat->currentText() == m_replaceWith->currentText()) {
         return;
     }
 
-    QTextCursor cursor = m_editor->textCursor();
-    cursor.setPosition(0);
-    m_editor->setTextCursor(cursor);
+    Book::instance().setCursorPosition(0);
 
     find();
-    while (m_editor->textCursor().hasSelection()) {
-        m_editor->textCursor().insertText(m_replaceWith->currentText());
+    while (Book::instance().hasSelection()) {
+        Book::instance().replace(
+            Book::instance().getSelectionStart(),
+            Book::instance().getSelectionEnd() - Book::instance().getSelectionStart(),
+            m_replaceWith->currentText());
         find();
     }
-*/
 }
 
 void FindReplaceWindow::checkboxChanged()

@@ -24,6 +24,7 @@
 #include <QStringList>
 #include <QDebug>
 #include <QVariant>
+#include <QTextCursor>
 
 #include <PlainTextEditor.h>
 #include <Preferences.h>
@@ -205,12 +206,25 @@ QString Book::getText() const
     return m_editor->toPlainText();
 }
 
+void Book::replace(int position, int length, const QString &after)
+{
+    Q_ASSERT(position >= 0);
+    Q_ASSERT(position + length <= m_editor->toPlainText().length());
+
+    QTextCursor cursor = m_editor->textCursor();
+    cursor.setPosition(position);
+    cursor.setPosition(position + length, QTextCursor::KeepAnchor);
+    m_editor->setTextCursor(cursor);
+    cursor.insertText(after);
+}
+
 void Book::setText(const QString& text)
 {
     const QString &old = getText();
     if (old.length() != text.length() || old != text) {
         QTextCursor cursor = m_editor->textCursor();
         cursor.select(QTextCursor::Document);
+        m_editor->setTextCursor(cursor);
         cursor.insertText(text);
     }
 }

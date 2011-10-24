@@ -41,21 +41,26 @@ public:
     static void createInstance(PlainTextEditor *editor);
     static Book& instance();
 
+    //file management
     bool openFile(const QString &fileName);
     bool saveFile();
     bool closeFile();
     bool newFile();
-
     bool isFileOpened();
 
+    //text accessors
     QString getText() const;
+    void setText(const QString& text);
+    void replace(int position, int length, const QString &after);
 
+    //editor metadata
     int getCursorPosition() const;
     int getSelectionStart() const;
     int getSelectionEnd() const;
     bool hasSelection() const;
     void clearSelection();
 
+    //book metadata
     QVariant getMetadata(MetaData metadata) const;
 
     QString getFileName() const;
@@ -64,7 +69,6 @@ public:
     QString getWhy() const;
 
 public slots:
-    void setText(const QString& text);
     void setCursorPosition(int position);
     void setSelection(int selectionStart, int selectionEnd);
     void setMetadata(MetaData metadata, const QVariant &data);

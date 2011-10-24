@@ -44,5 +44,7 @@ QString Formatting::formatHTMLContent(const QString &text)
            replace("<html>", "<html>\n", Qt::CaseInsensitive).
            replace("<body>", "<body>\n", Qt::CaseInsensitive).
            replace("</body>", "</body>\n", Qt::CaseInsensitive).
+           replace("<head>", "<head>\n", Qt::CaseInsensitive).
+           replace("</head>", "</head>\n", Qt::CaseInsensitive).
            replace("\n\n", "\n");
 }

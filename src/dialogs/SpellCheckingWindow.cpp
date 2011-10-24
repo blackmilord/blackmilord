@@ -275,10 +275,10 @@ void SpellCheckingWindow::change()
         qDebug() << Book::instance().getText().mid(m_sentenceStartPos, m_sentenceEndPos - m_sentenceStartPos) <<
                     "replaced by" <<
                     m_textContext->toPlainText();
-        Book::instance().setText(
-                Book::instance().getText().replace(m_sentenceStartPos,
-                        m_sentenceEndPos - m_sentenceStartPos,
-                        m_textContext->toPlainText()));
+        Book::instance().replace(
+            m_sentenceStartPos,
+            m_sentenceEndPos - m_sentenceStartPos,
+            m_textContext->toPlainText());
     }
     else {
         QModelIndexList indexes =
@@ -292,10 +292,10 @@ void SpellCheckingWindow::change()
         qDebug() << Book::instance().getText().mid(m_wordStartPos, m_wordEndPos - m_wordStartPos) <<
                     "replaced by" <<
                     replacement;
-        Book::instance().setText(
-                Book::instance().getText().replace(m_wordStartPos,
-                        m_wordEndPos - m_wordStartPos,
-                        replacement));
+        Book::instance().replace(
+            m_wordStartPos,
+            m_wordEndPos - m_wordStartPos,
+            replacement);
 
     }
     findNextWord();
@@ -314,14 +314,19 @@ void SpellCheckingWindow::changeAll()
     replacement = m_suggestions->data(indexes.first(),
             Qt::DisplayRole).toString();
 
-    int position = Book::instance().getCursorPosition() - m_currentWord.length();
 
-    Book::instance().setText(
-        Book::instance().getText().left(position) +
-        Book::instance().getText().mid(position).replace(m_currentWord, replacement));
+    int originalPos = Book::instance().getCursorPosition() - m_currentWord.length();
 
-    Book::instance().setCursorPosition(position);
+    QString pattern = "\\b" + m_currentWord + "\\b";
+    QRegExp rx(pattern);
+    rx.setMinimal(true);
+    int position = Book::instance().getText().indexOf(rx, originalPos);
+    while (position != -1) {
+        Book::instance().replace(position, rx.matchedLength(), replacement);
+        position = Book::instance().getText().indexOf(rx, position + replacement.length());
+    }
 
+    Book::instance().setCursorPosition(originalPos);
     findNextWord();
 }
 
