@@ -4,7 +4,13 @@ CONFIG += qt debug_and_release
 QT = core gui
 TARGET = blackmilord
 RESOURCES = resource.qrc
+
 QMAKE_CXXFLAGS += -Werror -Wextra
+QMAKE_LFLAGS += -s
+
+win32 {
+    QMAKE_LFLAGS += -static-libstdc++
+}
 
 CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS += -ggdb -O0
