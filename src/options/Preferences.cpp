@@ -86,8 +86,8 @@ void Preferences::initPropertiesMap()
     m_propertyMap[PROP_WINDOW_POSITION_X]            = "window/x";
     m_propertyMap[PROP_WINDOW_POSITION_Y]            = "window/y";
     m_propertyMap[PROP_WINDOW_MAXIMIZED]             = "window/maximized";
-    m_propertyMap[PROP_HIGHLIGHTER_SPELLCHECK]       = "editor/highlighter/spellchecking";
-    m_propertyMap[PROP_HIGHLIGHTER_HTML_TAGS]        = "editor/highlighter/htmltags";
+    m_propertyMap[PROP_HIGHLIGHTER_SPELLCHECK]       = "editor/highlighter_spellchecking";
+    m_propertyMap[PROP_HIGHLIGHTER_HTML_TAGS]        = "editor/highlighter_htmltags";
     m_propertyMap[PROP_EDITOR_FONT_FAMILY]           = "editor/font_editor_family";
     m_propertyMap[PROP_EDITOR_FONT_SIZE]             = "editor/font_editor_size";
     Q_ASSERT(m_propertyMap.size() == PROPERTY_NAME_SIZE);
@@ -102,7 +102,7 @@ Preferences::Preferences() :
     m_configFile = getenv("HOME");
     m_configFile.append( "/.blackmilord/config.ini");
 #elif defined Q_WS_WIN
-    m_configFile = getenv("USERPROFILE");
+    m_configFile = getenv("APPDATA");
     m_configFile.append( "\\BlackMilord\\config.ini");
 #endif
     qDebug() << "using config file" << m_configFile;

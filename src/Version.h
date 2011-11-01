@@ -23,5 +23,6 @@
 #define BLACK_MILORD_VERSION_H
 
 const double BLACK_MILORD_VERSION = 0.1;
+const char* BLACK_MILORD_RELEASE_NAME = "Out of the Darkness";
 
 #endif /* BLACK_MILORD_VERSION_H */
