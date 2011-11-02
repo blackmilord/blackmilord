@@ -28,6 +28,7 @@
 
 class QComboBox;
 class QCheckBox;
+class QPushButton;
 class QShowEvent;
 
 class FindReplaceWindow : public QDialog
@@ -39,18 +40,22 @@ public:
 
 private:
     void saveValues();
+    bool m_notFoundLastTime;
     QComboBox *m_findWhat;
     QComboBox *m_replaceWith;
     QCheckBox *m_regExp;
     QCheckBox *m_backward;
     QCheckBox *m_wordsOnly;
     QCheckBox *m_caseSensitive;
-
+    QPushButton *m_findNextButton;
+    QPushButton *m_replaceButton;
+    QPushButton *m_replaceAllButton;
 private slots:
-    void find();
+    void find(bool showDialogs = true);
     void replace();
     void replaceAll();
     void checkboxChanged();
+    void updateButtons();
 
 protected:
     void showEvent(QShowEvent *event);

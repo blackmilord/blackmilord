@@ -37,7 +37,8 @@
 #include <Book.h>
 
 FindReplaceWindow::FindReplaceWindow(QWidget *parent) :
-    QDialog(parent)
+    QDialog(parent),
+    m_notFoundLastTime(false)
 {
     QHBoxLayout *layout = new QHBoxLayout();
 
@@ -78,13 +79,13 @@ FindReplaceWindow::FindReplaceWindow(QWidget *parent) :
     controlsLayout->addStretch(1);
 
     QVBoxLayout *buttonsLayout = new QVBoxLayout();
-    QPushButton *findNextButton = new QPushButton(tr("Fin&d next"));
-    QPushButton *replaceButton = new QPushButton(tr("&Replace"));
-    QPushButton *replaceAllButton = new QPushButton(tr("Repl&ace All"));
+    m_findNextButton = new QPushButton(tr("Fin&d next"));
+    m_replaceButton = new QPushButton(tr("&Replace"));
+    m_replaceAllButton = new QPushButton(tr("Repl&ace All"));
     QPushButton *closeButton = new QPushButton(tr("Close"));
-    buttonsLayout->addWidget(findNextButton);
-    buttonsLayout->addWidget(replaceButton);
-    buttonsLayout->addWidget(replaceAllButton);
+    buttonsLayout->addWidget(m_findNextButton);
+    buttonsLayout->addWidget(m_replaceButton);
+    buttonsLayout->addWidget(m_replaceAllButton);
     buttonsLayout->addStretch(1);
     buttonsLayout->addWidget(closeButton);
 
@@ -92,10 +93,13 @@ FindReplaceWindow::FindReplaceWindow(QWidget *parent) :
     layout->addLayout(controlsLayout, 1);
     layout->addLayout(buttonsLayout, 0);
 
-    connect(findNextButton, SIGNAL(released()), this, SLOT(find()));
-    connect(replaceButton, SIGNAL(released()), this, SLOT(replace()));
-    connect(replaceAllButton, SIGNAL(released()), this, SLOT(replaceAll()));
+    connect(m_findNextButton, SIGNAL(released()), this, SLOT(find()));
+    connect(m_replaceButton, SIGNAL(released()), this, SLOT(replace()));
+    connect(m_replaceAllButton, SIGNAL(released()), this, SLOT(replaceAll()));
     connect(closeButton, SIGNAL(released()), this, SLOT(close()));
+
+    connect(m_findWhat, SIGNAL(editTextChanged(const QString &)), this, SLOT(updateButtons()));
+    connect(m_replaceWith, SIGNAL(editTextChanged(const QString &)), this, SLOT(updateButtons()));
 
     connect(m_regExp, SIGNAL(toggled(bool)), this, SLOT(checkboxChanged()));
     connect(m_backward, SIGNAL(toggled(bool)), this, SLOT(checkboxChanged()));
@@ -107,41 +111,41 @@ FindReplaceWindow::FindReplaceWindow(QWidget *parent) :
     setWindowIcon(QIcon(":/resource/icon/menu_find_and_replace.png"));
 }
 
-void FindReplaceWindow::showEvent(QShowEvent *event)
-{
-    Q_UNUSED(event);
-    m_findWhat->clearEditText();
-    m_replaceWith->clearEditText();
-    QDialog::showEvent(event);;
-}
-
 FindReplaceWindow::~FindReplaceWindow()
 {
 }
 
-void FindReplaceWindow::find()
+void FindReplaceWindow::showEvent(QShowEvent *event)
+{
+    m_findWhat->clearEditText();
+    m_replaceWith->clearEditText();
+    m_notFoundLastTime = false;
+    updateButtons();
+    QDialog::showEvent(event);
+}
+
+void FindReplaceWindow::find(bool showDialogs)
 {
     saveValues();
 
-    QString pattern = m_findWhat->currentText();
     const QString &text = Book::instance().getText();
-    int from = Book::instance().getCursorPosition();
-    int position = -1;
-    int length = 0;
 
-    qDebug() << "looking for" << pattern;
-
+    //prepare query
+    QString pattern = m_findWhat->currentText();
     if (!m_regExp->isChecked()) {
         pattern = QRegExp::escape(pattern);
     }
     if (m_wordsOnly->isChecked()) {
         pattern = "\\b" + pattern + "\\b";
     }
-
     QRegExp rx(pattern);
     rx.setMinimal(true);
     rx.setCaseSensitivity(m_caseSensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive);
 
+    //find text
+    int from = Book::instance().getCursorPosition();
+    int position = -1;
+    int length = 0;
     if (m_backward->isChecked()) {
         if (Book::instance().hasSelection()) {
             from = Book::instance().getSelectionStart();
@@ -156,14 +160,49 @@ void FindReplaceWindow::find()
     }
     length = rx.matchedLength();
 
+    //handle result
     if (position != -1) {
+        //select found text
+        m_notFoundLastTime = false;
         Book::instance().setSelection(position, position + length);
     }
     else {
-        if (Book::instance().hasSelection()) {
-            Book::instance().setCursorPosition(Book::instance().getSelectionStart());
+        //give dialog box about not found text
+        if (m_notFoundLastTime) {
+            //already tried with reseted position
+            m_notFoundLastTime = false;
+            if (showDialogs) {
+                QMessageBox::question(this, tr("No more matches"), tr("There is no more matches."));
+            }
+            if (m_backward->isChecked()) {
+                Book::instance().setCursorPositionToStart();
+            }
+            else {
+                Book::instance().setCursorPositionToEnd();
+            }
+            return;
         }
-        Book::instance().clearSelection();
+        //reset position of the cursor and continue
+        QMessageBox::StandardButton answer = QMessageBox::No;
+        if (showDialogs) {
+            answer = QMessageBox::question(this, tr("No more matches"),
+                tr("There is no more matches. Do you want to start from ") + (m_backward->isChecked() ? tr("the end") : tr("the beginning")) + "?",
+                QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        }
+        if (QMessageBox::Yes == answer) {
+            m_notFoundLastTime = true;
+            if (m_backward->isChecked()) {
+                Book::instance().setCursorPositionToEnd();
+            }
+            else {
+                Book::instance().setCursorPositionToStart();
+            }
+            find();
+        }
+        else {
+            m_notFoundLastTime = false;
+            Book::instance().clearSelection();
+        }
     }
 }
 
@@ -202,20 +241,19 @@ void FindReplaceWindow::replace()
 void FindReplaceWindow::replaceAll()
 {
     saveValues();
-    if (m_findWhat->currentText() == m_replaceWith->currentText()) {
-        return;
-    }
 
-    Book::instance().setCursorPosition(0);
+    Book::instance().setCursorPositionToStart();
 
-    find();
+    find(false);
     while (Book::instance().hasSelection()) {
         Book::instance().replace(
             Book::instance().getSelectionStart(),
             Book::instance().getSelectionEnd() - Book::instance().getSelectionStart(),
             m_replaceWith->currentText());
-        find();
+        find(false);
     }
+
+    Book::instance().setCursorPositionToEnd();
 }
 
 void FindReplaceWindow::checkboxChanged()
@@ -224,6 +262,14 @@ void FindReplaceWindow::checkboxChanged()
         m_wordsOnly->setChecked(false);
     }
     m_wordsOnly->setEnabled(!m_regExp->isChecked());
+}
+
+void FindReplaceWindow::updateButtons()
+{
+    m_findNextButton->setEnabled(!m_findWhat->currentText().isEmpty());
+    m_replaceButton->setEnabled(!m_findWhat->currentText().isEmpty());
+    m_replaceAllButton->setEnabled(!m_findWhat->currentText().isEmpty() &&
+        m_findWhat->currentText() != m_replaceWith->currentText());
 }
 
 void FindReplaceWindow::saveValues()

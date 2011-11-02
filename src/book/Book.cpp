@@ -243,6 +243,20 @@ void Book::setCursorPosition(int position)
     }
 }
 
+void Book::setCursorPositionToStart()
+{
+    QTextCursor cursor = m_editor->textCursor();
+    cursor.movePosition(QTextCursor::Start);
+    m_editor->setTextCursor(cursor);
+}
+
+void Book::setCursorPositionToEnd()
+{
+    QTextCursor cursor = m_editor->textCursor();
+    cursor.movePosition(QTextCursor::End);
+    m_editor->setTextCursor(cursor);
+}
+
 int Book::getSelectionStart() const
 {
     Q_ASSERT(hasSelection());

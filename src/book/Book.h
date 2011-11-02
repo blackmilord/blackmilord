@@ -70,6 +70,8 @@ public:
 
 public slots:
     void setCursorPosition(int position);
+    void setCursorPositionToStart();
+    void setCursorPositionToEnd();
     void setSelection(int selectionStart, int selectionEnd);
     void setMetadata(MetaData metadata, const QVariant &data);
     void setWhy(const QString &why);
