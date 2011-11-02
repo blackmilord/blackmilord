@@ -55,6 +55,7 @@ private:
     void resizeEvent(QResizeEvent *event);
     void moveEvent(QMoveEvent *event);
     void changeEvent(QEvent *event);
+    void closeEvent(QCloseEvent *event);
 
     void updateMenuEnable(bool fileOpened);
 
@@ -76,6 +77,7 @@ private slots:
     void showMetadataWindow();
     void showAboutWindow();
     void setWindowTitle(bool modified);
+    void quit();
 };
 
 #endif /* BLACK_MILORD_MAIN_WINDOW_H */

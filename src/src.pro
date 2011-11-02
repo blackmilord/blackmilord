@@ -6,17 +6,17 @@ TARGET = blackmilord
 RESOURCES = resource.qrc
 
 QMAKE_CXXFLAGS += -Werror -Wextra
-QMAKE_LFLAGS += -s
 
 win32 {
     QMAKE_LFLAGS += -static-libstdc++
 }
 
 CONFIG(debug, debug|release) {
-    QMAKE_CXXFLAGS += -ggdb -O0
+    QMAKE_CXXFLAGS += -g3 -gdwarf-2 -O0
     DESTPREFIX = "debug"
 }
 else {
+    QMAKE_LFLAGS += -s
     DEFINES += QT_NO_DEBUG_OUTPUT
     DESTPREFIX = "release"
 }

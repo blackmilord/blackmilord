@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
 
     menu->addSeparator();
 
-    menu->addAction(QIcon(":/resource/icon/menu_exit.png"), tr("E&xit"), QApplication::instance(),
+    menu->addAction(QIcon(":/resource/icon/menu_exit.png"), tr("E&xit"), this,
             SLOT(quit()), QKeySequence::Quit);
 
     menu = menuBar()->addMenu(tr("&Edit"));
@@ -289,15 +289,17 @@ void MainWindow::closeFile()
 {
     Q_ASSERT(Book::instance().isFileOpened());
     if (m_editor->document()->isModified()) {
-        if (QMessageBox::Yes == QMessageBox::question(this,
+        QMessageBox::StandardButton answer = QMessageBox::question(this,
                 tr("File is not saved"),
                 tr("Do you want to save file now?"),
-                QMessageBox::Yes | QMessageBox::No,
-                QMessageBox::Yes))
-        {
+                QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                QMessageBox::Yes);
+        if (QMessageBox::Yes == answer) {
             saveFile();
         }
-
+        else if (QMessageBox::Cancel == answer) {
+            return;
+        }
     }
     Book::instance().closeFile();
 }
@@ -375,6 +377,17 @@ void MainWindow::setWindowTitle(bool modified)
     }
 }
 
+void MainWindow::quit()
+{
+    if (Book::instance().isFileOpened()) {
+        closeFile();
+    }
+    if (Book::instance().isFileOpened()) {
+        return;
+    }
+    QApplication::instance()->quit();
+}
+
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     if (!Preferences::instance().getValue(Preferences::PROP_WINDOW_MAXIMIZED, isMaximized()).toBool()) {
@@ -398,6 +411,12 @@ void MainWindow::changeEvent(QEvent *event)
     if (event->type() == QEvent::WindowStateChange) {
         Preferences::instance().setValue(Preferences::PROP_WINDOW_MAXIMIZED, isMaximized());
     }
+    event->ignore();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    quit();
     event->ignore();
 }
 
