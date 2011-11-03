@@ -32,12 +32,13 @@
 #include <AspellWrapper.h>
 #include <Preferences.h>
 
-MainPage::MainPage(QWidget *parent) : 
-    QWidget(parent)
+MainPage::MainPage(QWidget *parent) :
+    QWidget(parent),
+    m_language(NULL)
 {
     QGridLayout *optionsLayout = new QGridLayout();
     m_makeBackupOverwrite = new QCheckBox(tr("Make a copy before overwriting original file."));
-    
+
     m_makeBackupOverwrite->setChecked(Preferences::instance().getValue(
             Preferences::PROP_MAKE_BACKUP_BEFORE_OVERWRITE, true).toBool());
 
@@ -74,7 +75,7 @@ void MainPage::registerPage(QListWidget *contentsWidget, QStackedWidget *pagesWi
 void MainPage::apply()
 {
     Preferences::instance().setValue(
-            Preferences::PROP_MAKE_BACKUP_BEFORE_OVERWRITE, 
+            Preferences::PROP_MAKE_BACKUP_BEFORE_OVERWRITE,
             m_makeBackupOverwrite->isChecked());
     if (ASpellWrapper::instance().isLoaded()) {
         ASpellWrapper::instance().changeLanguage(
@@ -84,6 +85,7 @@ void MainPage::apply()
 
 void MainPage::loadLanguages()
 {
+    Q_ASSERT(NULL != m_language);
     const QList<QPair<QString, QString> > &lang =
             ASpellWrapper::instance().installedDictionaries();
     QList<QPair<QString, QString> >::const_iterator it = lang.begin();
@@ -97,6 +99,7 @@ void MainPage::loadLanguages()
 
 void MainPage::selectLanguageFromPreference()
 {
+    Q_ASSERT(NULL != m_language);
     QString language = Preferences::instance().getValue(
             Preferences::PROP_ASPELL_DICTIONARY, "").toString();
     m_language->setCurrentIndex(0);
@@ -111,5 +114,7 @@ void MainPage::selectLanguageFromPreference()
 void MainPage::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event);
-    selectLanguageFromPreference();
+    if (ASpellWrapper::instance().isLoaded()) {
+        selectLanguageFromPreference();
+    }
 }

@@ -34,7 +34,7 @@
 #include <QCompleter>
 #include <QMessageBox>
 
-#include <Book.h>
+#include <PlainTextEditor.h>
 
 FindReplaceWindow::FindReplaceWindow(QWidget *parent) :
     QDialog(parent),
@@ -128,7 +128,7 @@ void FindReplaceWindow::find(bool showDialogs)
 {
     saveValues();
 
-    const QString &text = Book::instance().getText();
+    const QString &text = PlainTextEditor::instance().toPlainText();
 
     //prepare query
     QString pattern = m_findWhat->currentText();
@@ -143,18 +143,18 @@ void FindReplaceWindow::find(bool showDialogs)
     rx.setCaseSensitivity(m_caseSensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive);
 
     //find text
-    int from = Book::instance().getCursorPosition();
+    int from = PlainTextEditor::instance().getCursorPosition();
     int position = -1;
     int length = 0;
     if (m_backward->isChecked()) {
-        if (Book::instance().hasSelection()) {
-            from = Book::instance().getSelectionStart();
+        if (PlainTextEditor::instance().hasSelection()) {
+            from = PlainTextEditor::instance().getSelectionStart();
         }
         position = text.lastIndexOf(rx, from - 1);
     }
     else {
-        if (Book::instance().hasSelection()) {
-            from = Book::instance().getSelectionEnd();
+        if (PlainTextEditor::instance().hasSelection()) {
+            from = PlainTextEditor::instance().getSelectionEnd();
         }
         position = text.indexOf(rx, from);
     }
@@ -164,7 +164,7 @@ void FindReplaceWindow::find(bool showDialogs)
     if (position != -1) {
         //select found text
         m_notFoundLastTime = false;
-        Book::instance().setSelection(position, position + length);
+        PlainTextEditor::instance().setSelection(position, position + length);
     }
     else {
         //give dialog box about not found text
@@ -175,10 +175,10 @@ void FindReplaceWindow::find(bool showDialogs)
                 QMessageBox::question(this, tr("No more matches"), tr("There is no more matches."));
             }
             if (m_backward->isChecked()) {
-                Book::instance().setCursorPositionToStart();
+                PlainTextEditor::instance().setCursorPositionToStart();
             }
             else {
-                Book::instance().setCursorPositionToEnd();
+                PlainTextEditor::instance().setCursorPositionToEnd();
             }
             return;
         }
@@ -192,16 +192,16 @@ void FindReplaceWindow::find(bool showDialogs)
         if (QMessageBox::Yes == answer) {
             m_notFoundLastTime = true;
             if (m_backward->isChecked()) {
-                Book::instance().setCursorPositionToEnd();
+                PlainTextEditor::instance().setCursorPositionToEnd();
             }
             else {
-                Book::instance().setCursorPositionToStart();
+                PlainTextEditor::instance().setCursorPositionToStart();
             }
             find();
         }
         else {
             m_notFoundLastTime = false;
-            Book::instance().clearSelection();
+            PlainTextEditor::instance().clearSelection();
         }
     }
 }
@@ -210,29 +210,29 @@ void FindReplaceWindow::replace()
 {
     saveValues();
 
-    if (Book::instance().hasSelection()) {
+    if (PlainTextEditor::instance().hasSelection()) {
         if (m_backward->isChecked()) {
-            Book::instance().setCursorPosition(Book::instance().getSelectionEnd());
+            PlainTextEditor::instance().setCursorPosition(PlainTextEditor::instance().getSelectionEnd());
         }
         else {
-            Book::instance().setCursorPosition(Book::instance().getSelectionStart());
+            PlainTextEditor::instance().setCursorPosition(PlainTextEditor::instance().getSelectionStart());
         }
     }
 
     find();
 
-    if (!Book::instance().hasSelection()) {
-        Book::instance().setCursorPosition(0);
+    if (!PlainTextEditor::instance().hasSelection()) {
+        PlainTextEditor::instance().setCursorPosition(0);
         find();
-        if (!Book::instance().hasSelection()) {
+        if (!PlainTextEditor::instance().hasSelection()) {
             QMessageBox::information(this, QObject::tr("Text not found"), QObject::tr("There is no more text to replace."));
             return;
         }
     }
 
-    Book::instance().replace(
-        Book::instance().getSelectionStart(),
-        Book::instance().getSelectionEnd() - Book::instance().getSelectionStart(),
+    PlainTextEditor::instance().replace(
+        PlainTextEditor::instance().getSelectionStart(),
+        PlainTextEditor::instance().getSelectionEnd() - PlainTextEditor::instance().getSelectionStart(),
         m_replaceWith->currentText());
 
     find();
@@ -242,18 +242,18 @@ void FindReplaceWindow::replaceAll()
 {
     saveValues();
 
-    Book::instance().setCursorPositionToStart();
+    PlainTextEditor::instance().setCursorPositionToStart();
 
     find(false);
-    while (Book::instance().hasSelection()) {
-        Book::instance().replace(
-            Book::instance().getSelectionStart(),
-            Book::instance().getSelectionEnd() - Book::instance().getSelectionStart(),
+    while (PlainTextEditor::instance().hasSelection()) {
+        PlainTextEditor::instance().replace(
+            PlainTextEditor::instance().getSelectionStart(),
+            PlainTextEditor::instance().getSelectionEnd() - PlainTextEditor::instance().getSelectionStart(),
             m_replaceWith->currentText());
         find(false);
     }
 
-    Book::instance().setCursorPositionToEnd();
+    PlainTextEditor::instance().setCursorPositionToEnd();
 }
 
 void FindReplaceWindow::checkboxChanged()

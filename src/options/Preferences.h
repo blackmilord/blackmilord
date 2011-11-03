@@ -25,8 +25,8 @@
 #include <QObject>
 #include <QSettings>
 #include <QMap>
-#include <QFont>
 
+class QFont;
 class QVariant;
 class QString;
 class QThread;
@@ -58,7 +58,7 @@ public:
     void setValue(PropertyName key, const QVariant &value);
     QVariant getValue(PropertyName key, const QVariant &defaultValue);
     void saveLastUsedDirectory(const QString &dir);
-    QFont getDefaultFontEditor();
+    QFont getEditorFont();
 private:
     void createDefaultConfig();
     void initPropertiesMap();
@@ -66,8 +66,6 @@ private:
     QThread *m_threadGuard;
     QMap<PropertyName, QString> m_propertyMap;
     QSettings *m_settings;
-    QString m_configFile;
-    QFont m_defaultFontEditor;
 signals:
     void settingsChanged();
 };

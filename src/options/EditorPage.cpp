@@ -64,10 +64,10 @@ EditorPage::EditorPage(QWidget *parent) :
     optionsLayout->setColumnStretch(0, 0);
     optionsLayout->setColumnStretch(1, 1);
 
-    connect(m_font, SIGNAL(currentIndexChanged(const QString&)), 
+    connect(m_font, SIGNAL(currentIndexChanged(const QString&)),
             this, SLOT(fontFamilyChanged(const QString&)));
 
-    m_font->setCurrentFont(Preferences::instance().getDefaultFontEditor());
+    m_font->setCurrentFont(Preferences::instance().getEditorFont());
     fontFamilyChanged(m_font->currentText());
 
     QVBoxLayout *mainLayout = new QVBoxLayout();

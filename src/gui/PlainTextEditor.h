@@ -26,15 +26,57 @@
 #include <QTextBlockUserData>
 #include "PlainTextEditorUndoStack.h"
 
+class QLayout;
+
 class PlainTextEditor :
-    public QPlainTextEdit
+    protected QPlainTextEdit
 {
     Q_OBJECT
-public:
+
     explicit PlainTextEditor(QWidget * parent = 0);
     virtual ~PlainTextEditor();
 
+public:
+    static PlainTextEditor& instance();
+
     int firstVisibleBlock() const;
+
+    void replace(int position, int length, const QString &after);
+    int getCursorPosition() const;
+    void setCursorPosition(int position);
+    void setCursorPositionToStart();
+    void setCursorPositionToEnd();
+    int getSelectionStart() const;
+    int getSelectionEnd() const;
+    bool hasSelection() const;
+    void setSelection(int selectionStart, int selectionEnd);
+    void clearSelection();
+
+    QString toPlainText() const;
+    void setPlainText(const QString &text);
+
+    QTextBlock findBlockByNumber(int blockNumber) const;
+    QTextBlock findBlock(int pos) const;
+    void setTextCursor(const QTextCursor &cursor);
+    QTextCursor textCursor() const;
+    QTextCursor textCursorForBlock(int blockNumber = 0) const;
+    int blockCount() const;
+    bool blockSignals(bool block);
+    void setFocus();
+
+    void setEnabled(bool enabled);
+    bool isEnabled() const;
+
+    void setModified(bool modified);
+    bool isModified() const;
+
+    void addToLayout(QLayout *layout);
+    void connect(const char *signal, const QObject *receiver,
+            const char *method, Qt::ConnectionType type = Qt::AutoConnection);
+    void connect(const QObject *sender, const char *signal,
+            const char *method, Qt::ConnectionType type = Qt::AutoConnection);
+    void disconnect(const char *signal, const QObject *receiver, const char *method);
+    void disconnect(const QObject *sender, const char *signal, const char *method);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event);
@@ -46,16 +88,19 @@ private:
 signals:
     void canUndo(bool);
     void canRedo(bool);
+    void contentsChange(int, int, int);
+    void contentsChanged();
 
 public slots:
+    void applySettings();
     void redo();
     void undo();
     void clearRedoUndoHistory();
 
 private slots:
-    void contentsChanged();
-    void contentsChange(int position, int charsRemoved, int charsAdded);
-    void applyHint(QAction *action);
+    void contentsChangedSlot();
+    void contentsChangeSlot(int position, int charsRemoved, int charsAdded);
+    void applyHintSlot(QAction *action);
     void canUndoSlot(bool value);
     void canRedoSlot(bool value);
 };

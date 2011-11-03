@@ -61,12 +61,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     QVBoxLayout *centralLayout = new QVBoxLayout;
     centralWidget->setLayout(centralLayout);
 
-    m_editor = new PlainTextEditor(this);
-    m_editor->setEnabled(false);
-    centralLayout->addWidget(m_editor);
+    PlainTextEditor::instance().setEnabled(false);
+    PlainTextEditor::instance().addToLayout(centralLayout);
     setCentralWidget(centralWidget);
-
-    Book::createInstance(m_editor);
 
     //Menu
     QMenu *menu = menuBar()->addMenu(tr("&File"));
@@ -101,12 +98,12 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
 
     menu = menuBar()->addMenu(tr("&Edit"));
 
-    QAction *undoAction = menu->addAction(tr("&Undo"), m_editor,
-        SLOT(undo()), QKeySequence::Undo);
+    QAction *undoAction = menu->addAction(tr("&Undo"));
+    undoAction->setShortcut(QKeySequence::Undo);
     undoAction->setEnabled(false);
 
-    QAction *redoAction = menu->addAction(tr("&Redo"), m_editor,
-        SLOT(redo()), QKeySequence::Redo);
+    QAction *redoAction = menu->addAction(tr("&Redo"));
+    undoAction->setShortcut(QKeySequence::Redo);
     redoAction->setEnabled(false);
 
     menu->addSeparator();
@@ -147,12 +144,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
             this, SLOT(fileCreated()));
     connect(&Preferences::instance(), SIGNAL(settingsChanged()),
             this, SLOT(applySettings()));
-    connect(m_editor, SIGNAL(modificationChanged(bool)),
-            this, SLOT(setWindowTitle(bool)));
-    connect(m_editor, SIGNAL(canRedo(bool)),
-            redoAction, SLOT(setEnabled(bool)));
-    connect(m_editor, SIGNAL(canUndo(bool)),
-            undoAction, SLOT(setEnabled(bool)));
+    PlainTextEditor::instance().connect(SIGNAL(modificationChanged(bool)), this, SLOT(setWindowTitle(bool)));
+    PlainTextEditor::instance().connect(SIGNAL(canRedo(bool)), redoAction, SLOT(setEnabled(bool)));
+    PlainTextEditor::instance().connect(SIGNAL(canUndo(bool)), undoAction, SLOT(setEnabled(bool)));
+    PlainTextEditor::instance().connect(undoAction, SIGNAL(triggered()), SLOT(undo()));
+    PlainTextEditor::instance().connect(redoAction, SIGNAL(triggered()), SLOT(redo()));
 
     //Other things
     QApplication::setWindowIcon(QIcon(":/resource/icon/application_icon.png"));
@@ -190,7 +186,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::applySettings()
 {
-    m_editor->setFont(Preferences::instance().getDefaultFontEditor());
 }
 
 void MainWindow::createFile()
@@ -203,11 +198,11 @@ void MainWindow::createFile()
 
 void MainWindow::fileCreated()
 {
-    m_editor->setEnabled(true);
+    PlainTextEditor::instance().setEnabled(true);
     updateMenuEnable(true);
     setWindowTitle(false);
-    m_editor->document()->setModified(false);
-    m_editor->setFocus();
+    PlainTextEditor::instance().setModified(false);
+    PlainTextEditor::instance().setFocus();
 }
 
 void MainWindow::openMobiFile()
@@ -236,11 +231,11 @@ void MainWindow::openMobiFile()
 
 void MainWindow::fileOpened()
 {
-    m_editor->setEnabled(true);
+    PlainTextEditor::instance().setEnabled(true);
     updateMenuEnable(true);
     setWindowTitle(false);
-    m_editor->document()->setModified(false);
-    m_editor->setFocus();
+    PlainTextEditor::instance().setModified(false);
+    PlainTextEditor::instance().setFocus();
 }
 
 void MainWindow::saveFile()
@@ -282,13 +277,13 @@ void MainWindow::saveFileAs()
 void MainWindow::fileSaved()
 {
     setWindowTitle(false);
-    m_editor->document()->setModified(false);
+    PlainTextEditor::instance().setModified(false);
 }
 
 void MainWindow::closeFile()
 {
     Q_ASSERT(Book::instance().isFileOpened());
-    if (m_editor->document()->isModified()) {
+    if (PlainTextEditor::instance().isModified()) {
         QMessageBox::StandardButton answer = QMessageBox::question(this,
                 tr("File is not saved"),
                 tr("Do you want to save file now?"),
@@ -307,8 +302,8 @@ void MainWindow::closeFile()
 void MainWindow::fileClosed()
 {
     updateMenuEnable(false);
-    m_editor->setEnabled(false);
-    m_editor->document()->setModified(false);
+    PlainTextEditor::instance().setEnabled(false);
+    PlainTextEditor::instance().setModified(false);
     setWindowTitle(false);
 }
 

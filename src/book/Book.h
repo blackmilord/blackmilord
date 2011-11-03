@@ -29,16 +29,14 @@
 
 class QString;
 class QVariant;
-class PlainTextEditor;
 
 class Book : public QObject
 {
     Q_OBJECT
-    Book(PlainTextEditor *editor);
+    Book();
     ~Book();
 
 public:
-    static void createInstance(PlainTextEditor *editor);
     static Book& instance();
 
     //file management
@@ -51,14 +49,6 @@ public:
     //text accessors
     QString getText() const;
     void setText(const QString& text);
-    void replace(int position, int length, const QString &after);
-
-    //editor metadata
-    int getCursorPosition() const;
-    int getSelectionStart() const;
-    int getSelectionEnd() const;
-    bool hasSelection() const;
-    void clearSelection();
 
     //book metadata
     QVariant getMetadata(MetaData metadata) const;
@@ -69,10 +59,6 @@ public:
     QString getWhy() const;
 
 public slots:
-    void setCursorPosition(int position);
-    void setCursorPositionToStart();
-    void setCursorPositionToEnd();
-    void setSelection(int selectionStart, int selectionEnd);
     void setMetadata(MetaData metadata, const QVariant &data);
     void setWhy(const QString &why);
 
@@ -88,9 +74,6 @@ signals:
 
 private:
     void reset();
-
-    static Book *m_instance;
-    PlainTextEditor *m_editor;
 
     //book metadata
     QString m_author;

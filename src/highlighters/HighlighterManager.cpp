@@ -70,7 +70,7 @@ void HighlighterManager::applySettings()
 
 bool HighlighterManager::startLazyBlockHighlight(int blockNumber)
 {
-    QTextBlock block = m_editor->document()->findBlockByNumber(blockNumber);
+    QTextBlock block = m_editor->findBlockByNumber(blockNumber);
     if (NULL == block.userData()) {
         return false;
     }
@@ -96,7 +96,7 @@ void HighlighterManager::startBlockHighlight()
         m_inProgress = true;
         int blockIndex = m_queue.takeFirst();
         QApplication::postEvent(m_highlighterThread->getWorker(), new HighlightEvent(
-            blockIndex, m_editor->document()->findBlockByNumber(blockIndex).text()));
+            blockIndex, m_editor->findBlockByNumber(blockIndex).text()));
     }
     int blockCount = m_editor->blockCount();
     int firstVisible = m_editor->firstVisibleBlock();
@@ -117,14 +117,14 @@ void HighlighterManager::registerBlockToHighlight(int start, int end, bool impor
     if (m_editor->toPlainText().length() < end) {
         end = m_editor->toPlainText().length();
     }
-    const QTextBlock &firstBlock = m_editor->document()->findBlock(start);
-    const QTextBlock &lastBlock = m_editor->document()->findBlock(end);
+    const QTextBlock &firstBlock = m_editor->findBlock(start);
+    const QTextBlock &lastBlock = m_editor->findBlock(end);
     for (int i = firstBlock.blockNumber(); i <= lastBlock.blockNumber(); ++i) {
         if (important) {
             m_queue.push_back(i);
         }
         else {
-            QTextBlock block = m_editor->document()->findBlockByNumber(i);
+            QTextBlock block = m_editor->findBlockByNumber(i);
             if (NULL != block.userData()) {
                 block.setUserData(new BlockData());
             }
@@ -140,7 +140,7 @@ void HighlighterManager::cancelHighlighting()
     m_queue.clear();
     int blockCount = m_editor->blockCount();
     for (int i = 0; i < blockCount; ++i) {
-        QTextBlock block = m_editor->document()->findBlockByNumber(i);
+        QTextBlock block = m_editor->findBlockByNumber(i);
         if (NULL != block.userData()) {
             static_cast<BlockData*>(block.userData())->setNeedRehighlight(false);
         }
@@ -167,7 +167,7 @@ void HighlighterManager::rehighlight()
     m_queue.clear();
     int blockCount = m_editor->blockCount();
     for (int i = 0; i < blockCount; ++i) {
-        QTextBlock block = m_editor->document()->findBlockByNumber(i);
+        QTextBlock block = m_editor->findBlockByNumber(i);
         if (NULL == block.userData()) {
             block.setUserData(new BlockData());
         }
@@ -178,10 +178,11 @@ void HighlighterManager::rehighlight()
 
 void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighter::MultiFormatList &formatting)
 {
+    //TODO: TextEditor should provide API for highlighting,
+    //TODO: Blocking signal should be removed
     QSet<int> steps;
-    const QTextBlock &block = m_editor->document()->findBlockByNumber(blockIndex);
+    const QTextBlock &block = m_editor->findBlockByNumber(blockIndex);
     bool signalsBlockedEditor = m_editor->blockSignals(true);
-    bool signalsBlockedDocument = m_editor->document()->blockSignals(true);
     steps << 0 << block.text().length();
     foreach(const AbstractHighlighter::FormatList &formats, formatting) {
         foreach(const AbstractHighlighter::CharFormat &format, formats) {
@@ -223,7 +224,6 @@ void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighte
         cursor.setCharFormat(newFormat);
     }
     m_editor->blockSignals(signalsBlockedEditor);
-    m_editor->document()->blockSignals(signalsBlockedDocument);
 }
 
 QVector<AbstractHighlighter*> HighlighterManager::getHighlighters() const

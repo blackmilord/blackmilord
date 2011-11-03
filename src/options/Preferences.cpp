@@ -27,6 +27,7 @@
 #include <QDir>
 #include <QVariant>
 #include <QString>
+#include <QFont>
 #include <Version.h>
 
 void Preferences::saveLastUsedDirectory(const QString &dir)
@@ -40,12 +41,6 @@ void Preferences::setValue(PropertyName key, const QVariant &value)
 {
     Q_ASSERT(m_threadGuard == QThread::currentThread());
     m_settings->setValue(m_propertyMap[key], value);
-    if (key == PROP_EDITOR_FONT_FAMILY || key == PROP_EDITOR_FONT_SIZE) {
-        m_defaultFontEditor.setFamily(
-                getValue(PROP_EDITOR_FONT_FAMILY, "Arial").toString());
-        m_defaultFontEditor.setPointSize(
-                getValue(PROP_EDITOR_FONT_SIZE, 12).toInt());
-    }
     emit settingsChanged();
 }
 
@@ -55,10 +50,15 @@ QVariant Preferences::getValue(PropertyName key, const QVariant &defaultValue)
     return m_settings->value(m_propertyMap[key], defaultValue);
 }
 
-QFont Preferences::getDefaultFontEditor()
+QFont Preferences::getEditorFont()
 {
     Q_ASSERT(m_threadGuard == QThread::currentThread());
-    return m_defaultFontEditor;
+    QFont defaultFontEditor;
+    defaultFontEditor.setFamily(
+            getValue(PROP_EDITOR_FONT_FAMILY, "Arial").toString());
+    defaultFontEditor.setPointSize(
+            getValue(PROP_EDITOR_FONT_SIZE, 12).toInt());
+    return defaultFontEditor;
 }
 
 Preferences& Preferences::instance()
@@ -73,6 +73,8 @@ void Preferences::createDefaultConfig()
     setValue(PROP_HIGHLIGHTER_HTML_TAGS, false);
     setValue(PROP_MAKE_BACKUP_BEFORE_OVERWRITE, true);
     setValue(PROP_WINDOW_MAXIMIZED, false);
+    setValue(PROP_EDITOR_FONT_FAMILY, "Arial");
+    setValue(PROP_EDITOR_FONT_SIZE, 12);
 }
 
 void Preferences::initPropertiesMap()
@@ -97,24 +99,20 @@ Preferences::Preferences() :
     m_threadGuard(QThread::currentThread())
 {
     initPropertiesMap();
-    qDebug() << "Loading preferences...";
+    QString configFile;
 #ifdef Q_WS_X11
-    m_configFile = getenv("HOME");
-    m_configFile.append( "/.blackmilord/config.ini");
+    configFile = getenv("HOME");
+    configFile.append( "/.blackmilord/config.ini");
 #elif defined Q_WS_WIN
-    m_configFile = getenv("APPDATA");
-    m_configFile.append( "\\BlackMilord\\config.ini");
+    configFile = getenv("APPDATA");
+    configFile.append( "\\BlackMilord\\config.ini");
 #endif
-    qDebug() << "using config file" << m_configFile;
-    bool needDefault = !QFile::exists(m_configFile);
-    m_settings = new QSettings(m_configFile, QSettings::IniFormat);
+    qDebug() << "Using config file" << configFile;
+    bool needDefault = !QFile::exists(configFile);
+    m_settings = new QSettings(configFile, QSettings::IniFormat);
     if (needDefault) {
         createDefaultConfig();
     }
-    m_defaultFontEditor.setFamily(
-            getValue(PROP_EDITOR_FONT_FAMILY, "Arial").toString());
-    m_defaultFontEditor.setPointSize(
-            getValue(PROP_EDITOR_FONT_SIZE, 12).toInt());
     setValue(PROP_SETTINGS_VERSION, BLACK_MILORD_VERSION);
 }
 

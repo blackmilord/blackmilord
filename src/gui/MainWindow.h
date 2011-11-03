@@ -26,7 +26,6 @@
 #include <QVector>
 #include <AbstractHighlighter.h>
 
-class PlainTextEditor;
 class QString;
 class MobiFile;
 class HowToUseAspellWindow;
@@ -44,7 +43,6 @@ public:
     virtual ~MainWindow();
 
 private:
-    PlainTextEditor *m_editor;
     HowToUseAspellWindow *m_howToUseAspellWindow;
     SpellCheckingWindow *m_spellCheckingWindow;
     FindReplaceWindow *m_findReplaceWindow;

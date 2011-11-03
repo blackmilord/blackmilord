@@ -30,10 +30,7 @@
 #include <Preferences.h>
 #include "AbstractBook.h"
 
-Book* Book::m_instance = NULL;
-
-Book::Book(PlainTextEditor *editor) :
-    m_editor(editor)
+Book::Book()
 {
     reset();
 }
@@ -42,16 +39,10 @@ Book::~Book()
 {
 }
 
-void Book::createInstance(PlainTextEditor *editor)
-{
-    Q_ASSERT(m_instance == NULL);
-    m_instance = new Book(editor);
-}
-
 Book& Book::instance()
 {
-    Q_ASSERT(m_instance != NULL);
-    return *m_instance;
+    static Book instance;
+    return instance;
 }
 
 bool Book::openFile(const QString &fileName)
@@ -87,7 +78,7 @@ bool Book::saveFile()
 bool Book::closeFile()
 {
     setText("");
-    m_editor->clearRedoUndoHistory();
+    PlainTextEditor::instance().clearRedoUndoHistory();
     reset();
     emit fileClosed();
     return true;
@@ -203,93 +194,12 @@ void Book::setMetadata(MetaData metadata, const QVariant &data)
 
 QString Book::getText() const
 {
-    return m_editor->toPlainText();
-}
-
-void Book::replace(int position, int length, const QString &after)
-{
-    Q_ASSERT(position >= 0);
-    Q_ASSERT(position + length <= m_editor->toPlainText().length());
-
-    QTextCursor cursor = m_editor->textCursor();
-    cursor.setPosition(position);
-    cursor.setPosition(position + length, QTextCursor::KeepAnchor);
-    m_editor->setTextCursor(cursor);
-    cursor.insertText(after);
+    return PlainTextEditor::instance().toPlainText();
 }
 
 void Book::setText(const QString& text)
 {
-    const QString &old = getText();
-    if (old.length() != text.length() || old != text) {
-        QTextCursor cursor = m_editor->textCursor();
-        cursor.select(QTextCursor::Document);
-        m_editor->setTextCursor(cursor);
-        cursor.insertText(text);
-    }
-}
-
-int Book::getCursorPosition() const
-{
-    return m_editor->textCursor().position();
-}
-
-void Book::setCursorPosition(int position)
-{
-    if (getCursorPosition() != position) {
-        QTextCursor cursor = m_editor->textCursor();
-        cursor.setPosition(position);
-        m_editor->setTextCursor(cursor);
-    }
-}
-
-void Book::setCursorPositionToStart()
-{
-    QTextCursor cursor = m_editor->textCursor();
-    cursor.movePosition(QTextCursor::Start);
-    m_editor->setTextCursor(cursor);
-}
-
-void Book::setCursorPositionToEnd()
-{
-    QTextCursor cursor = m_editor->textCursor();
-    cursor.movePosition(QTextCursor::End);
-    m_editor->setTextCursor(cursor);
-}
-
-int Book::getSelectionStart() const
-{
-    Q_ASSERT(hasSelection());
-    return m_editor->textCursor().selectionStart();
-}
-
-int Book::getSelectionEnd() const
-{
-    Q_ASSERT(hasSelection());
-    return m_editor->textCursor().selectionEnd();
-}
-
-bool Book::hasSelection() const
-{
-    return m_editor->textCursor().hasSelection();
-}
-
-void Book::setSelection(int selectionStart, int selectionEnd)
-{
-    QTextCursor cursor = m_editor->textCursor();
-    int oldSelectionStart = cursor.selectionStart();
-    int oldSelectionEnd = cursor.selectionEnd();
-    Q_ASSERT(selectionStart >= 0 && selectionEnd >= 0);
-    if (oldSelectionStart != selectionStart || oldSelectionEnd != selectionEnd) {
-        cursor.setPosition(selectionStart);
-        cursor.setPosition(selectionEnd, QTextCursor::KeepAnchor);
-        m_editor->setTextCursor(cursor);
-    }
-}
-
-void Book::clearSelection()
-{
-    m_editor->textCursor().clearSelection();
+    PlainTextEditor::instance().setPlainText(text);
 }
 
 QString Book::getFileName() const
