@@ -30,6 +30,7 @@
 #include <QIODevice>
 #include <QTemporaryFile>
 #include <QDateTime>
+#include <QPixmap>
 
 #include <Preferences.h>
 #include <Book.h>
@@ -311,8 +312,28 @@ QList<QByteArray> MobiFileObject::prepareTextRecords() const
     return textRecords;
 }
 
-bool MobiFileObject::readImageRecords(QDataStream &/*data*/)
+bool MobiFileObject::readImageRecords(QDataStream &data)
 {
+    bool loaded;
+    int count = 0;
+    int record = m_MOBIHeader.getFirstImageRecordIndex();
+    do {
+        data.device()->seek(m_databaseHeader.getRecordOffset(record));
+        quint32 length = m_databaseHeader.getRecordLength(record);
+        QByteArray imageData = data.device()->read(length);
+        if (imageData.size() != static_cast<int>(length)) {
+            return false;
+        }
+        QPixmap image;
+        loaded = image.loadFromData(imageData);
+        if (loaded) {
+            //TODO: store image
+            ++count;
+        }
+        ++record;
+        Q_UNUSED(image);
+    } while (loaded);
+    qDebug() << "loaded" << count << "images.";
     return true;
 }
 

@@ -19,78 +19,20 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BLACK_MILORD_BOOK_H
-#define BLACK_MILORD_BOOK_H
+#ifndef BLACK_MILORD_PICTURE_VIEWER_WINDOW_H
+#define BLACK_MILORD_PICTURE_VIEWER_WINDOW_H
 
-#include <QDateTime>
-#include <MobiFileObject.h>
-#include "BackupManager.h"
-#include "MetadataEnum.h"
+#include <QDialog>
 
-class QString;
-class QVariant;
-
-class Book : public QObject
+class PictureViewerWindow : public QDialog
 {
     Q_OBJECT
-    Book();
-    ~Book();
-
 public:
-    static Book& instance();
-
-    //file management
-    bool openFile(const QString &fileName);
-    bool saveFile();
-    bool closeFile();
-    bool newFile();
-    bool isFileOpened();
-
-    //text accessors
-    QString getText() const;
-    void setText(const QString& text);
-
-    //book metadata
-    QVariant getMetadata(MetaData metadata) const;
-
-    QString getFileName() const;
-    void setFileName(const QString fileName);
-
-    QString getWhy() const;
-
-public slots:
-    void setMetadata(MetaData metadata, const QVariant &data);
-    void setWhy(const QString &why);
-
-signals:
-    void fileLoaded();
-    void fileSaved();
-    void fileClosed();
-    void fileCreated();
-    void textChanged();
-    void metadataChanged();
+    explicit PictureViewerWindow(QWidget *parent = 0);
+    virtual ~PictureViewerWindow();
 
 private:
-    void reset();
 
-    //book metadata
-    QString m_author;
-    QString m_publisher;
-    QString m_description;
-    QString m_isbn;
-    QString m_subject;
-    quint16 m_version;
-    QDateTime m_creationDate;
-    QDateTime m_modificationDate;
-    QDateTime m_lastBackupDate;
-    quint32 m_modificationNumber;
-
-    //internal metadata
-    bool m_fileOpened;
-    QString m_fileName;
-    QString m_why;
-
-    BackupManager m_backupManager;
 };
 
-#endif /* BLACK_MILORD_BOOK_H */
+#endif /* BLACK_MILORD_PICTURE_VIEWER_WINDOW_H */

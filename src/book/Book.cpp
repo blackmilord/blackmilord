@@ -30,6 +30,8 @@
 #include <Preferences.h>
 #include "AbstractBook.h"
 
+//TODO: emit textChanged when text changes
+
 Book::Book()
 {
     reset();
