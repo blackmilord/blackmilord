@@ -103,7 +103,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     undoAction->setEnabled(false);
 
     QAction *redoAction = menu->addAction(tr("&Redo"));
-    undoAction->setShortcut(QKeySequence::Redo);
+    redoAction->setShortcut(QKeySequence::Redo);
     redoAction->setEnabled(false);
 
     menu->addSeparator();
