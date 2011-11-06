@@ -34,6 +34,7 @@ class FindReplaceWindow;
 class OptionsWindow;
 class MetaDataWindow;
 class AboutWindow;
+class PictureViewerWindow;
 
 class MainWindow : public QMainWindow
 {
@@ -49,6 +50,7 @@ private:
     OptionsWindow *m_optionsWindow;
     MetaDataWindow *m_metadataWindow;
     AboutWindow *m_aboutWindow;
+    PictureViewerWindow *m_pictureViewerWindow;
 
     void resizeEvent(QResizeEvent *event);
     void moveEvent(QMoveEvent *event);
@@ -74,6 +76,7 @@ private slots:
     void showOptionsWindow();
     void showMetadataWindow();
     void showAboutWindow();
+    void showPictureViewerWindow();
     void setWindowTitle(bool modified);
     void quit();
 };

@@ -112,8 +112,8 @@ SpellCheckingWindow::SpellCheckingWindow(QWidget *parent) :
     PlainTextEditor::instance().connect(SIGNAL(contentsChanged()), this, SLOT(editorTextChanged()));
 
     setLayout(layout);
-    setWindowTitle(tr("Spelling"));
-    setWindowIcon(QIcon(":/resource/icon/menu_check_spelling.png"));
+    setWindowTitle(tr("Spell check"));
+    setWindowIcon(QIcon(":/resource/icon/menu_spell_check.png"));
 }
 
 SpellCheckingWindow::~SpellCheckingWindow()

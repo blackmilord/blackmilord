@@ -23,9 +23,10 @@
 #define BLACK_MILORD_BOOK_H
 
 #include <QDateTime>
+#include <QList>
 #include <MobiFileObject.h>
-#include "BackupManager.h"
 #include "MetadataEnum.h"
+#include "BookPicture.h"
 
 class QString;
 class QVariant;
@@ -49,6 +50,10 @@ public:
     //text accessors
     QString getText() const;
     void setText(const QString& text);
+    //pictures accessors
+    int getPicturesCount() const;
+    void addPicture(const BookPicture & picture);
+    BookPicture getPicture(int index) const;
 
     //book metadata
     QVariant getMetadata(MetaData metadata) const;
@@ -74,6 +79,7 @@ private:
     void reset();
 
     //book metadata
+    QList<BookPicture> m_pictures;
     QString m_author;
     QString m_publisher;
     QString m_description;
@@ -89,8 +95,6 @@ private:
     bool m_fileOpened;
     QString m_fileName;
     QString m_why;
-
-    BackupManager m_backupManager;
 };
 
 #endif /* BLACK_MILORD_BOOK_H */

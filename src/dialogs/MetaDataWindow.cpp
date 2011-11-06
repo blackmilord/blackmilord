@@ -86,7 +86,7 @@ MetaDataWindow::MetaDataWindow(QWidget *parent) :
     setMinimumHeight(300);
     setMinimumWidth(300);
     setWindowTitle(tr("Metadata editor"));
-
+    setWindowIcon(QIcon(":/resource/icon/menu_metadata.png"));
     metadataChanged();
 }
 

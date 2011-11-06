@@ -29,7 +29,7 @@ class BackupManager
 public:
     BackupManager();
     virtual ~BackupManager();
-    bool create(const QString &fileName);
+    static bool create(const QString &fileName);
 };
 
 #endif /* BLACK_MILORD_BACKUP_MANAGER_H */

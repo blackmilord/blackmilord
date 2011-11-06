@@ -19,39 +19,61 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BLACK_MILORD_PICTURE_VIEWER_WINDOW_H
-#define BLACK_MILORD_PICTURE_VIEWER_WINDOW_H
+#include "BookPicture.h"
+#include <QPixmap>
 
-#include <QDialog>
-
-class QGraphicsScene;
-class QGraphicsView;
-class QPixmap;
-class QListWidget;
-class QString;
-
-class PictureViewerWindow : public QDialog
+BookPicture::BookPicture(const QPixmap &picture) :
+    m_original(NULL),
+    m_current(new QPixmap(picture))
 {
-    Q_OBJECT
-public:
-    explicit PictureViewerWindow(QWidget *parent = 0);
-    virtual ~PictureViewerWindow();
+}
 
-protected:
-    void showEvent(QShowEvent *event);
+BookPicture::~BookPicture()
+{
+}
 
-private:
-    QGraphicsScene *m_graphicsScene;
-    QGraphicsView *m_graphicsView;
-    QListWidget *m_contentsWidget;
 
-    void showImage(const QPixmap &image);
-    void showText(const QString &text);
-    inline void clearView();
+const QPixmap* BookPicture::getOriginalPicture() const
+{
+    return m_original.isNull() ? m_current.data() : m_original.data();
+}
 
-private slots:
-    void reloadImageList();
-    void currentRowChanged(int currentRow);
-};
+const QPixmap* BookPicture::getCurrentPicture() const
+{
+    return m_current.data();
+}
 
-#endif /* BLACK_MILORD_PICTURE_VIEWER_WINDOW_H */
+void BookPicture::setPicture(const QPixmap &picture)
+{
+    if (m_original.isNull()) {
+        m_original = m_current;
+    }
+    m_current = QSharedPointer<QPixmap>(new QPixmap(picture));
+}
+
+bool BookPicture::isModified() const
+{
+    //This only tells setPicture was called. Images may be exactly the same.
+    //For more reasons this should be checked in setPicture if picture is still the same and ignore storing.
+    return m_original.data() != m_current.data();
+}
+
+QString BookPicture::getHtmlIndex() const
+{
+    return m_htmlIndex;
+}
+
+void BookPicture::setHtmlIndex(const QString &htmlIndex)
+{
+    m_htmlIndex = htmlIndex;
+}
+
+QString BookPicture::getFilePath() const
+{
+    return m_filePath;
+}
+
+void BookPicture::setFilePath(const QString &filePath)
+{
+    m_filePath = filePath;
+}

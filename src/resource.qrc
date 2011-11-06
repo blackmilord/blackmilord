@@ -13,7 +13,11 @@
         <file>resource/icon/menu_save_as.png</file>
         <file>resource/icon/menu_settings.png</file>
         <file>resource/icon/menu_find_and_replace.png</file>
-        <file>resource/icon/menu_check_spelling.png</file>
+        <file>resource/icon/menu_spell_check.png</file>
+        <file>resource/icon/menu_metadata.png</file>
+        <file>resource/icon/menu_images.png</file>
+        <file>resource/icon/menu_redo.png</file>
+        <file>resource/icon/menu_undo.png</file>
 
         <file>device/kindle3/HtmlValidation.def</file>
 

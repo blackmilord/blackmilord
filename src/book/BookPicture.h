@@ -19,39 +19,33 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BLACK_MILORD_PICTURE_VIEWER_WINDOW_H
-#define BLACK_MILORD_PICTURE_VIEWER_WINDOW_H
+#ifndef BLACK_MILORD_BOOK_PICTURE_H
+#define BLACK_MILORD_BOOK_PICTURE_H
 
-#include <QDialog>
+#include <QString>
+#include <QSharedPointer>
 
-class QGraphicsScene;
-class QGraphicsView;
 class QPixmap;
-class QListWidget;
-class QString;
 
-class PictureViewerWindow : public QDialog
+class BookPicture
 {
-    Q_OBJECT
 public:
-    explicit PictureViewerWindow(QWidget *parent = 0);
-    virtual ~PictureViewerWindow();
-
-protected:
-    void showEvent(QShowEvent *event);
+    explicit BookPicture(const QPixmap &picture);
+    virtual ~BookPicture();
+    const QPixmap* getOriginalPicture() const;
+    const QPixmap* getCurrentPicture() const;
+    void setPicture(const QPixmap &picture);
+    bool isModified() const;
+    QString getHtmlIndex() const;
+    void setHtmlIndex(const QString &htmlIndex);
+    QString getFilePath() const;
+    void setFilePath(const QString &filePath);
 
 private:
-    QGraphicsScene *m_graphicsScene;
-    QGraphicsView *m_graphicsView;
-    QListWidget *m_contentsWidget;
-
-    void showImage(const QPixmap &image);
-    void showText(const QString &text);
-    inline void clearView();
-
-private slots:
-    void reloadImageList();
-    void currentRowChanged(int currentRow);
+    QSharedPointer<QPixmap> m_original;
+    QSharedPointer<QPixmap> m_current;
+    QString m_htmlIndex;
+    QString m_filePath;
 };
 
-#endif /* BLACK_MILORD_PICTURE_VIEWER_WINDOW_H */
+#endif /* BLACK_MILORD_BOOK_PICTURE_H */

@@ -29,6 +29,7 @@
 #include <PlainTextEditor.h>
 #include <Preferences.h>
 #include "AbstractBook.h"
+#include "BackupManager.h"
 
 //TODO: emit textChanged when text changes
 
@@ -65,7 +66,7 @@ bool Book::saveFile()
         return false;
     }
     if (QFile::exists(m_fileName) && Preferences::instance().getValue(Preferences::PROP_MAKE_BACKUP_BEFORE_OVERWRITE, true).toBool()) {
-        if (!m_backupManager.create(m_fileName)) {
+        if (!BackupManager::create(m_fileName)) {
             m_why = tr("Cannot create backup file.");
             return false;
         }
@@ -101,6 +102,7 @@ void Book::reset()
 {
     m_fileOpened = false;
 
+    m_pictures.clear();
     m_author.clear();
     m_publisher.clear();
     m_description.clear();
@@ -202,6 +204,22 @@ QString Book::getText() const
 void Book::setText(const QString& text)
 {
     PlainTextEditor::instance().setPlainText(text);
+}
+
+int Book::getPicturesCount() const
+{
+    return m_pictures.size();
+}
+
+void Book::addPicture(const BookPicture & picture)
+{
+    m_pictures.push_back(picture);
+}
+
+BookPicture Book::getPicture(int index) const
+{
+    Q_ASSERT(index >= 0 && index < m_pictures.size());
+    return m_pictures[index];
 }
 
 QString Book::getFileName() const

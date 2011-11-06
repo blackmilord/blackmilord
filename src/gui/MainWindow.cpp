@@ -41,6 +41,7 @@
 #include <OptionsWindow.h>
 #include <MetaDataWindow.h>
 #include <AboutWindow.h>
+#include <PictureViewerWindow.h>
 #include <Preferences.h>
 
 namespace {
@@ -54,7 +55,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     m_findReplaceWindow(NULL),
     m_optionsWindow(NULL),
     m_metadataWindow(NULL),
-    m_aboutWindow(NULL)
+    m_aboutWindow(NULL),
+    m_pictureViewerWindow(NULL)
 {
     //Widgets
     QWidget *centralWidget = new QWidget(this);
@@ -66,70 +68,62 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     setCentralWidget(centralWidget);
 
     //Menu
+    //File
     QMenu *menu = menuBar()->addMenu(tr("&File"));
     QAction *action;
     action = menu->addAction(QIcon(":/resource/icon/menu_new.png"), tr("&New"), this,
             SLOT(createFile()), QKeySequence::New);
-
     menu->addSeparator();
     QMenu *submenu = menu->addMenu(QIcon(":/resource/icon/menu_import.png"), "&Import");
-
     action = submenu->addAction(tr("&Open Mobi file"), this,
             SLOT(openMobiFile()), QKeySequence::Open);
-
     menu->addSeparator();
-
     action = menu->addAction(QIcon(":/resource/icon/menu_save.png"), tr("&Save"), this,
             SLOT(saveFile()), QKeySequence::Save);
     action->setObjectName("enable_on_open");
-
     action = menu->addAction(QIcon(":/resource/icon/menu_save_as.png"), tr("&Save As..."), this,
             SLOT(saveFileAs()), QKeySequence::SaveAs);
     action->setObjectName("enable_on_open");
-
     action = menu->addAction(tr("&Close"), this,
             SLOT(closeFile()), QKeySequence::Close);
     action->setObjectName("enable_on_open");
-
     menu->addSeparator();
-
     menu->addAction(QIcon(":/resource/icon/menu_exit.png"), tr("E&xit"), this,
             SLOT(quit()), QKeySequence::Quit);
-
+    //Edit
     menu = menuBar()->addMenu(tr("&Edit"));
-
-    QAction *undoAction = menu->addAction(tr("&Undo"));
+    QAction *undoAction = menu->addAction(QIcon(":/resource/icon/menu_undo.png"), tr("&Undo"));
     undoAction->setShortcut(QKeySequence::Undo);
     undoAction->setEnabled(false);
-
-    QAction *redoAction = menu->addAction(tr("&Redo"));
+    QAction *redoAction = menu->addAction(QIcon(":/resource/icon/menu_redo.png"), tr("&Redo"));
     redoAction->setShortcut(QKeySequence::Redo);
     redoAction->setEnabled(false);
-
     menu->addSeparator();
-
-    action = menu->addAction(tr("Metadata"), this, SLOT(showMetadataWindow()));
+    action = menu->addAction(QIcon(":/resource/icon/menu_find_and_replace.png"), "&Find and Replace",
+            this, SLOT(showFindReplaceWindow()), QKeySequence::Find);
     action->setObjectName("enable_on_open");
-
-    menu->addSeparator();
-
-    action = menu->addAction(QIcon(":/resource/icon/menu_find_and_replace.png"), "&Find and Replace", this,
-            SLOT(showFindReplaceWindow()), QKeySequence::Find);
-    action->setObjectName("enable_on_open");
-
     if (ASpellWrapper::instance().isLoaded()) {
-        action = menu->addAction(QIcon(":/resource/icon/menu_check_spelling.png"), tr("Check &spelling"), this,
-                SLOT(showSpellCheckingWindow()), QKeySequence(Qt::Key_F7));
+        action = menu->addAction(QIcon(":/resource/icon/menu_spell_check.png"), tr("&Spell check "),
+                this, SLOT(showSpellCheckingWindow()), QKeySequence(Qt::Key_F7));
         action->setObjectName("enable_on_open");
     }
     else {
         menu->addAction(tr("How to use Aspell..."),
                 this, SLOT(showHowToUseAspellWindow()));
     }
-
+    //Book
+    menu = menuBar()->addMenu(tr("&Book"));
+    action = menu->addAction(QIcon(":/resource/icon/menu_metadata.png"), tr("&Metadata"),
+            this, SLOT(showMetadataWindow()));
+    action->setObjectName("enable_on_open");
+    action = menu->addAction(QIcon(":/resource/icon/menu_images.png"), tr("&Images"),
+            this, SLOT(showPictureViewerWindow()));
+    action->setObjectName("enable_on_open");
+    //Options
     menu = menuBar()->addMenu(tr("&Options"));
-    menu->addAction(QIcon(":/resource/icon/menu_settings.png"), "&Settings", this, SLOT(showOptionsWindow()));
-
+    menu->addAction(QIcon(":/resource/icon/menu_settings.png"), "&Settings",
+            this, SLOT(showOptionsWindow()));
+    //Help
     menu = menuBar()->addMenu(tr("&Help"));
     menu->addAction("&About", this, SLOT(showAboutWindow()));
 
@@ -356,6 +350,14 @@ void MainWindow::showAboutWindow()
         m_aboutWindow = new AboutWindow(this);
     }
     m_aboutWindow->show();
+}
+
+void MainWindow::showPictureViewerWindow()
+{
+    if (!m_pictureViewerWindow) {
+        m_pictureViewerWindow = new PictureViewerWindow(this);
+    }
+    m_pictureViewerWindow->show();
 }
 
 void MainWindow::setWindowTitle(bool modified)

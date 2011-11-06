@@ -327,7 +327,7 @@ bool MobiFileObject::readImageRecords(QDataStream &data)
         QPixmap image;
         loaded = image.loadFromData(imageData);
         if (loaded) {
-            //TODO: store image
+            Book::instance().addPicture(BookPicture(image));
             ++count;
         }
         ++record;
