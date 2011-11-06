@@ -94,9 +94,12 @@ void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
     action->setEnabled(m_undoStack.canRedo());
 
     menu->addSeparator();
-    menu->addAction(tr("Copy"), this, SLOT(copy()), QKeySequence::Copy);
-    menu->addAction(tr("Cut"), this, SLOT(cut()), QKeySequence::Cut);
-    menu->addAction(tr("Paste"), this, SLOT(paste()), QKeySequence::Paste);
+    action = menu->addAction(tr("Copy"), this, SLOT(copy()), QKeySequence::Copy);
+    action->setEnabled(hasSelection());
+    action = menu->addAction(tr("Cut"), this, SLOT(cut()), QKeySequence::Cut);
+    action->setEnabled(hasSelection());
+    action = menu->addAction(tr("Paste"), this, SLOT(paste()), QKeySequence::Paste);
+    action->setEnabled(canPaste());
 
     menu->addSeparator();
     menu->addAction(tr("Select All"), this, SLOT(selectAll()), QKeySequence::SelectAll);
