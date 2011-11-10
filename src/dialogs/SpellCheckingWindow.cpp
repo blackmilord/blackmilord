@@ -34,6 +34,7 @@
 #include <QMessageBox>
 #include <QCoreApplication>
 
+#include <Gui.h>
 #include <PlainTextEditor.h>
 #include <Dictionary.h>
 #include <AspellWrapper.h>
@@ -109,7 +110,7 @@ SpellCheckingWindow::SpellCheckingWindow(QWidget *parent) :
     connect(m_changeAllButton, SIGNAL(released()), this, SLOT(changeAll()));
     connect(m_textContext, SIGNAL(textChanged()), this, SLOT(textContextChanged()));
     connect(m_language, SIGNAL(currentIndexChanged(int)), this, SLOT(changeLanguage(int)));
-    PlainTextEditor::instance().connect(SIGNAL(contentsChanged()), this, SLOT(editorTextChanged()));
+    Gui::plainTextEditor()->connect(SIGNAL(contentsChanged()), this, SLOT(editorTextChanged()));
 
     setLayout(layout);
     setWindowTitle(tr("Spell check"));
@@ -130,7 +131,7 @@ void SpellCheckingWindow::findNextWord()
 
     do {
         do {
-            m_finder->setPosition(PlainTextEditor::instance().getCursorPosition());
+            m_finder->setPosition(Gui::plainTextEditor()->getCursorPosition());
 
             //find beginning of the word
             startPos = m_finder->toNextBoundary();
@@ -145,7 +146,7 @@ void SpellCheckingWindow::findNextWord()
                     close();
                     return;
                 }
-                PlainTextEditor::instance().setCursorPosition(0);
+                Gui::plainTextEditor()->setCursorPosition(0);
                 insideTag = false;
                 resetToBegin = true;
                 continue;
@@ -159,7 +160,7 @@ void SpellCheckingWindow::findNextWord()
             endPos = m_finder->toNextBoundary();
 
             //move cursor to current word
-            PlainTextEditor::instance().setCursorPosition(endPos);
+            Gui::plainTextEditor()->setCursorPosition(endPos);
 
             word = m_finder->string().mid(startPos, endPos - startPos);
             //qDebug() << word;
@@ -272,10 +273,10 @@ void SpellCheckingWindow::addToDictionary()
 void SpellCheckingWindow::change()
 {
     if (m_editMode) {
-        qDebug() << PlainTextEditor::instance().toPlainText().mid(m_sentenceStartPos, m_sentenceEndPos - m_sentenceStartPos) <<
+        qDebug() << Gui::plainTextEditor()->toPlainText().mid(m_sentenceStartPos, m_sentenceEndPos - m_sentenceStartPos) <<
                     "replaced by" <<
                     m_textContext->toPlainText();
-        PlainTextEditor::instance().replace(
+        Gui::plainTextEditor()->replace(
             m_sentenceStartPos,
             m_sentenceEndPos - m_sentenceStartPos,
             m_textContext->toPlainText());
@@ -289,10 +290,10 @@ void SpellCheckingWindow::change()
         QString replacement = m_suggestions->data(indexes.first(),
                 Qt:: DisplayRole).toString();
 
-        qDebug() << PlainTextEditor::instance().toPlainText().mid(m_wordStartPos, m_wordEndPos - m_wordStartPos) <<
+        qDebug() << Gui::plainTextEditor()->toPlainText().mid(m_wordStartPos, m_wordEndPos - m_wordStartPos) <<
                     "replaced by" <<
                     replacement;
-        PlainTextEditor::instance().replace(
+        Gui::plainTextEditor()->replace(
             m_wordStartPos,
             m_wordEndPos - m_wordStartPos,
             replacement);
@@ -315,18 +316,18 @@ void SpellCheckingWindow::changeAll()
             Qt::DisplayRole).toString();
 
 
-    int originalPos = PlainTextEditor::instance().getCursorPosition() - m_currentWord.length();
+    int originalPos = Gui::plainTextEditor()->getCursorPosition() - m_currentWord.length();
 
     QString pattern = "\\b" + m_currentWord + "\\b";
     QRegExp rx(pattern);
     rx.setMinimal(true);
-    int position = PlainTextEditor::instance().toPlainText().indexOf(rx, originalPos);
+    int position = Gui::plainTextEditor()->toPlainText().indexOf(rx, originalPos);
     while (position != -1) {
-        PlainTextEditor::instance().replace(position, rx.matchedLength(), replacement);
-        position = PlainTextEditor::instance().toPlainText().indexOf(rx, position + replacement.length());
+        Gui::plainTextEditor()->replace(position, rx.matchedLength(), replacement);
+        position = Gui::plainTextEditor()->toPlainText().indexOf(rx, position + replacement.length());
     }
 
-    PlainTextEditor::instance().setCursorPosition(originalPos);
+    Gui::plainTextEditor()->setCursorPosition(originalPos);
     findNextWord();
 }
 
@@ -336,7 +337,7 @@ void SpellCheckingWindow::showEvent(QShowEvent *event)
     loadLanguages();
 
     delete m_finder;
-    m_finder = new QTextBoundaryFinder(QTextBoundaryFinder::Word, PlainTextEditor::instance().toPlainText());
+    m_finder = new QTextBoundaryFinder(QTextBoundaryFinder::Word, Gui::plainTextEditor()->toPlainText());
 
     m_textContext->blockSignals(true);
     m_textContext->clear();
@@ -364,7 +365,7 @@ void SpellCheckingWindow::editorTextChanged()
         qDebug() << "editor text changed, recreating QTextBoundaryFinder";
         delete m_finder;
         m_finder = new QTextBoundaryFinder(QTextBoundaryFinder::Word,
-                PlainTextEditor::instance().toPlainText());
+                Gui::plainTextEditor()->toPlainText());
     }
 }
 

@@ -40,7 +40,9 @@ INCLUDEPATH +=  . \
                 gui
 
 SOURCES += main.cpp
+SOURCES += gui/Gui.cpp
 SOURCES += gui/MainWindow.cpp
+SOURCES += gui/StatusBar.cpp
 SOURCES += gui/PlainTextEditor.cpp
 SOURCES += gui/PlainTextEditorUndoStack.cpp
 SOURCES += book/Book.cpp
@@ -78,7 +80,9 @@ SOURCES += options/Preferences.cpp
 SOURCES += device/DeviceConfiguration.cpp
 
 HEADERS += Version.h
+HEADERS += gui/Gui.h
 HEADERS += gui/MainWindow.h
+HEADERS += gui/StatusBar.h
 HEADERS += gui/PlainTextEditor.h
 HEADERS += gui/PlainTextEditorUndoStack.h
 HEADERS += book/Book.h

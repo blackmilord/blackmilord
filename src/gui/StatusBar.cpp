@@ -19,24 +19,24 @@
  *                                                                      *
  ************************************************************************/
 
-#include <QApplication>
-#include <QDebug>
-#include <MainWindow.h>
-#include <Book.h>
+#include "StatusBar.h"
+#include <QLabel>
 
-void processArguments(int argc, char *argv[])
+StatusBar::StatusBar(QWidget *parent) :
+    QStatusBar(parent),
+    m_statusBarDocLength(new QLabel())
 {
-    if (argc > 1) {
-        Book::instance().openFile(argv[1]);
-    }
+    addPermanentWidget(m_statusBarDocLength);
+    m_statusBarDocLength->setText("0");
+    m_statusBarDocLength->setMinimumWidth(30);
+    m_statusBarDocLength->setAlignment(Qt::AlignRight);
 }
 
-int main(int argc, char *argv[])
+StatusBar::~StatusBar()
 {
-    QApplication app(argc, argv);
-    app.setAttribute(Qt::AA_DontShowIconsInMenus, false);
-    MainWindow main;
-    main.show();
-    processArguments(argc, argv);
-    return app.exec();
+}
+
+void StatusBar::setStatusBarDocLength(const QString &length)
+{
+    m_statusBarDocLength->setText(length);
 }

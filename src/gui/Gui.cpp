@@ -19,24 +19,34 @@
  *                                                                      *
  ************************************************************************/
 
-#include <QApplication>
-#include <QDebug>
-#include <MainWindow.h>
-#include <Book.h>
+#include <PlainTextEditor.h>
+#include <StatusBar.h>
 
-void processArguments(int argc, char *argv[])
+#include "Gui.h"
+
+PlainTextEditor* Gui::m_editor = NULL;
+StatusBar* Gui::m_statusBar = NULL;
+
+PlainTextEditor* Gui::plainTextEditor()
 {
-    if (argc > 1) {
-        Book::instance().openFile(argv[1]);
-    }
+    Q_ASSERT(NULL != m_editor);
+    return m_editor;
 }
 
-int main(int argc, char *argv[])
+void Gui::setPlainTextEditor(PlainTextEditor *editor)
 {
-    QApplication app(argc, argv);
-    app.setAttribute(Qt::AA_DontShowIconsInMenus, false);
-    MainWindow main;
-    main.show();
-    processArguments(argc, argv);
-    return app.exec();
+    Q_ASSERT(NULL == m_editor);
+    m_editor = editor;
+}
+
+StatusBar* Gui::statusBar()
+{
+    Q_ASSERT(NULL != m_statusBar);
+    return m_statusBar;
+}
+
+void Gui::setStatusBar(StatusBar *statusBar)
+{
+    Q_ASSERT(NULL == m_statusBar);
+    m_statusBar = statusBar;
 }

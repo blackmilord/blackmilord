@@ -32,12 +32,9 @@ class PlainTextEditor :
     protected QPlainTextEdit
 {
     Q_OBJECT
-
+public:
     explicit PlainTextEditor(QWidget * parent = 0);
     virtual ~PlainTextEditor();
-
-public:
-    static PlainTextEditor& instance();
 
     int firstVisibleBlock() const;
 
@@ -70,7 +67,8 @@ public:
     void setModified(bool modified);
     bool isModified() const;
 
-    void addToLayout(QLayout *layout);
+    QWidget* asWidget();
+    QObject* asObject();
     void connect(const char *signal, const QObject *receiver,
             const char *method, Qt::ConnectionType type = Qt::AutoConnection);
     void connect(const QObject *sender, const char *signal,

@@ -26,6 +26,7 @@
 #include <QVariant>
 #include <QTextCursor>
 
+#include <Gui.h>
 #include <PlainTextEditor.h>
 #include <Preferences.h>
 #include "AbstractBook.h"
@@ -81,7 +82,7 @@ bool Book::saveFile()
 bool Book::closeFile()
 {
     setText("");
-    PlainTextEditor::instance().clearRedoUndoHistory();
+    Gui::plainTextEditor()->clearRedoUndoHistory();
     reset();
     emit fileClosed();
     return true;
@@ -198,12 +199,12 @@ void Book::setMetadata(MetaData metadata, const QVariant &data)
 
 QString Book::getText() const
 {
-    return PlainTextEditor::instance().toPlainText();
+    return Gui::plainTextEditor()->toPlainText();
 }
 
 void Book::setText(const QString& text)
 {
-    PlainTextEditor::instance().setPlainText(text);
+    Gui::plainTextEditor()->setPlainText(text);
 }
 
 int Book::getPicturesCount() const

@@ -20,15 +20,18 @@
  ************************************************************************/
 
 #include "PlainTextEditor.h"
+#include "Gui.h"
+#include "StatusBar.h"
 #include <QDebug>
 #include <QMenu>
 #include <QLayout>
+#include <QApplication>
+#include <QTextCursor>
+#include <QTextDocument>
 
 #include <AspellWrapper.h>
 #include <HighlighterManager.h>
 #include <Book.h>
-#include <qtextcursor.h>
-#include <qtextdocument.h>
 
 PlainTextEditor::PlainTextEditor(QWidget * parent) :
     QPlainTextEdit(parent),
@@ -46,14 +49,6 @@ PlainTextEditor::PlainTextEditor(QWidget * parent) :
 
 PlainTextEditor::~PlainTextEditor()
 {
-    //this is the place where instance should be deleted, but
-    //qt handle it itself when instance is set as a child of other QObject.
-}
-
-PlainTextEditor& PlainTextEditor::instance()
-{
-    static PlainTextEditor *instance = new PlainTextEditor();
-    return *instance;
 }
 
 int PlainTextEditor::firstVisibleBlock() const
@@ -151,6 +146,7 @@ void PlainTextEditor::clearRedoUndoHistory()
 
 void PlainTextEditor::contentsChangedSlot()
 {
+    Gui::statusBar()->setStatusBarDocLength(QString::number(toPlainText().size()));
     emit contentsChanged();
     if (toPlainText().isEmpty()) {
         HighlighterManagerFactory::instance().cancelHighlighting();
@@ -359,7 +355,13 @@ bool PlainTextEditor::isModified() const
     return document()->isModified();
 }
 
-void PlainTextEditor::addToLayout(QLayout *layout)
+QWidget* PlainTextEditor::asWidget()
 {
-    layout->addWidget(this);
+    return static_cast<QWidget*>(this);
 }
+
+QObject* PlainTextEditor::asObject()
+{
+    return static_cast<QObject*>(this);
+}
+

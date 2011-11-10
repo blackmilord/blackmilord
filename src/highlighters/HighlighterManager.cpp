@@ -77,8 +77,8 @@ bool HighlighterManager::startLazyBlockHighlight(int blockNumber)
     if (static_cast<BlockData*>(block.userData())->needRehighlight()) {
         static_cast<BlockData*>(block.userData())->setNeedRehighlight(false);
         m_inProgress = true;
-        QApplication::postEvent(m_highlighterThread->getWorker(), new HighlightEvent(
-            blockNumber, block.text()));
+        QApplication::postEvent(m_highlighterThread->getWorker(),
+            new HighlightEvent(blockNumber, block.text()));
         return true;
     }
     return false;

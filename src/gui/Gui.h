@@ -19,24 +19,23 @@
  *                                                                      *
  ************************************************************************/
 
-#include <QApplication>
-#include <QDebug>
-#include <MainWindow.h>
-#include <Book.h>
+#ifndef BLACK_MILORD_GUI_H
+#define BLACK_MILORD_GUI_H
 
-void processArguments(int argc, char *argv[])
-{
-    if (argc > 1) {
-        Book::instance().openFile(argv[1]);
-    }
-}
+class PlainTextEditor;
+class StatusBar;
 
-int main(int argc, char *argv[])
+class Gui
 {
-    QApplication app(argc, argv);
-    app.setAttribute(Qt::AA_DontShowIconsInMenus, false);
-    MainWindow main;
-    main.show();
-    processArguments(argc, argv);
-    return app.exec();
-}
+public:
+    static PlainTextEditor* plainTextEditor();
+    static void setPlainTextEditor(PlainTextEditor *editor);
+
+    static StatusBar* statusBar();
+    static void setStatusBar(StatusBar *statusBar);
+private:
+    static PlainTextEditor *m_editor;
+    static StatusBar *m_statusBar;
+};
+
+#endif /* BLACK_MILORD_GUI_H */

@@ -30,7 +30,10 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QDesktopWidget>
+#include <QLabel>
 
+#include "Gui.h"
+#include <StatusBar.h>
 #include <PlainTextEditor.h>
 #include <AspellWrapper.h>
 #include <Book.h>
@@ -62,10 +65,13 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     QWidget *centralWidget = new QWidget(this);
     QVBoxLayout *centralLayout = new QVBoxLayout;
     centralWidget->setLayout(centralLayout);
-
-    PlainTextEditor::instance().setEnabled(false);
-    PlainTextEditor::instance().addToLayout(centralLayout);
     setCentralWidget(centralWidget);
+
+    Gui::setPlainTextEditor(new PlainTextEditor());
+    Gui::plainTextEditor()->setEnabled(false);
+    centralLayout->addWidget(Gui::plainTextEditor()->asWidget());
+    Gui::setStatusBar(new StatusBar());
+    setStatusBar(Gui::statusBar());
 
     //Menu
     //File
@@ -138,11 +144,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
             this, SLOT(fileCreated()));
     connect(&Preferences::instance(), SIGNAL(settingsChanged()),
             this, SLOT(applySettings()));
-    PlainTextEditor::instance().connect(SIGNAL(modificationChanged(bool)), this, SLOT(setWindowTitle(bool)));
-    PlainTextEditor::instance().connect(SIGNAL(canRedo(bool)), redoAction, SLOT(setEnabled(bool)));
-    PlainTextEditor::instance().connect(SIGNAL(canUndo(bool)), undoAction, SLOT(setEnabled(bool)));
-    PlainTextEditor::instance().connect(undoAction, SIGNAL(triggered()), SLOT(undo()));
-    PlainTextEditor::instance().connect(redoAction, SIGNAL(triggered()), SLOT(redo()));
+    Gui::plainTextEditor()->connect(SIGNAL(modificationChanged(bool)), this, SLOT(setWindowTitle(bool)));
+    Gui::plainTextEditor()->connect(SIGNAL(canRedo(bool)), redoAction, SLOT(setEnabled(bool)));
+    Gui::plainTextEditor()->connect(SIGNAL(canUndo(bool)), undoAction, SLOT(setEnabled(bool)));
+    Gui::plainTextEditor()->connect(undoAction, SIGNAL(triggered()), SLOT(undo()));
+    Gui::plainTextEditor()->connect(redoAction, SIGNAL(triggered()), SLOT(redo()));
 
     //Other things
     QApplication::setWindowIcon(QIcon(":/resource/icon/application_icon.png"));
@@ -170,8 +176,6 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     }
 
     applySettings();
-
-    show();
 }
 
 MainWindow::~MainWindow()
@@ -192,11 +196,11 @@ void MainWindow::createFile()
 
 void MainWindow::fileCreated()
 {
-    PlainTextEditor::instance().setEnabled(true);
+    Gui::plainTextEditor()->setEnabled(true);
     updateMenuEnable(true);
     setWindowTitle(false);
-    PlainTextEditor::instance().setModified(false);
-    PlainTextEditor::instance().setFocus();
+    Gui::plainTextEditor()->setModified(false);
+    Gui::plainTextEditor()->setFocus();
 }
 
 void MainWindow::openMobiFile()
@@ -225,11 +229,11 @@ void MainWindow::openMobiFile()
 
 void MainWindow::fileOpened()
 {
-    PlainTextEditor::instance().setEnabled(true);
+    Gui::plainTextEditor()->setEnabled(true);
     updateMenuEnable(true);
     setWindowTitle(false);
-    PlainTextEditor::instance().setModified(false);
-    PlainTextEditor::instance().setFocus();
+    Gui::plainTextEditor()->setModified(false);
+    Gui::plainTextEditor()->setFocus();
 }
 
 void MainWindow::saveFile()
@@ -271,13 +275,13 @@ void MainWindow::saveFileAs()
 void MainWindow::fileSaved()
 {
     setWindowTitle(false);
-    PlainTextEditor::instance().setModified(false);
+    Gui::plainTextEditor()->setModified(false);
 }
 
 void MainWindow::closeFile()
 {
     Q_ASSERT(Book::instance().isFileOpened());
-    if (PlainTextEditor::instance().isModified()) {
+    if (Gui::plainTextEditor()->isModified()) {
         QMessageBox::StandardButton answer = QMessageBox::question(this,
                 tr("File is not saved"),
                 tr("Do you want to save file now?"),
@@ -296,8 +300,8 @@ void MainWindow::closeFile()
 void MainWindow::fileClosed()
 {
     updateMenuEnable(false);
-    PlainTextEditor::instance().setEnabled(false);
-    PlainTextEditor::instance().setModified(false);
+    Gui::plainTextEditor()->setEnabled(false);
+    Gui::plainTextEditor()->setModified(false);
     setWindowTitle(false);
 }
 
