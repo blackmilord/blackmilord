@@ -28,6 +28,7 @@
 
 #include <Gui.h>
 #include <PlainTextEditor.h>
+#include <StatusBar.h>
 #include <Preferences.h>
 #include "AbstractBook.h"
 #include "BackupManager.h"
@@ -56,6 +57,7 @@ bool Book::openFile(const QString &fileName)
     if (result) {
         m_fileName = fileName;
         m_fileOpened = true;
+        Gui::statusBar()->showMessage(tr("Document imported from") + " " + fileName);
         emit fileLoaded();
     }
     return result;
@@ -74,6 +76,7 @@ bool Book::saveFile()
     }
     bool result = AbstractBookFactory::getObject()->saveFile(m_fileName);
     if (result) {
+        Gui::statusBar()->showMessage(tr("Document is saved"));
         emit fileSaved();
     }
     return result;
@@ -84,6 +87,7 @@ bool Book::closeFile()
     setText("");
     Gui::plainTextEditor()->clearRedoUndoHistory();
     reset();
+    Gui::statusBar()->showMessage(tr("Document is closed"));
     emit fileClosed();
     return true;
 }
@@ -94,6 +98,7 @@ bool Book::newFile()
     bool result = AbstractBookFactory::getObject()->newFile();
     if (result) {
         m_fileOpened = true;
+        Gui::statusBar()->showMessage(tr("New document is created"));
         emit fileCreated();
     }
     return result;

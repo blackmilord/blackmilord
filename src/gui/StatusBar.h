@@ -35,6 +35,10 @@ public:
     virtual ~StatusBar();
 
     void setStatusBarDocLength(const QString &length);
+
+public slots:
+    void showMessage(const QString &message, int timeout = 2000);
+
 private:
     QLabel *m_statusBarDocLength;
 

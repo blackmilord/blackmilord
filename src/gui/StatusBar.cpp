@@ -40,3 +40,8 @@ void StatusBar::setStatusBarDocLength(const QString &length)
 {
     m_statusBarDocLength->setText(length);
 }
+
+void StatusBar::showMessage(const QString &message, int timeout)
+{
+    QStatusBar::showMessage(message, timeout);
+}

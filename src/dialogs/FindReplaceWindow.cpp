@@ -33,9 +33,11 @@
 #include <QShowEvent>
 #include <QCompleter>
 #include <QMessageBox>
+#include <QDateTime>
 
 #include <Gui.h>
 #include <PlainTextEditor.h>
+#include <StatusBar.h>
 
 FindReplaceWindow::FindReplaceWindow(QWidget *parent) :
     QDialog(parent),
@@ -236,12 +238,17 @@ void FindReplaceWindow::replace()
         Gui::plainTextEditor()->getSelectionEnd() - Gui::plainTextEditor()->getSelectionStart(),
         m_replaceWith->currentText());
 
+    Gui::statusBar()->showMessage(tr("Text replaced"));
+
     find();
 }
 
 void FindReplaceWindow::replaceAll()
 {
+    qDebug() << "FindReplaceWindow::replaceAll() start" << QDateTime::currentDateTime();
     saveValues();
+
+    unsigned count = 0;
 
     Gui::plainTextEditor()->setCursorPositionToStart();
 
@@ -251,10 +258,16 @@ void FindReplaceWindow::replaceAll()
             Gui::plainTextEditor()->getSelectionStart(),
             Gui::plainTextEditor()->getSelectionEnd() - Gui::plainTextEditor()->getSelectionStart(),
             m_replaceWith->currentText());
+        count++;
         find(false);
     }
 
+    QString message = tr("Repleced") + " " + QString::number(count) + " " + tr("occurrences");
+    Gui::statusBar()->showMessage(message, 3000);
+
     Gui::plainTextEditor()->setCursorPositionToEnd();
+    qDebug() << "FindReplaceWindow::replaceAll() end" << QDateTime::currentDateTime();
+    qDebug() << "replace count" << count;
 }
 
 void FindReplaceWindow::checkboxChanged()
