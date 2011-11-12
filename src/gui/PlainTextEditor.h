@@ -49,7 +49,7 @@ public:
     void setSelection(int selectionStart, int selectionEnd);
     void clearSelection();
 
-    QString toPlainText() const;
+    const QString& toPlainText() const;
     void setPlainText(const QString &text);
 
     QTextBlock findBlockByNumber(int blockNumber) const;
@@ -82,6 +82,7 @@ protected:
 
 private:
     PlainTextEditorUndoStack m_undoStack;
+    QString m_textReadOnly;
 
 signals:
     void canUndo(bool);

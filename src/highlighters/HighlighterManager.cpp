@@ -97,6 +97,7 @@ void HighlighterManager::startBlockHighlight()
         int blockIndex = m_queue.takeFirst();
         QApplication::postEvent(m_highlighterThread->getWorker(), new HighlightEvent(
             blockIndex, m_editor->findBlockByNumber(blockIndex).text()));
+        return;
     }
     int blockCount = m_editor->blockCount();
     int firstVisible = m_editor->firstVisibleBlock();

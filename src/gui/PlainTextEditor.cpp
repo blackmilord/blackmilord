@@ -146,15 +146,16 @@ void PlainTextEditor::clearRedoUndoHistory()
 
 void PlainTextEditor::contentsChangedSlot()
 {
-    Gui::statusBar()->setStatusBarDocLength(QString::number(toPlainText().size()));
+    Gui::statusBar()->setStatusBarDocLength(QString::number(m_textReadOnly.size()));
     emit contentsChanged();
-    if (toPlainText().isEmpty()) {
+    if (m_textReadOnly.isEmpty()) {
         HighlighterManagerFactory::instance().cancelHighlighting();
     }
 }
 
 void PlainTextEditor::contentsChangeSlot(int position, int charsRemoved, int charsAdded)
 {
+    m_textReadOnly = QPlainTextEdit::toPlainText();
     emit contentsChange(position, charsRemoved, charsAdded);
     if (Book::instance().isFileOpened()) {
         HighlighterManagerFactory::instance().registerBlockToHighlight(position, position + charsAdded, true);
@@ -210,7 +211,7 @@ void PlainTextEditor::disconnect(const QObject *sender, const char *signal, cons
 void PlainTextEditor::replace(int position, int length, const QString &after)
 {
     Q_ASSERT(position >= 0);
-    Q_ASSERT(position + length <= toPlainText().length());
+    Q_ASSERT(position + length <= m_textReadOnly.length());
 
     QTextCursor cursor = textCursor();
     cursor.setPosition(position);
@@ -281,9 +282,9 @@ void PlainTextEditor::clearSelection()
     textCursor().clearSelection();
 }
 
-QString PlainTextEditor::toPlainText() const
+const QString& PlainTextEditor::toPlainText() const
 {
-    return QPlainTextEdit::toPlainText();
+    return m_textReadOnly;
 }
 
 void PlainTextEditor::setPlainText(const QString &text)

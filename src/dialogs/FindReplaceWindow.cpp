@@ -129,7 +129,10 @@ void FindReplaceWindow::showEvent(QShowEvent *event)
 
 void FindReplaceWindow::find(bool showDialogs)
 {
-    saveValues();
+    if (sender() == m_findNextButton) {
+        //save values only as a response for pressing a button.
+        saveValues();
+    }
 
     const QString &text = Gui::plainTextEditor()->toPlainText();
 
@@ -200,7 +203,7 @@ void FindReplaceWindow::find(bool showDialogs)
             else {
                 Gui::plainTextEditor()->setCursorPositionToStart();
             }
-            find();
+            find(showDialogs);
         }
         else {
             m_notFoundLastTime = false;
@@ -248,6 +251,8 @@ void FindReplaceWindow::replaceAll()
     qDebug() << "FindReplaceWindow::replaceAll() start" << QDateTime::currentDateTime();
     saveValues();
 
+    Gui::plainTextEditor()->asWidget()->setUpdatesEnabled(false);
+
     unsigned count = 0;
 
     Gui::plainTextEditor()->setCursorPositionToStart();
@@ -261,6 +266,9 @@ void FindReplaceWindow::replaceAll()
         count++;
         find(false);
     }
+
+    Gui::plainTextEditor()->asWidget()->setUpdatesEnabled(true);
+    Gui::plainTextEditor()->asWidget()->update();
 
     QString message = tr("Repleced") + " " + QString::number(count) + " " + tr("occurrences");
     Gui::statusBar()->showMessage(message, 3000);
