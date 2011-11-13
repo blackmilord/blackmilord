@@ -110,7 +110,7 @@ SpellCheckingWindow::SpellCheckingWindow(QWidget *parent) :
     connect(m_changeAllButton, SIGNAL(released()), this, SLOT(changeAll()));
     connect(m_textContext, SIGNAL(textChanged()), this, SLOT(textContextChanged()));
     connect(m_language, SIGNAL(currentIndexChanged(int)), this, SLOT(changeLanguage(int)));
-    Gui::plainTextEditor()->connect(SIGNAL(contentsChanged()), this, SLOT(editorTextChanged()));
+    connect(Gui::plainTextEditor()->asObject(), SIGNAL(contentsChanged()), this, SLOT(editorTextChanged()));
 
     setLayout(layout);
     setWindowTitle(tr("Spell check"));

@@ -46,6 +46,7 @@ public:
 protected:
     void run();
 private:
+    QAtomicInt m_guard;
     HighlighterWorker *m_worker;
 };
 

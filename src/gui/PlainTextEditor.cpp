@@ -37,12 +37,12 @@ PlainTextEditor::PlainTextEditor(QWidget * parent) :
     QPlainTextEdit(parent),
     m_undoStack(this)
 {
-    HighlighterManagerFactory::createInstance(this);
-    connect(&Preferences::instance(), SIGNAL(settingsChanged()), SLOT(applySettings()));
-    connect(document(), SIGNAL(contentsChange(int, int, int)), SLOT(contentsChangeSlot(int, int, int)));
-    connect(document(), SIGNAL(contentsChanged()), SLOT(contentsChangedSlot()));
-    connect(&m_undoStack, SIGNAL(canUndo(bool)), SLOT(canUndoSlot(bool)));
-    connect(&m_undoStack, SIGNAL(canRedo(bool)), SLOT(canRedoSlot(bool)));
+    connect(&Preferences::instance(), SIGNAL(settingsChanged()), this, SLOT(applySettings()));
+    connect(document(), SIGNAL(contentsChange(int, int, int)), this, SLOT(contentsChangeSlot(int, int, int)));
+    connect(document(), SIGNAL(contentsChanged()), this, SLOT(contentsChangedSlot()));
+    connect(&m_undoStack, SIGNAL(canUndo(bool)), this, SLOT(canUndoSlot(bool)));
+    connect(&m_undoStack, SIGNAL(canRedo(bool)), this, SLOT(canRedoSlot(bool)));
+    connect(this, SIGNAL(updateRequest(const QRect &, int)), this, SLOT(updateRequestSlot(const QRect &, int)));
     setUndoRedoEnabled(false);
     installEventFilter(this);
 }
@@ -124,6 +124,19 @@ void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
     delete menu;
 }
 
+void PlainTextEditor::updateRequestSlot(const QRect &rect, int dy)
+{
+    Q_UNUSED(rect);
+    if (dy != 0) {
+        int firstVisibleBlockNumber = QPlainTextEdit::firstVisibleBlock().blockNumber();
+        int lastVisibleBlockNumber = cursorForPosition(QPoint(viewport()->width(), viewport()->height())).blockNumber();
+
+        for (int blockNumber = firstVisibleBlockNumber; blockNumber <= lastVisibleBlockNumber; ++blockNumber ) {
+            HighlighterManager::instance().registerBlockToHighlight(findBlockByNumber(blockNumber), false);
+        }
+    }
+}
+
 void PlainTextEditor::applySettings()
 {
     setFont(Preferences::instance().getEditorFont());
@@ -149,7 +162,7 @@ void PlainTextEditor::contentsChangedSlot()
     Gui::statusBar()->setStatusBarDocLength(QString::number(m_textReadOnly.size()));
     emit contentsChanged();
     if (m_textReadOnly.isEmpty()) {
-        HighlighterManagerFactory::instance().cancelHighlighting();
+        HighlighterManager::instance().cancelHighlighting();
     }
 }
 
@@ -157,13 +170,35 @@ void PlainTextEditor::contentsChangeSlot(int position, int charsRemoved, int cha
 {
     m_textReadOnly = QPlainTextEdit::toPlainText();
     emit contentsChange(position, charsRemoved, charsAdded);
-    if (Book::instance().isFileOpened()) {
-        HighlighterManagerFactory::instance().registerBlockToHighlight(position, position + charsAdded, true);
+
+    //highlighting code
+    const QTextBlock &first = findBlock(position);
+    const QTextBlock &last = findBlock(position + charsAdded);
+    int firstBlockNumber = first.blockNumber();
+    int lastBlockNumber = last.blockNumber();
+    if (firstBlockNumber == lastBlockNumber) {
+        //Check is simple and fast. Make it this way.
+        HighlighterManager::instance().registerBlockToHighlight(first, true);
+    }
+    else if (firstBlockNumber == lastBlockNumber + 1) {
+        //Occurs a lot when pressing enter
+        HighlighterManager::instance().registerBlockToHighlight(first, true);
+        HighlighterManager::instance().registerBlockToHighlight(last, true);
     }
     else {
-        //Opening in progress, use rehighlight instead
-        //rehighlight has set whole document to be rehighlighted with low priority
-        HighlighterManagerFactory::instance().rehighlight();
+        int firstVisibleBlockNumber = QPlainTextEdit::firstVisibleBlock().blockNumber();
+        int lastVisibleBlockNumber = cursorForPosition(QPoint(viewport()->width(), viewport()->height())).blockNumber();
+
+        if (firstVisibleBlockNumber > firstBlockNumber) {
+            firstBlockNumber = firstVisibleBlockNumber;
+        }
+        if (lastVisibleBlockNumber < lastBlockNumber) {
+            lastBlockNumber = lastVisibleBlockNumber;
+        }
+
+        for (int blockNumber = firstBlockNumber; blockNumber <= lastBlockNumber; ++blockNumber ) {
+            HighlighterManager::instance().registerBlockToHighlight(findBlockByNumber(blockNumber), true);
+        }
     }
 }
 
@@ -184,28 +219,6 @@ void PlainTextEditor::canUndoSlot(bool value)
 void PlainTextEditor::canRedoSlot(bool value)
 {
     emit canRedo(value);
-}
-
-void PlainTextEditor::connect(const char *signal, const QObject *receiver,
-        const char *method, Qt::ConnectionType type)
-{
-    QWidget::connect(this, signal, receiver, method, type);
-}
-
-void PlainTextEditor::connect(const QObject *sender, const char *signal,
-        const char *method, Qt::ConnectionType type)
-{
-    QWidget::connect(sender, signal, this, method, type);
-}
-
-void PlainTextEditor::disconnect(const char *signal, const QObject *receiver, const char *method)
-{
-    QWidget::disconnect(this, signal, receiver, method);
-}
-
-void PlainTextEditor::disconnect(const QObject *sender, const char *signal, const char *method)
-{
-    QWidget::disconnect(sender, signal, this, method);
 }
 
 void PlainTextEditor::replace(int position, int length, const QString &after)

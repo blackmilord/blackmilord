@@ -30,11 +30,11 @@ PlainTextEditorUndoStack::PlainTextEditorUndoStack(PlainTextEditor *editor) :
     m_position(0),
     m_maxStackSize(100)
 {
-    m_editor->connect(SIGNAL(cursorPositionChanged()),
+    connect(m_editor->asObject(), SIGNAL(cursorPositionChanged()),
         this, SLOT(cursorPositionChanged()));
-    m_editor->connect(SIGNAL(selectionChanged()),
+    connect(m_editor->asObject(), SIGNAL(selectionChanged()),
         this, SLOT(selectionChanged()));
-    m_editor->connect(SIGNAL(contentsChange(int, int, int)),
+    connect(m_editor->asObject(), SIGNAL(contentsChange(int, int, int)),
         this, SLOT(contentsChange(int, int, int)));
 
     addNewUndoCommand();
@@ -82,7 +82,7 @@ void PlainTextEditorUndoStack::undo()
         Q_ASSERT(canUndo());
         command = popUndoCommand();
     }
-    m_editor->disconnect(SIGNAL(contentsChange(int, int, int)),
+    disconnect(m_editor->asObject(), SIGNAL(contentsChange(int, int, int)),
         this, SLOT(contentsChange(int, int, int)));
 
     switch (command->m_type) {
@@ -115,7 +115,7 @@ void PlainTextEditorUndoStack::undo()
             Q_ASSERT(false);
     }
 
-    m_editor->connect(SIGNAL(contentsChange(int, int, int)),
+    connect(m_editor->asObject(), SIGNAL(contentsChange(int, int, int)),
         this, SLOT(contentsChange(int, int, int)));
 
     addNewRedoCommand(command);
@@ -135,7 +135,7 @@ void PlainTextEditorUndoStack::redo()
     RedoUndoCommand* command = popRedoCommand();
     Q_ASSERT(command->m_type != RedoUndoCommand::UNKNOWN);
 
-    m_editor->disconnect(SIGNAL(contentsChange(int, int, int)),
+    disconnect(m_editor->asObject(), SIGNAL(contentsChange(int, int, int)),
         this, SLOT(contentsChange(int, int, int)));
 
     switch (command->m_type) {
@@ -168,7 +168,7 @@ void PlainTextEditorUndoStack::redo()
             Q_ASSERT(false);
     }
 
-    m_editor->connect(SIGNAL(contentsChange(int, int, int)),
+    connect(m_editor->asObject(), SIGNAL(contentsChange(int, int, int)),
         this, SLOT(contentsChange(int, int, int)));
 
     addNewUndoCommand(command);

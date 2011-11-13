@@ -69,12 +69,6 @@ public:
 
     QWidget* asWidget();
     QObject* asObject();
-    void connect(const char *signal, const QObject *receiver,
-            const char *method, Qt::ConnectionType type = Qt::AutoConnection);
-    void connect(const QObject *sender, const char *signal,
-            const char *method, Qt::ConnectionType type = Qt::AutoConnection);
-    void disconnect(const char *signal, const QObject *receiver, const char *method);
-    void disconnect(const QObject *sender, const char *signal, const char *method);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event);
@@ -97,6 +91,7 @@ public slots:
     void clearRedoUndoHistory();
 
 private slots:
+    void updateRequestSlot(const QRect &rect, int dy);
     void contentsChangedSlot();
     void contentsChangeSlot(int position, int charsRemoved, int charsAdded);
     void applyHintSlot(QAction *action);
@@ -109,7 +104,7 @@ class BlockData :
 {
 public:
     BlockData() :
-        m_needRehighlight(false)
+        m_highlightingDone(false)
     {
     }
 
@@ -117,18 +112,18 @@ public:
     {
     }
 
-    bool needRehighlight()
+    bool highlightingDone()
     {
-        return m_needRehighlight;
+        return m_highlightingDone;
     }
 
-    void setNeedRehighlight(bool needRehighlight)
+    void setHighlightingDone(bool highlightingDone)
     {
-        m_needRehighlight = needRehighlight;
+        m_highlightingDone = highlightingDone;
     }
 
 private:
-    bool m_needRehighlight;
+    bool m_highlightingDone;
 };
 
 

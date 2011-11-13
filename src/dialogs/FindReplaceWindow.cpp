@@ -255,15 +255,18 @@ void FindReplaceWindow::replaceAll()
 
     unsigned count = 0;
 
-    Gui::plainTextEditor()->setCursorPositionToStart();
+    PlainTextEditor *editor = Gui::plainTextEditor();
+    const QString &replaceWith = m_replaceWith->currentText();
+    int selectionStart;
+    int selectionEnd;
 
+    editor->setCursorPositionToStart();
     find(false);
-    while (Gui::plainTextEditor()->hasSelection()) {
-        Gui::plainTextEditor()->replace(
-            Gui::plainTextEditor()->getSelectionStart(),
-            Gui::plainTextEditor()->getSelectionEnd() - Gui::plainTextEditor()->getSelectionStart(),
-            m_replaceWith->currentText());
-        count++;
+    while (editor->hasSelection()) {
+        selectionStart = editor->getSelectionStart();
+        selectionEnd = editor->getSelectionEnd();
+        editor->replace(selectionStart, selectionEnd - selectionStart, replaceWith);
+        ++count;
         find(false);
     }
 

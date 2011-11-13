@@ -12,8 +12,9 @@ win32 {
 }
 
 CONFIG(debug, debug|release) {
-    QMAKE_CXXFLAGS += -g3 -gdwarf-2 -O0
+    QMAKE_CXXFLAGS += -g3 -gdwarf-2 -O0 -pg
     DESTPREFIX = "debug"
+    QMAKE_LFLAGS += -pg
 }
 else {
     QMAKE_LFLAGS += -s
@@ -71,8 +72,9 @@ SOURCES += highlighters/AbstractHighlighter.cpp
 SOURCES += highlighters/HighlighterHTMLTags.cpp
 SOURCES += highlighters/HighlighterSpellcheck.cpp
 SOURCES += highlighters/HighlighterThread.cpp
-SOURCES += highlighters/event/HighlightEvent.cpp
-SOURCES += highlighters/event/HighlightEventResponse.cpp
+SOURCES += highlighters/event/HighlightersApplySettingsEvent.cpp
+SOURCES += highlighters/event/HighlightBlockEvent.cpp
+SOURCES += highlighters/event/HighlightBlockEventResponse.cpp
 SOURCES += options/OptionsWindow.cpp
 SOURCES += options/EditorPage.cpp
 SOURCES += options/MainPage.cpp
@@ -111,8 +113,9 @@ HEADERS += highlighters/AbstractHighlighter.h
 HEADERS += highlighters/HighlighterHTMLTags.h
 HEADERS += highlighters/HighlighterSpellcheck.h
 HEADERS += highlighters/HighlighterThread.h
-HEADERS += highlighters/event/HighlightEvent.h
-HEADERS += highlighters/event/HighlightEventResponse.h
+HEADERS += highlighters/event/HighlightersApplySettingsEvent.h
+HEADERS += highlighters/event/HighlightBlockEvent.h
+HEADERS += highlighters/event/HighlightBlockEventResponse.h
 HEADERS += options/OptionsWindow.h
 HEADERS += options/EditorPage.h
 HEADERS += options/MainPage.h

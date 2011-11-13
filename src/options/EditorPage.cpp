@@ -51,7 +51,7 @@ EditorPage::EditorPage(QWidget *parent) :
     optionsLayout->addWidget(m_fontSize, verticalIndex++, 1);
 
     const QVector<AbstractHighlighter*> &highlighters =
-            HighlighterManagerFactory::instance().getHighlighters();
+            HighlighterManager::instance().getHighlighters();
     for(int i = 0; i < highlighters.size(); ++i) {
         QCheckBox *check = new QCheckBox(highlighters[i]->getOptionCheckBoxCaption(), this);
         optionsLayout->addWidget(check, verticalIndex++, 0);
@@ -93,7 +93,7 @@ void EditorPage::apply()
     Preferences::instance().setValue(
             Preferences::PROP_EDITOR_FONT_SIZE, m_fontSize->currentText());
     const QVector<AbstractHighlighter*> &highlighters =
-            HighlighterManagerFactory::instance().getHighlighters();
+            HighlighterManager::instance().getHighlighters();
     for(int i = 0; i < highlighters.size(); ++i) {
         Preferences::instance().setValue(
                 highlighters[i]->getPropertyName(), m_highlighterCheckBox[i]->isChecked());

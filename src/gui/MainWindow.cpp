@@ -144,11 +144,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
             this, SLOT(fileCreated()));
     connect(&Preferences::instance(), SIGNAL(settingsChanged()),
             this, SLOT(applySettings()));
-    Gui::plainTextEditor()->connect(SIGNAL(modificationChanged(bool)), this, SLOT(setWindowTitle(bool)));
-    Gui::plainTextEditor()->connect(SIGNAL(canRedo(bool)), redoAction, SLOT(setEnabled(bool)));
-    Gui::plainTextEditor()->connect(SIGNAL(canUndo(bool)), undoAction, SLOT(setEnabled(bool)));
-    Gui::plainTextEditor()->connect(undoAction, SIGNAL(triggered()), SLOT(undo()));
-    Gui::plainTextEditor()->connect(redoAction, SIGNAL(triggered()), SLOT(redo()));
+    connect(Gui::plainTextEditor()->asObject(), SIGNAL(modificationChanged(bool)), this, SLOT(setWindowTitle(bool)));
+    connect(Gui::plainTextEditor()->asObject(), SIGNAL(canRedo(bool)), redoAction, SLOT(setEnabled(bool)));
+    connect(Gui::plainTextEditor()->asObject(), SIGNAL(canUndo(bool)), undoAction, SLOT(setEnabled(bool)));
+    connect(undoAction, SIGNAL(triggered()), Gui::plainTextEditor()->asObject(), SLOT(undo()));
+    connect(redoAction, SIGNAL(triggered()), Gui::plainTextEditor()->asObject(), SLOT(redo()));
 
     //Other things
     QApplication::setWindowIcon(QIcon(":/resource/icon/application_icon.png"));

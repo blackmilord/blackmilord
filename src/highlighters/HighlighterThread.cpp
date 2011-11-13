@@ -25,13 +25,14 @@
 #include <QApplication>
 #include <QtCore/qmetatype.h>
 
-#include "event/HighlightEvent.h"
-#include "event/HighlightEventResponse.h"
+#include <event/HighlightBlockEvent.h>
+#include <event/HighlightBlockEventResponse.h>
 #include "HighlighterManager.h"
 #include "AbstractHighlighter.h"
 
 HighlighterThread::HighlighterThread(QObject * parent) :
     QThread(parent),
+    m_guard(0),
     m_worker(NULL)
 {
 }
@@ -44,11 +45,15 @@ HighlighterThread::~HighlighterThread()
 void HighlighterThread::run()
 {
     m_worker = new HighlighterWorker(NULL);
+    m_guard = 1;
     exec();
 }
 
 HighlighterWorker* HighlighterThread::getWorker()
 {
+    while(m_guard != 1) {
+        msleep(1);
+    }
     Q_ASSERT(m_worker != NULL);
     return m_worker;
 }
@@ -66,14 +71,15 @@ HighlighterWorker::~HighlighterWorker()
 
 void HighlighterWorker::customEvent(QEvent *event)
 {
-    if (event->type() == HighlightEvent::getType()) {
+    if (event->type() == HighlightBlockEvent::getType()) {
         event->accept();
-        HighlightEvent *highlightEvent = static_cast<HighlightEvent*>(event);
+        HighlightBlockEvent *highlightEvent = dynamic_cast<HighlightBlockEvent*>(event);
+        qDebug() << highlightEvent->getText();
         QVector<AbstractHighlighter*> highlighters =
-            HighlighterManagerFactory::instance().getHighlighters();
+            HighlighterManager::instance().getHighlighters();
 
-        HighlightEventResponse *responseEvent =
-            new HighlightEventResponse(highlightEvent->getBlockIndex());
+        HighlightBlockEventResponse *responseEvent =
+            new HighlightBlockEventResponse(highlightEvent->getBlockIndex());
 
         foreach(AbstractHighlighter* highlighter, highlighters) {
             if (highlighter->isEnabled()) {
@@ -82,7 +88,7 @@ void HighlighterWorker::customEvent(QEvent *event)
             }
         }
 
-        QApplication::postEvent(&HighlighterManagerFactory::instance(), responseEvent);
+        QApplication::postEvent(&HighlighterManager::instance(), responseEvent);
 
     }
     else {

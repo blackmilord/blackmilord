@@ -25,17 +25,17 @@
 #include <QTextBlock>
 
 #include <PlainTextEditor.h>
+#include <Gui.h>
+#include <event/HighlightBlockEvent.h>
+#include <event/HighlightBlockEventResponse.h>
+#include <event/HighlightersApplySettingsEvent.h>
 #include "AbstractHighlighter.h"
 #include "HighlighterHTMLTags.h"
 #include "HighlighterSpellcheck.h"
 #include "HighlighterThread.h"
-#include "event/HighlightEvent.h"
-#include "event/HighlightEventResponse.h"
 
-HighlighterManager::HighlighterManager(PlainTextEditor *editor) :
-    m_inProgress(false),
-    m_needToApplySettings(false),
-    m_editor(editor),
+HighlighterManager::HighlighterManager() :
+    m_inProgress(0),
     m_highlighterThread(new HighlighterThread(this))
 {
     m_highlighters.push_back(new HighlighterHTMLTags());
@@ -54,109 +54,64 @@ HighlighterManager::~HighlighterManager()
     }
 }
 
+HighlighterManager& HighlighterManager::instance()
+{
+    static HighlighterManager instance;
+    return instance;
+}
+
 void HighlighterManager::applySettings()
 {
-    if (!m_inProgress) {
-        m_needToApplySettings = false;
+    if (0 == m_inProgress) {
         foreach(AbstractHighlighter* highlighter, m_highlighters) {
             highlighter->applySettings();
         }
         rehighlight();
     }
     else {
-        m_needToApplySettings = true;
+        QApplication::postEvent(this, new HighlightersApplySettingsEvent());
     }
 }
 
-bool HighlighterManager::startLazyBlockHighlight(int blockNumber)
+void HighlighterManager::registerBlockToHighlight(const QTextBlock &block, bool important)
 {
-    QTextBlock block = m_editor->findBlockByNumber(blockNumber);
-    if (NULL == block.userData()) {
-        return false;
-    }
-    if (static_cast<BlockData*>(block.userData())->needRehighlight()) {
-        static_cast<BlockData*>(block.userData())->setNeedRehighlight(false);
-        m_inProgress = true;
-        QApplication::postEvent(m_highlighterThread->getWorker(),
-            new HighlightEvent(blockNumber, block.text()));
-        return true;
-    }
-    return false;
-}
-
-void HighlighterManager::startBlockHighlight()
-{
-    if (m_inProgress) {
-        return;
-    }
-    if (m_needToApplySettings) {
-        applySettings();
-    }
-    if (!m_queue.isEmpty()) {
-        m_inProgress = true;
-        int blockIndex = m_queue.takeFirst();
-        QApplication::postEvent(m_highlighterThread->getWorker(), new HighlightEvent(
-            blockIndex, m_editor->findBlockByNumber(blockIndex).text()));
-        return;
-    }
-    int blockCount = m_editor->blockCount();
-    int firstVisible = m_editor->firstVisibleBlock();
-    for (int i = firstVisible; i < blockCount; ++i) {
-        if (startLazyBlockHighlight(i)) {
+    if (!important) {
+        BlockData *data = dynamic_cast<BlockData*>(block.userData());
+        if (data == NULL){
+            data = new BlockData();
+            const_cast<QTextBlock&>(block).setUserData(data);
+        }
+        if(data->highlightingDone()) {
             return;
         }
+        data->setHighlightingDone(true);
     }
-    for (int i = 0; i < firstVisible; ++i) {
-        if (startLazyBlockHighlight(i)) {
-            return;
-        }
-    }
-}
-
-void HighlighterManager::registerBlockToHighlight(int start, int end, bool important)
-{
-    if (m_editor->toPlainText().length() < end) {
-        end = m_editor->toPlainText().length();
-    }
-    const QTextBlock &firstBlock = m_editor->findBlock(start);
-    const QTextBlock &lastBlock = m_editor->findBlock(end);
-    for (int i = firstBlock.blockNumber(); i <= lastBlock.blockNumber(); ++i) {
-        if (important) {
-            m_queue.push_back(i);
-        }
-        else {
-            QTextBlock block = m_editor->findBlockByNumber(i);
-            if (NULL != block.userData()) {
-                block.setUserData(new BlockData());
-            }
-            static_cast<BlockData*>(block.userData())->setNeedRehighlight(false);
-        }
-    }
-    startBlockHighlight();
+    int priority = important ? Qt::HighEventPriority : Qt::NormalEventPriority;
+    ++m_inProgress;
+    QApplication::postEvent(m_highlighterThread->getWorker(),
+        new HighlightBlockEvent(block.blockNumber(), block.text()), priority);
 }
 
 void HighlighterManager::cancelHighlighting()
 {
-    qDebug() << "cancel highlighting";
-    m_queue.clear();
-    int blockCount = m_editor->blockCount();
-    for (int i = 0; i < blockCount; ++i) {
-        QTextBlock block = m_editor->findBlockByNumber(i);
-        if (NULL != block.userData()) {
-            static_cast<BlockData*>(block.userData())->setNeedRehighlight(false);
-        }
-    }
+    qDebug() << "HighlighterManager::cancelHighlighting() is not implemented";
+
+    //TODO: unless we know amount of removed events we cannot fix m_inProgress variable
+    //QApplication::removePostedEvents(m_highlighterThread->getWorker(), HighlightBlockEvent::getType());
 }
 
 void HighlighterManager::customEvent(QEvent *event)
 {
-    if (event->type() == HighlightEventResponse::getType()) {
+    if (event->type() == HighlightBlockEventResponse::getType()) {
         event->accept();
-        HighlightEventResponse *responseEvent =
-                static_cast<HighlightEventResponse*>(event);
+        HighlightBlockEventResponse *responseEvent =
+                dynamic_cast<HighlightBlockEventResponse*>(event);
         highlightBlock(responseEvent->getBlockIndex(), *responseEvent->getResults());
-        m_inProgress = false;
-        startBlockHighlight();
+        --m_inProgress;
+    }
+    else if (event->type() == HighlightersApplySettingsEvent::getType()) {
+        event->accept();
+        applySettings();
     }
     else {
         event->ignore();
@@ -165,16 +120,8 @@ void HighlighterManager::customEvent(QEvent *event)
 
 void HighlighterManager::rehighlight()
 {
-    m_queue.clear();
-    int blockCount = m_editor->blockCount();
-    for (int i = 0; i < blockCount; ++i) {
-        QTextBlock block = m_editor->findBlockByNumber(i);
-        if (NULL == block.userData()) {
-            block.setUserData(new BlockData());
-        }
-        static_cast<BlockData*>(block.userData())->setNeedRehighlight(true);
-    }
-    startBlockHighlight();
+    qDebug() << "HighlighterManager::rehighlight() is not implemented";
+    //TODO: implement
 }
 
 void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighter::MultiFormatList &formatting)
@@ -182,8 +129,8 @@ void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighte
     //TODO: TextEditor should provide API for highlighting,
     //TODO: Blocking signal should be removed
     QSet<int> steps;
-    const QTextBlock &block = m_editor->findBlockByNumber(blockIndex);
-    bool signalsBlockedEditor = m_editor->blockSignals(true);
+    const QTextBlock &block = Gui::plainTextEditor()->findBlockByNumber(blockIndex);
+    bool signalsBlockedEditor = Gui::plainTextEditor()->blockSignals(true);
     steps << 0 << block.text().length();
     foreach(const AbstractHighlighter::FormatList &formats, formatting) {
         foreach(const AbstractHighlighter::CharFormat &format, formats) {
@@ -224,24 +171,10 @@ void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighte
         cursor.setPosition(cursorPositionOffset + end, QTextCursor::KeepAnchor);
         cursor.setCharFormat(newFormat);
     }
-    m_editor->blockSignals(signalsBlockedEditor);
+    Gui::plainTextEditor()->blockSignals(signalsBlockedEditor);
 }
 
 QVector<AbstractHighlighter*> HighlighterManager::getHighlighters() const
 {
     return m_highlighters;
-}
-
-HighlighterManager* HighlighterManagerFactory::m_instance = NULL;
-
-HighlighterManager& HighlighterManagerFactory::instance()
-{
-    Q_ASSERT(m_instance != NULL);
-    return *m_instance;
-}
-
-void HighlighterManagerFactory::createInstance(PlainTextEditor *editor)
-{
-    Q_ASSERT(m_instance == NULL);
-    m_instance = new HighlighterManager(editor);
 }

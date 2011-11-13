@@ -19,28 +19,20 @@
  *                                                                      *
  ************************************************************************/
 
-#include "HighlightEvent.h"
+#ifndef BLACK_MILORD_HIGHLIGHTERS_APPLY_SETTINGS_EVENT_H
+#define BLACK_MILORD_HIGHLIGHTERS_APPLY_SETTINGS_EVENT_H
 
-QEvent::Type HighlightEvent::m_type =
-    static_cast<QEvent::Type>(QEvent::registerEventType());
+#include <QEvent>
 
-HighlightEvent::HighlightEvent(int blockIndex, const QString &text) :
-    QEvent(m_type),
-    m_blockIndex(blockIndex),
-    m_text(text)
+class HighlightersApplySettingsEvent :
+    public QEvent
 {
-}
+public:
+    HighlightersApplySettingsEvent();
+    virtual ~HighlightersApplySettingsEvent();
+    static QEvent::Type getType() { return m_type; }
+protected:
+    static QEvent::Type m_type;
+};
 
-HighlightEvent::~HighlightEvent()
-{
-}
-
-QString HighlightEvent::getText() const
-{
-    return m_text;
-}
-
-int HighlightEvent::getBlockIndex() const
-{
-    return m_blockIndex;
-}
+#endif /* BLACK_MILORD_HIGHLIGHTERS_APPLY_SETTINGS_EVENT_H */

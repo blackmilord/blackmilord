@@ -19,22 +19,22 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BLACK_MILORD_HIGHLIGHT_EVENT_RESPONSE_H
-#define BLACK_MILORD_HIGHLIGHT_EVENT_RESPONSE_H
+#ifndef BLACK_MILORD_HIGHLIGHT_BLOCK_EVENT_RESPONSE_H
+#define BLACK_MILORD_HIGHLIGHT_BLOCK_EVENT_RESPONSE_H
 
 #include <QEvent>
 #include <QString>
 #include <QVector>
 #include <QSharedPointer>
 
-#include "AbstractHighlighter.h"
+#include <AbstractHighlighter.h>
 
-class HighlightEventResponse :
+class HighlightBlockEventResponse :
     public QEvent
 {
 public:
-    HighlightEventResponse(int blockIndex);
-    virtual ~HighlightEventResponse();
+    HighlightBlockEventResponse(int blockIndex);
+    virtual ~HighlightBlockEventResponse();
     int getBlockIndex() const;
     AbstractHighlighter::MultiFormatListPtr getResults() const;
     static QEvent::Type getType() { return m_type; }
@@ -45,4 +45,4 @@ protected:
     static QEvent::Type m_type;
 };
 
-#endif /* BLACK_MILORD_HIGHLIGHT_EVENT_RESPONSE_H */
+#endif /* BLACK_MILORD_HIGHLIGHT_BLOCK_EVENT_RESPONSE_H */

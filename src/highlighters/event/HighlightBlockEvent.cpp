@@ -19,44 +19,28 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BLACK_MILORD_HIGHLIGHTER_MANAGER_H
-#define BLACK_MILORD_HIGHLIGHTER_MANAGER_H
+#include "HighlightBlockEvent.h"
 
-#include <QObject>
-#include <QSharedPointer>
-#include <QList>
-#include <QEvent>
-#include "AbstractHighlighter.h"
+QEvent::Type HighlightBlockEvent::m_type =
+    static_cast<QEvent::Type>(QEvent::registerEventType());
 
-class QTextBlock;
-class PlainTextEditor;
-class HighlighterThread;
-
-class HighlighterManager :
-    public QObject
+HighlightBlockEvent::HighlightBlockEvent(int blockIndex, const QString &text) :
+    QEvent(m_type),
+    m_blockIndex(blockIndex),
+    m_text(text)
 {
-    Q_OBJECT
+}
 
-    HighlighterManager();
-    virtual ~HighlighterManager();
-public:
-    static HighlighterManager& instance();
-    void registerBlockToHighlight(const QTextBlock &block, bool important);
-    void cancelHighlighting();
-    void rehighlight();
-    QVector<AbstractHighlighter*> getHighlighters() const;
+HighlightBlockEvent::~HighlightBlockEvent()
+{
+}
 
-protected:
-    void highlightBlock(int blockIndex, const AbstractHighlighter::MultiFormatList &formatting);
-    void customEvent(QEvent *event);
+QString HighlightBlockEvent::getText() const
+{
+    return m_text;
+}
 
-private:
-    int m_inProgress;
-    QVector<AbstractHighlighter*> m_highlighters;
-    HighlighterThread *m_highlighterThread;
-
-private slots:
-    void applySettings();
-};
-
-#endif /* BLACK_MILORD_HIGHLIGHTER_MANAGER_H */
+int HighlightBlockEvent::getBlockIndex() const
+{
+    return m_blockIndex;
+}

@@ -19,28 +19,28 @@
  *                                                                      *
  ************************************************************************/
 
-#include "HighlightEventResponse.h"
+#include "HighlightBlockEventResponse.h"
 
-QEvent::Type HighlightEventResponse::m_type =
+QEvent::Type HighlightBlockEventResponse::m_type =
     static_cast<QEvent::Type>(QEvent::registerEventType());
 
-HighlightEventResponse::HighlightEventResponse(int blockIndex) :
+HighlightBlockEventResponse::HighlightBlockEventResponse(int blockIndex) :
     QEvent(m_type),
     m_blockIndex(blockIndex),
     m_results(new QVector<AbstractHighlighter::FormatList>())
 {
 }
 
-HighlightEventResponse::~HighlightEventResponse()
+HighlightBlockEventResponse::~HighlightBlockEventResponse()
 {
 }
 
-AbstractHighlighter::MultiFormatListPtr HighlightEventResponse::getResults() const
+AbstractHighlighter::MultiFormatListPtr HighlightBlockEventResponse::getResults() const
 {
     return m_results;
 }
 
-int HighlightEventResponse::getBlockIndex() const
+int HighlightBlockEventResponse::getBlockIndex() const
 {
     return m_blockIndex;
 }
