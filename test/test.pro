@@ -32,7 +32,7 @@ INCLUDEPATH +=  . \
                 ../src/device \
                 ../src/gui
 
-SOURCES += ./main.cpp
+SOURCES += ./main_tests.cpp
 SOURCES += ./Tests.cpp
 SOURCES += ../src/gui/Gui.cpp
 SOURCES += ../src/gui/MainWindow.cpp
