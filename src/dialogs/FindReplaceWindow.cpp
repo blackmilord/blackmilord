@@ -127,15 +127,8 @@ void FindReplaceWindow::showEvent(QShowEvent *event)
     QDialog::showEvent(event);
 }
 
-void FindReplaceWindow::find(bool showDialogs)
+QRegExp FindReplaceWindow::prepareQuery() const
 {
-    if (sender() == m_findNextButton) {
-        //save values only as a response for pressing a button.
-        saveValues();
-    }
-
-    const QString &text = Gui::plainTextEditor()->toPlainText();
-
     //prepare query
     QString pattern = m_findWhat->currentText();
     if (!m_regExp->isChecked()) {
@@ -147,6 +140,19 @@ void FindReplaceWindow::find(bool showDialogs)
     QRegExp rx(pattern);
     rx.setMinimal(true);
     rx.setCaseSensitivity(m_caseSensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive);
+    return rx;
+}
+
+void FindReplaceWindow::find(bool showDialogs)
+{
+    if (sender() == m_findNextButton) {
+        //save values only as a response for pressing a button.
+        saveValues();
+    }
+
+    const QString &text = Gui::plainTextEditor()->toPlainText();
+
+    const QRegExp &rx = prepareQuery();
 
     //find text
     int from = Gui::plainTextEditor()->getCursorPosition();
@@ -248,37 +254,27 @@ void FindReplaceWindow::replace()
 
 void FindReplaceWindow::replaceAll()
 {
-    qDebug() << "FindReplaceWindow::replaceAll() start" << QDateTime::currentDateTime();
     saveValues();
-
-    Gui::plainTextEditor()->asWidget()->setUpdatesEnabled(false);
-
     unsigned count = 0;
-
     PlainTextEditor *editor = Gui::plainTextEditor();
     const QString &replaceWith = m_replaceWith->currentText();
-    int selectionStart;
-    int selectionEnd;
+    const QRegExp &rx = prepareQuery();
+    QString text = editor->toPlainText();
 
-    editor->setCursorPositionToStart();
-    find(false);
-    while (editor->hasSelection()) {
-        selectionStart = editor->getSelectionStart();
-        selectionEnd = editor->getSelectionEnd();
-        editor->replace(selectionStart, selectionEnd - selectionStart, replaceWith);
+    int offset = rx.indexIn(text);
+    while (-1 != offset) {
         ++count;
-        find(false);
+        offset += rx.matchedLength();
+        offset = rx.indexIn(text, offset);
     }
 
-    Gui::plainTextEditor()->asWidget()->setUpdatesEnabled(true);
-    Gui::plainTextEditor()->asWidget()->update();
+    text.replace(rx, replaceWith);
+    Gui::plainTextEditor()->setPlainText(text);
+    //TODO: set cursor to last replaced occurrence
+    Gui::plainTextEditor()->setCursorPositionToEnd();
 
     QString message = tr("Repleced") + " " + QString::number(count) + " " + tr("occurrences");
     Gui::statusBar()->showMessage(message, 3000);
-
-    Gui::plainTextEditor()->setCursorPositionToEnd();
-    qDebug() << "FindReplaceWindow::replaceAll() end" << QDateTime::currentDateTime();
-    qDebug() << "replace count" << count;
 }
 
 void FindReplaceWindow::checkboxChanged()

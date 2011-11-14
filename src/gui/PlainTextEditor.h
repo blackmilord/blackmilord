@@ -39,10 +39,12 @@ public:
     int firstVisibleBlock() const;
 
     void replace(int position, int length, const QString &after);
+
     int getCursorPosition() const;
     void setCursorPosition(int position);
     void setCursorPositionToStart();
     void setCursorPositionToEnd();
+
     int getSelectionStart() const;
     int getSelectionEnd() const;
     bool hasSelection() const;
@@ -54,11 +56,15 @@ public:
 
     QTextBlock findBlockByNumber(int blockNumber) const;
     QTextBlock findBlock(int pos) const;
+
     void setTextCursor(const QTextCursor &cursor);
     QTextCursor textCursor() const;
     QTextCursor textCursorForBlock(int blockNumber = 0) const;
+
     int blockCount() const;
+
     bool blockSignals(bool block);
+
     void setFocus();
 
     void setEnabled(bool enabled);

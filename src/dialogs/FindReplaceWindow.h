@@ -26,6 +26,7 @@
 
 #include "SpellCheckingWindow.h"
 
+class QRegExp;
 class QComboBox;
 class QCheckBox;
 class QPushButton;
@@ -40,6 +41,8 @@ public:
 
 private:
     void saveValues();
+    QRegExp prepareQuery() const;
+
     bool m_notFoundLastTime;
     QComboBox *m_findWhat;
     QComboBox *m_replaceWith;

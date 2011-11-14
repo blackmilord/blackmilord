@@ -74,7 +74,6 @@ void HighlighterWorker::customEvent(QEvent *event)
     if (event->type() == HighlightBlockEvent::getType()) {
         event->accept();
         HighlightBlockEvent *highlightEvent = dynamic_cast<HighlightBlockEvent*>(event);
-        qDebug() << highlightEvent->getText();
         QVector<AbstractHighlighter*> highlighters =
             HighlighterManager::instance().getHighlighters();
 

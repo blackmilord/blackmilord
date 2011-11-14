@@ -12,9 +12,8 @@ win32 {
 }
 
 CONFIG(debug, debug|release) {
-    QMAKE_CXXFLAGS += -g3 -gdwarf-2 -O0 -pg
+    QMAKE_CXXFLAGS += -g3 -gdwarf-2 -O0
     DESTPREFIX = "debug"
-    QMAKE_LFLAGS += -pg
 }
 else {
     QMAKE_LFLAGS += -s
