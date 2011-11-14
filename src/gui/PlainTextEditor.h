@@ -36,32 +36,67 @@ public:
     explicit PlainTextEditor(QWidget * parent = 0);
     virtual ~PlainTextEditor();
 
-    int firstVisibleBlock() const;
+    inline int firstVisibleBlock() const
+    {
+        return QPlainTextEdit::firstVisibleBlock().blockNumber();
+    }
+    inline int lastVisibleBlock() const
+    {
+        return QPlainTextEdit::cursorForPosition(
+            QPoint(viewport()->width(), viewport()->height())).blockNumber();
+    }
 
     void replace(int position, int length, const QString &after);
 
-    int getCursorPosition() const;
+    inline int getCursorPosition() const
+    {
+        return textCursor().position();
+    }
     void setCursorPosition(int position);
     void setCursorPositionToStart();
     void setCursorPositionToEnd();
 
-    int getSelectionStart() const;
-    int getSelectionEnd() const;
-    bool hasSelection() const;
+    inline int getSelectionStart() const
+    {
+        return textCursor().selectionStart();
+    }
+    inline int getSelectionEnd() const
+    {
+        return textCursor().selectionEnd();
+    }
+    inline bool hasSelection() const
+    {
+        return textCursor().hasSelection();
+    }
     void setSelection(int selectionStart, int selectionEnd);
     void clearSelection();
+    inline QString getSelectedText() const
+    {
+        return textCursor().selectedText();
+    }
 
-    const QString& toPlainText() const;
+    inline const QString& toPlainText() const
+    {
+        return m_textReadOnly;
+    }
     void setPlainText(const QString &text);
 
-    QTextBlock findBlockByNumber(int blockNumber) const;
-    QTextBlock findBlock(int pos) const;
+    inline QTextBlock findBlockByNumber(int blockNumber) const
+    {
+        return document()->findBlockByNumber(blockNumber);
+    }
+    inline QTextBlock findBlock(int pos) const
+    {
+        return document()->findBlock(pos);
+    }
 
-    void setTextCursor(const QTextCursor &cursor);
+    //TODO: remove
     QTextCursor textCursor() const;
-    QTextCursor textCursorForBlock(int blockNumber = 0) const;
 
-    int blockCount() const;
+    inline int blockCount() const
+    {
+        return QPlainTextEdit::blockCount();
+    }
 
     bool blockSignals(bool block);
 

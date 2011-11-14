@@ -231,7 +231,7 @@ void PlainTextEditorUndoStack::cursorPositionChanged()
 {
     //qDebug() << "cursor position change";
     QTextCursor cursor =  m_editor->textCursor();
-    m_position = cursor.position();
+    m_position = m_editor->getCursorPosition();
     if (!cursor.atEnd()) {
         m_after = m_editor->toPlainText().at(m_position);
     }
@@ -249,9 +249,8 @@ void PlainTextEditorUndoStack::cursorPositionChanged()
 void PlainTextEditorUndoStack::selectionChanged()
 {
     //qDebug() << "selection change";
-    QTextCursor cursor =  m_editor->textCursor();
-    if (cursor.hasSelection()) {
-        m_selection = cursor.selectedText();
+    if (m_editor->hasSelection()) {
+        m_selection = m_editor->getSelectedText();
     }
     else {
         m_selection = QString();

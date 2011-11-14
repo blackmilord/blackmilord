@@ -35,7 +35,7 @@ PlainTextEditor* Gui::plainTextEditor()
 
 void Gui::setPlainTextEditor(PlainTextEditor *editor)
 {
-    Q_ASSERT(NULL == m_editor);
+    Q_ASSERT(NULL == m_editor || editor == NULL);
     m_editor = editor;
 }
 
@@ -47,6 +47,6 @@ StatusBar* Gui::statusBar()
 
 void Gui::setStatusBar(StatusBar *statusBar)
 {
-    Q_ASSERT(NULL == m_statusBar);
+    Q_ASSERT(NULL == m_statusBar || statusBar == NULL);
     m_statusBar = statusBar;
 }

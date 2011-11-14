@@ -51,11 +51,6 @@ PlainTextEditor::~PlainTextEditor()
 {
 }
 
-int PlainTextEditor::firstVisibleBlock() const
-{
-    return QPlainTextEdit::firstVisibleBlock().blockNumber();
-}
-
 bool PlainTextEditor::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == this) {
@@ -128,8 +123,8 @@ void PlainTextEditor::updateRequestSlot(const QRect &rect, int dy)
 {
     Q_UNUSED(rect);
     if (dy != 0) {
-        int firstVisibleBlockNumber = QPlainTextEdit::firstVisibleBlock().blockNumber();
-        int lastVisibleBlockNumber = cursorForPosition(QPoint(viewport()->width(), viewport()->height())).blockNumber();
+        int firstVisibleBlockNumber = firstVisibleBlock();
+        int lastVisibleBlockNumber = lastVisibleBlock();
 
         for (int blockNumber = firstVisibleBlockNumber; blockNumber <= lastVisibleBlockNumber; ++blockNumber ) {
             HighlighterManager::instance().registerBlockToHighlight(findBlockByNumber(blockNumber), false);
@@ -232,11 +227,6 @@ void PlainTextEditor::replace(int position, int length, const QString &after)
     cursor.insertText(after);
 }
 
-int PlainTextEditor::getCursorPosition() const
-{
-    return textCursor().position();
-}
-
 void PlainTextEditor::setCursorPosition(int position)
 {
     if (getCursorPosition() != position) {
@@ -260,23 +250,6 @@ void PlainTextEditor::setCursorPositionToEnd()
     setTextCursor(cursor);
 }
 
-int PlainTextEditor::getSelectionStart() const
-{
-    Q_ASSERT(hasSelection());
-    return textCursor().selectionStart();
-}
-
-int PlainTextEditor::getSelectionEnd() const
-{
-    Q_ASSERT(hasSelection());
-    return textCursor().selectionEnd();
-}
-
-bool PlainTextEditor::hasSelection() const
-{
-    return textCursor().hasSelection();
-}
-
 void PlainTextEditor::setSelection(int selectionStart, int selectionEnd)
 {
     QTextCursor cursor = textCursor();
@@ -292,12 +265,9 @@ void PlainTextEditor::setSelection(int selectionStart, int selectionEnd)
 
 void PlainTextEditor::clearSelection()
 {
-    textCursor().clearSelection();
-}
-
-const QString& PlainTextEditor::toPlainText() const
-{
-    return m_textReadOnly;
+    QTextCursor cursor = textCursor();
+    cursor.clearSelection();
+    setTextCursor(cursor);
 }
 
 void PlainTextEditor::setPlainText(const QString &text)
@@ -307,35 +277,9 @@ void PlainTextEditor::setPlainText(const QString &text)
     cursor.insertText(text);
 }
 
-QTextBlock PlainTextEditor::findBlockByNumber(int blockNumber) const
-{
-    return document()->findBlockByNumber(blockNumber);
-}
-
-QTextBlock PlainTextEditor::findBlock(int pos) const
-{
-    return document()->findBlock(pos);
-}
-
-void PlainTextEditor::setTextCursor(const QTextCursor& cursor)
-{
-    QPlainTextEdit::setTextCursor(cursor);
-}
-
-QTextCursor PlainTextEditor::textCursorForBlock(int blockNumber) const
-{
-    Q_ASSERT(blockNumber < blockCount());
-    return QTextCursor(document()->findBlockByNumber(blockNumber));
-}
-
 QTextCursor PlainTextEditor::textCursor() const
 {
     return QPlainTextEdit::textCursor();
-}
-
-int PlainTextEditor::blockCount() const
-{
-    return QPlainTextEdit::blockCount();
 }
 
 bool PlainTextEditor::blockSignals(bool block)

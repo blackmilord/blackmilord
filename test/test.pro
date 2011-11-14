@@ -1,7 +1,7 @@
 TEMPLATE = app
 VERSION = 0.1.0
 CONFIG += qt debug_and_release qtestlib
-QT = core gui
+QT = core gui testlib
 TARGET = test_blackmilord
 RESOURCES = ../src/resource.qrc
 

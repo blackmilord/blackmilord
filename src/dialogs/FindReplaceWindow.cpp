@@ -125,6 +125,7 @@ void FindReplaceWindow::showEvent(QShowEvent *event)
     m_notFoundLastTime = false;
     updateButtons();
     QDialog::showEvent(event);
+    m_findWhat->setFocus();
 }
 
 QRegExp FindReplaceWindow::prepareQuery() const
