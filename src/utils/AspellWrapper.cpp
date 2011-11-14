@@ -20,7 +20,6 @@
  ************************************************************************/
 
 #include "AspellWrapper.h"
-#include "utils/Dictionary.h"
 #ifdef Q_WS_X11
 #  include <dlfcn.h>
 #elif defined Q_WS_WIN
@@ -30,6 +29,7 @@
 #include <QDebug>
 #include <QMutexLocker>
 #include <Preferences.h>
+#include <Dictionary.h>
 
 ASpellWrapper::ASpellWrapper() :
     m_mutex(QMutex::Recursive),
