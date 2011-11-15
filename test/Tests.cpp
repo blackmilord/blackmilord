@@ -68,12 +68,13 @@ void BlackMilordTests::check_PlainTextEditor_typing()
     QVERIFY(editor->toPlainText() == "ab");
 }
 
-void BlackMilordTests::check_PlainTextEditor_firstVisibleBlock()
+void BlackMilordTests::check_PlainTextEditor_visibleBlocks()
 {
     PlainTextEditor *editor = Gui::plainTextEditor();
     QString testString = "test\ntest";
     editor->setPlainText(testString);
     QVERIFY(editor->firstVisibleBlock() == 0);
+    QVERIFY(editor->lastVisibleBlock() == 1);
 }
 
 void BlackMilordTests::check_PlainTextEditor_getCursorPosition()
@@ -123,4 +124,28 @@ void BlackMilordTests::check_PlainTextEditor_selection()
     QVERIFY(editor->hasSelection() == false);
     QVERIFY(editor->getSelectionStart() == editor->getSelectionEnd());
     QVERIFY(editor->getSelectionStart() == editor->getCursorPosition());
+}
+
+void BlackMilordTests::check_PlainTextEditor_blockCount()
+{
+    PlainTextEditor *editor = Gui::plainTextEditor();
+    QString testString = "test\ntest";
+    editor->setPlainText(testString);
+    QVERIFY(editor->blockCount() == 2);
+}
+
+void BlackMilordTests::check_PlainTextEditor_redoUndoAvailability()
+{
+    PlainTextEditor *editor = Gui::plainTextEditor();
+    QVERIFY(!editor->canRedo());
+    QVERIFY(!editor->canUndo());
+    QTest::keyEvent(QTest::Click, editor->asWidget(), Qt::Key_A);
+    QVERIFY(!editor->canRedo());
+    QVERIFY(!editor->canUndo());
+    QTest::keyEvent(QTest::Click, editor->asWidget(), Qt::Key_Enter);
+    QVERIFY(!editor->canRedo());
+    QVERIFY(editor->canUndo());
+    editor->undo();
+    QVERIFY(editor->canRedo());
+    QVERIFY(!editor->canUndo());
 }

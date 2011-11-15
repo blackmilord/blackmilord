@@ -108,6 +108,15 @@ public:
     void setModified(bool modified);
     bool isModified() const;
 
+    inline bool canRedo()
+    {
+        return m_undoStack.canRedo();
+    }
+    inline bool canUndo()
+    {
+        return m_undoStack.canUndo();
+    }
+
     QWidget* asWidget();
     QObject* asObject();
 

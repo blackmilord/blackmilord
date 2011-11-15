@@ -36,8 +36,11 @@ private slots:
 
     void check_PlainTextEditor_setTextgetText();
     void check_PlainTextEditor_typing();
-    void check_PlainTextEditor_firstVisibleBlock();
+    void check_PlainTextEditor_visibleBlocks();
     void check_PlainTextEditor_getCursorPosition();
     void check_PlainTextEditor_setCursorPosition();
     void check_PlainTextEditor_selection();
+    void check_PlainTextEditor_blockCount();
+
+    void check_PlainTextEditor_redoUndoAvailability();
 };
