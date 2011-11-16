@@ -125,7 +125,6 @@ void PlainTextEditor::updateRequestSlot(const QRect &rect, int dy)
     if (dy != 0) {
         int firstVisibleBlockNumber = firstVisibleBlock();
         int lastVisibleBlockNumber = lastVisibleBlock();
-
         for (int blockNumber = firstVisibleBlockNumber; blockNumber <= lastVisibleBlockNumber; ++blockNumber ) {
             HighlighterManager::instance().registerBlockToHighlight(findBlockByNumber(blockNumber), false);
         }
@@ -181,16 +180,10 @@ void PlainTextEditor::contentsChangeSlot(int position, int charsRemoved, int cha
         HighlighterManager::instance().registerBlockToHighlight(last, true);
     }
     else {
-        int firstVisibleBlockNumber = QPlainTextEdit::firstVisibleBlock().blockNumber();
-        int lastVisibleBlockNumber = cursorForPosition(QPoint(viewport()->width(), viewport()->height())).blockNumber();
-
-        if (firstVisibleBlockNumber > firstBlockNumber) {
-            firstBlockNumber = firstVisibleBlockNumber;
-        }
-        if (lastVisibleBlockNumber < lastBlockNumber) {
-            lastBlockNumber = lastVisibleBlockNumber;
-        }
-
+        HighlighterManager::instance().registerBlockToHighlight(first, true);
+        HighlighterManager::instance().registerBlockToHighlight(last, true);
+        ++firstBlockNumber;
+        --lastBlockNumber;
         for (int blockNumber = firstBlockNumber; blockNumber <= lastBlockNumber; ++blockNumber ) {
             HighlighterManager::instance().registerBlockToHighlight(findBlockByNumber(blockNumber), true);
         }

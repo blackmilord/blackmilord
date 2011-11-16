@@ -75,6 +75,14 @@ void HighlighterManager::applySettings()
 
 void HighlighterManager::registerBlockToHighlight(const QTextBlock &block, bool important)
 {
+    if (important) {
+        int firstVisible = Gui::plainTextEditor()->firstVisibleBlock();
+        int lastVisible = Gui::plainTextEditor()->lastVisibleBlock();
+        int current = block.blockNumber();
+        if (current < firstVisible || current > lastVisible) {
+            important = false;
+        }
+    }
     if (!important) {
         BlockData *data = dynamic_cast<BlockData*>(block.userData());
         if (data == NULL){
