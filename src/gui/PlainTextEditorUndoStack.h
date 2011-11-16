@@ -79,6 +79,27 @@ private:
     int m_position;
     QString m_selection;
     int m_maxStackSize;
+    
+    bool m_lastCanRedo;
+    bool m_lastCanUndo;
+    
+    inline void emitCanRedo()
+    {
+        bool tmp = canRedo();
+        if (tmp != m_lastCanRedo) {
+            m_lastCanRedo = tmp;
+            emit canRedo(m_lastCanRedo);
+        }
+    }
+
+    inline void emitCanUndo()
+    {
+        bool tmp = canUndo();
+        if (tmp != m_lastCanUndo) {
+            m_lastCanUndo = tmp;
+            emit canUndo(m_lastCanUndo);
+        }
+    }
 
     QList<RedoUndoCommand*> m_undoCommands;
     QList<RedoUndoCommand*> m_redoCommands;

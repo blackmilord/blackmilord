@@ -28,7 +28,9 @@
 PlainTextEditorUndoStack::PlainTextEditorUndoStack(PlainTextEditor *editor) :
     m_editor(editor),
     m_position(0),
-    m_maxStackSize(100)
+    m_maxStackSize(100),
+    m_lastCanRedo(false),
+    m_lastCanUndo(false)
 {
     connect(m_editor->asObject(), SIGNAL(cursorPositionChanged()),
         this, SLOT(cursorPositionChanged()));
@@ -60,7 +62,7 @@ void PlainTextEditorUndoStack::clearUndoCommands()
         delete command;
     }
     m_undoCommands.clear();
-    emit canUndo(false);
+    emitCanUndo();
 }
 
 void PlainTextEditorUndoStack::clearRedoCommands()
@@ -69,7 +71,7 @@ void PlainTextEditorUndoStack::clearRedoCommands()
         delete command;
     }
     m_redoCommands.clear();
-    emit canRedo(false);
+    emitCanRedo();
 }
 
 void PlainTextEditorUndoStack::undo()
@@ -272,13 +274,13 @@ void PlainTextEditorUndoStack::addNewUndoCommand(RedoUndoCommand* command)
     if (m_undoCommands.size() > m_maxStackSize) {
         delete m_undoCommands.takeLast();
     }
-    emit canUndo(canUndo());
+    emitCanUndo();
 }
 
 PlainTextEditorUndoStack::RedoUndoCommand* PlainTextEditorUndoStack::popUndoCommand()
 {
     RedoUndoCommand *result = m_undoCommands.takeFirst();
-    emit canUndo(canUndo());
+    emitCanUndo();
     return result;
 }
 
@@ -291,13 +293,13 @@ void PlainTextEditorUndoStack::addNewRedoCommand(RedoUndoCommand* command)
     if (m_redoCommands.size() > m_maxStackSize) {
         delete m_redoCommands.takeLast();
     }
-    emit canRedo(canRedo());
+    emitCanRedo();
 }
 
 PlainTextEditorUndoStack::RedoUndoCommand* PlainTextEditorUndoStack::popRedoCommand()
 {
     RedoUndoCommand *result = m_redoCommands.takeFirst();
-    emit canRedo(canRedo());
+    emitCanRedo();
     return result;
 }
 
@@ -325,6 +327,7 @@ void PlainTextEditorUndoStack::adding(int position, const QChar &charAdded)
     if (command->m_type == RedoUndoCommand::UNKNOWN) {
         command->m_type = RedoUndoCommand::INSERT;
         command->m_position = position;
+        emitCanUndo();
     }
 
     command->m_textAdded->append(charAdded);

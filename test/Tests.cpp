@@ -141,11 +141,27 @@ void BlackMilordTests::check_PlainTextEditor_redoUndoAvailability()
     QVERIFY(!editor->canUndo());
     QTest::keyEvent(QTest::Click, editor->asWidget(), Qt::Key_A);
     QVERIFY(!editor->canRedo());
-    QVERIFY(!editor->canUndo());
+    QVERIFY(editor->canUndo());
     QTest::keyEvent(QTest::Click, editor->asWidget(), Qt::Key_Enter);
     QVERIFY(!editor->canRedo());
     QVERIFY(editor->canUndo());
+    QTest::keyEvent(QTest::Click, editor->asWidget(), Qt::Key_A);
+    QVERIFY(!editor->canRedo());
+    QVERIFY(editor->canUndo());
+
+    editor->undo();
+    QVERIFY(editor->canRedo());
+    QVERIFY(editor->canUndo());
+
     editor->undo();
     QVERIFY(editor->canRedo());
     QVERIFY(!editor->canUndo());
+
+    editor->redo();
+    QVERIFY(editor->canRedo());
+    QVERIFY(editor->canUndo());
+
+    editor->redo();
+    QVERIFY(!editor->canRedo());
+    QVERIFY(editor->canUndo());
 }
