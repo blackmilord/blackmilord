@@ -73,22 +73,82 @@ void HighlighterWorker::customEvent(QEvent *event)
 {
     if (event->type() == HighlightBlockEvent::getType()) {
         event->accept();
+        //get request event
         HighlightBlockEvent *highlightEvent = dynamic_cast<HighlightBlockEvent*>(event);
+        const QString &text = highlightEvent->getText();
+
+        //create response event
+        HighlightBlockEventResponse *responseEvent =
+            new HighlightBlockEventResponse(highlightEvent->getBlockIndex(), text.length());
+        AbstractHighlighter::FormatListPtr result = responseEvent->getResults();
+
+        //get highlighters
         QVector<AbstractHighlighter*> highlighters =
             HighlighterManager::instance().getHighlighters();
 
-        HighlightBlockEventResponse *responseEvent =
-            new HighlightBlockEventResponse(highlightEvent->getBlockIndex());
-
+        //call all highlighters
+        QVector<AbstractHighlighter::FormatListPtr> results;
         foreach(AbstractHighlighter* highlighter, highlighters) {
             if (highlighter->isEnabled()) {
-                responseEvent->getResults()->push_back(
-                    highlighter->highlightBlock(highlightEvent->getText()));
+                results.push_back(highlighter->highlightBlock(text));
             }
         }
 
-        QApplication::postEvent(&HighlighterManager::instance(), responseEvent);
+        //merge results to single list
 
+        //calculate all steps
+        QSet<int> steps;
+        steps << 0 << text.length();
+        foreach(const AbstractHighlighter::FormatListPtr &formats, results) {
+            foreach(const AbstractHighlighter::CharFormat &format, *formats.data()) {
+                steps << format.m_start << format.m_end;
+            }
+        }
+        QList<int> stepList = steps.toList();
+        qSort(stepList);
+
+        //store formating for each range when not default
+        int start = 0;
+        int end = stepList.takeFirst();
+        bool newFormatSet = false;
+        QTextCharFormat lastStoredFormat;
+        int lastStoredEnd = -1;
+        while (!stepList.isEmpty()) {
+            start = end;
+            end = stepList.takeFirst();
+            QTextCharFormat newFormat;
+            newFormatSet = false;
+            foreach(const AbstractHighlighter::FormatListPtr &formats, results) {
+                foreach(const AbstractHighlighter::CharFormat &format, *formats.data()) {
+                    if (format.m_start <= start && format.m_end >= end) {
+                        if (!newFormatSet) {
+                            newFormat = format.m_format;
+                            newFormatSet = true;
+                        }
+                        else {
+                            QMap<int, QVariant> props = format.m_format.properties();
+                            QMap<int, QVariant>::const_iterator prop = props.begin();
+                            for(; prop != props.end(); ++prop) {
+                                newFormat.setProperty(prop.key(), prop.value());
+                            }
+                        }
+                    }
+                }
+            }
+            if (newFormatSet) {
+                if (newFormat == lastStoredFormat && lastStoredEnd == start) {
+                    //resize last block for optimalization
+                    result->last().m_end = end;
+                    lastStoredEnd = end;
+                }
+                else {
+                    lastStoredEnd = end;
+                    lastStoredFormat = newFormat;
+                    result->push_back(AbstractHighlighter::CharFormat(start, end, newFormat));
+                }
+            }
+        }
+        QApplication::postEvent(&HighlighterManager::instance(), responseEvent);
     }
     else {
         event->ignore();

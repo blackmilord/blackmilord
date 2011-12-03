@@ -37,12 +37,12 @@ class EditorPage : public QWidget, public IPageWidget
     Q_OBJECT
 public:
     explicit EditorPage(QWidget *parent = 0);
+    virtual ~EditorPage();
     void registerPage(QListWidget *contentsWidget, QStackedWidget *pagesWidget);
     void apply();
 private:
      QFontComboBox *m_font;
      QComboBox *m_fontSize;
-     QVector<QCheckBox*> m_highlighterCheckBox;
 
      void showEvent(QShowEvent *event);
 

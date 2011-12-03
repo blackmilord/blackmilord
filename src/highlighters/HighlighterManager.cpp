@@ -33,20 +33,22 @@
 #include "HighlighterHTMLTags.h"
 #include "HighlighterSpellcheck.h"
 #include "HighlighterThread.h"
+#include "DatabaseHeader.h"
 
 HighlighterManager::HighlighterManager() :
+    QSyntaxHighlighter(Gui::plainTextEditor()->document()),
     m_inProgress(0),
-    m_highlighterThread(new HighlighterThread(this))
+    m_highlighterThread(new HighlighterThread(this)),
+    m_preparedFormatting(NULL)
 {
     m_highlighters.push_back(new HighlighterHTMLTags());
     m_highlighters.push_back(new HighlighterSpellcheck());
-    connect(&Preferences::instance(), SIGNAL(settingsChanged()),
-            this, SLOT(applySettings()));
     m_highlighterThread->start();
 }
 
 HighlighterManager::~HighlighterManager()
 {
+    cancelHighlighting();
     m_highlighterThread->quit();
     m_highlighterThread->wait();
     foreach(AbstractHighlighter* highlighter, m_highlighters) {
@@ -56,8 +58,8 @@ HighlighterManager::~HighlighterManager()
 
 HighlighterManager& HighlighterManager::instance()
 {
-    static HighlighterManager instance;
-    return instance;
+    static HighlighterManager *instance = new HighlighterManager();
+    return *instance;
 }
 
 void HighlighterManager::applySettings()
@@ -69,53 +71,65 @@ void HighlighterManager::applySettings()
         rehighlight();
     }
     else {
+        cancelHighlighting();
         QApplication::postEvent(this, new HighlightersApplySettingsEvent());
     }
 }
 
-void HighlighterManager::registerBlockToHighlight(const QTextBlock &block, bool important)
+void HighlighterManager::saveSettings()
 {
-    if (important) {
-        int firstVisible = Gui::plainTextEditor()->firstVisibleBlock();
-        int lastVisible = Gui::plainTextEditor()->lastVisibleBlock();
-        int current = block.blockNumber();
-        if (current < firstVisible || current > lastVisible) {
-            important = false;
-        }
+    foreach(AbstractHighlighter* highlighter, m_highlighters) {
+        highlighter->saveSettings();
     }
-    if (!important) {
-        BlockData *data = dynamic_cast<BlockData*>(block.userData());
-        if (data == NULL){
-            data = new BlockData();
-            const_cast<QTextBlock&>(block).setUserData(data);
-        }
-        if(data->highlightingDone()) {
-            return;
-        }
-        data->setHighlightingDone(true);
+}
+
+void HighlighterManager::registerBlockToHighlight(const QTextBlock &block, bool invalidate)
+{
+    int blockNumber = block.blockNumber();
+    if (blockNumber < Gui::plainTextEditor()->firstVisibleBlock() ||
+        blockNumber > Gui::plainTextEditor()->lastVisibleBlock())
+    {
+        invalidateBlock(block);
+        return;
     }
-    int priority = important ? Qt::HighEventPriority : Qt::NormalEventPriority;
-    ++m_inProgress;
+    BlockData *data = dynamic_cast<BlockData*>(block.userData());
+    if (NULL == data){
+        data = new BlockData();
+        const_cast<QTextBlock&>(block).setUserData(data);
+    }
+    if (data->highlightingDone() && !invalidate) {
+        return;
+    }
+    data->setHighlightingDone(true);
     QApplication::postEvent(m_highlighterThread->getWorker(),
-        new HighlightBlockEvent(block.blockNumber(), block.text()), priority);
+        new HighlightBlockEvent(block.blockNumber(), block.text()));
+}
+
+void HighlighterManager::invalidateBlock(const QTextBlock &block)
+{
+    BlockData *data = dynamic_cast<BlockData*>(block.userData());
+    if (data == NULL){
+        //No need to do anything
+        //Block is invalid by default
+        return;
+    }
+    data->setHighlightingDone(false);
 }
 
 void HighlighterManager::cancelHighlighting()
 {
-    qDebug() << "HighlighterManager::cancelHighlighting() is not implemented";
-
-    //TODO: unless we know amount of removed events we cannot fix m_inProgress variable
-    //QApplication::removePostedEvents(m_highlighterThread->getWorker(), HighlightBlockEvent::getType());
+    QApplication::removePostedEvents(m_highlighterThread->getWorker(), HighlightBlockEvent::getType());
 }
 
 void HighlighterManager::customEvent(QEvent *event)
 {
     if (event->type() == HighlightBlockEventResponse::getType()) {
         event->accept();
-        HighlightBlockEventResponse *responseEvent =
-                dynamic_cast<HighlightBlockEventResponse*>(event);
-        highlightBlock(responseEvent->getBlockIndex(), *responseEvent->getResults());
-        --m_inProgress;
+        Q_ASSERT(m_preparedFormatting == NULL);
+        m_preparedFormatting = dynamic_cast<HighlightBlockEventResponse*>(event);
+        QSyntaxHighlighter::rehighlightBlock(
+            Gui::plainTextEditor()->findBlockByNumber(m_preparedFormatting->getBlockIndex()));
+        m_preparedFormatting = NULL;
     }
     else if (event->type() == HighlightersApplySettingsEvent::getType()) {
         event->accept();
@@ -128,61 +142,48 @@ void HighlighterManager::customEvent(QEvent *event)
 
 void HighlighterManager::rehighlight()
 {
-    qDebug() << "HighlighterManager::rehighlight() is not implemented";
-    //TODO: implement
-}
+    cancelHighlighting();
+    int blockCount = Gui::plainTextEditor()->blockCount();
+    int firstVisible = Gui::plainTextEditor()->firstVisibleBlock();
+    int lastVisible = Gui::plainTextEditor()->lastVisibleBlock();
 
-void HighlighterManager::highlightBlock(int blockIndex, const AbstractHighlighter::MultiFormatList &formatting)
-{
-    //TODO: TextEditor should provide API for highlighting,
-    //TODO: Blocking signal should be removed
-    QSet<int> steps;
-    const QTextBlock &block = Gui::plainTextEditor()->findBlockByNumber(blockIndex);
-    bool signalsBlockedEditor = Gui::plainTextEditor()->blockSignals(true);
-    steps << 0 << block.text().length();
-    foreach(const AbstractHighlighter::FormatList &formats, formatting) {
-        foreach(const AbstractHighlighter::CharFormat &format, formats) {
-            steps << format.m_start << format.m_start + format.m_count;
-        }
+    for (int i = 0; i < firstVisible; ++i) {
+        const QTextBlock &block = Gui::plainTextEditor()->findBlockByNumber(i);
+        invalidateBlock(block);
     }
-    QList<int> stepList = steps.toList();
-    qSort(stepList);
+    for (int i = lastVisible + 1; i < blockCount; ++i) {
+        const QTextBlock &block = Gui::plainTextEditor()->findBlockByNumber(i);
+        invalidateBlock(block);
+    }
 
-    QTextCursor cursor(block);
-    int cursorPositionOffset = cursor.position();
-    int start = 0;
-    int end = stepList.takeFirst();
-    bool newFormatSet = false;
-    while (!stepList.isEmpty()) {
-        start = end;
-        end = stepList.takeFirst();
-        QTextCharFormat newFormat;
-        newFormatSet = false;
-        foreach(const AbstractHighlighter::FormatList &formats, formatting) {
-            foreach(const AbstractHighlighter::CharFormat &format, formats) {
-                if (format.m_start <= start && format.m_start + format.m_count >= end) {
-                    if (!newFormatSet) {
-                        newFormat = format.m_format;
-                        newFormatSet = true;
-                    }
-                    else {
-                        QMap<int, QVariant> props = format.m_format.properties();
-                        QMap<int, QVariant>::const_iterator prop = props.begin();
-                        for(; prop != props.end(); ++prop) {
-                            newFormat.setProperty(prop.key(), prop.value());
-                        }
-                    }
-                }
-            }
-        }
-        cursor.setPosition(cursorPositionOffset + start);
-        cursor.setPosition(cursorPositionOffset + end, QTextCursor::KeepAnchor);
-        cursor.setCharFormat(newFormat);
+    for (int i = firstVisible; i <= lastVisible; ++i) {
+        registerBlockToHighlight(Gui::plainTextEditor()->findBlockByNumber(i), true);
     }
-    Gui::plainTextEditor()->blockSignals(signalsBlockedEditor);
 }
 
 QVector<AbstractHighlighter*> HighlighterManager::getHighlighters() const
 {
     return m_highlighters;
+}
+
+void HighlighterManager::highlightBlock(const QString &text)
+{
+    if (m_preparedFormatting == NULL) {
+        //no prepared data
+        return;
+    }
+    if (m_preparedFormatting->getBlockLength() != text.length()) {
+        //prepared data is out of date.
+        return;
+    }
+    if (m_preparedFormatting->getBlockIndex() != QSyntaxHighlighter::currentBlock().blockNumber()) {
+        //this is not prepared block.
+        //User might type somothing during preparing formatting.
+        return;
+    }
+    //apply formatting
+    setFormat(0, text.length(), QTextCharFormat());
+    foreach(const AbstractHighlighter::CharFormat &format, *m_preparedFormatting->getResults().data()) {
+        setFormat(format.m_start, format.m_end, format.m_format);
+    }
 }

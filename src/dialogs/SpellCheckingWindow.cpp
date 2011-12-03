@@ -186,8 +186,7 @@ void SpellCheckingWindow::loadLanguages()
         return;
     }
     QList<QPair<QString, QString> >::const_iterator it = lang.begin();
-    QString propertiesDictionary = Preferences::instance().getValue(
-            Preferences::PROP_ASPELL_DICTIONARY, "").toString();
+    QString propertiesDictionary = Preferences::instance().getAspellDictionary();
     m_language->clear();
     for (; it != lang.end(); ++it) {
         QString display = it->first;

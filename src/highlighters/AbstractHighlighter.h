@@ -27,8 +27,8 @@
 #include <QMutex>
 #include <Preferences.h>
 
-
 class QString;
+class QLayout;
 
 class AbstractHighlighter
 {
@@ -36,38 +36,81 @@ public:
 
     struct CharFormat
     {
-        CharFormat() :
-            m_start(0),
-            m_count(0)
+        CharFormat()
         {
+            Q_ASSERT(false);
         }
 
-        CharFormat(int start, int count, const QTextCharFormat &format) :
+        CharFormat(int start, int end, const QTextCharFormat &format) :
             m_format(format),
             m_start(start),
-            m_count(count)
+            m_end(end)
         {
         }
 
         QTextCharFormat m_format;
         int m_start;
-        int m_count;
+        int m_end;
     };
 
     typedef QVector<CharFormat> FormatList;
-    typedef QVector<FormatList> MultiFormatList;
-    typedef QSharedPointer<QVector<FormatList> > MultiFormatListPtr;
-    typedef FormatList::const_iterator FormatListIterator;
-    typedef MultiFormatList::const_iterator MultiFormatListIterator;
+    typedef QSharedPointer<FormatList> FormatListPtr;
 
-    AbstractHighlighter();
+    explicit AbstractHighlighter(bool enabled = false);
     virtual ~AbstractHighlighter();
 
-    virtual FormatList highlightBlock(const QString &text) = 0;
-    virtual QString getOptionCheckBoxCaption() const = 0;
-    virtual Preferences::PropertyName getPropertyName() const = 0;
+    /**
+     * This function is called every time a line of text needs highlighting.
+     * WARNING: This function is called from non-main thread.
+     *          It should base only on internal settings.
+     *          This function should not call anything.
+     *          It is quaranted @see applySettins() is not called
+     *          during execution of this function.
+     * @param text Text to highlight.
+     * @return List of text formatting.
+     */
+    virtual FormatListPtr highlightBlock(const QString &text) = 0;
+
+    /**
+     * This funcion provides inteface to configure a highlighter.
+     * @return layout with configuration dialog
+     */
+    virtual QLayout* configurationLayout() = 0;
+
+    /**
+     * Reset layout to current settins;
+     */
+    virtual void resetConfigurationLayout() = 0;
+
+    /**
+     * This function saves configuration provided
+     * by user in @see configurationLayout() in application preferences.
+     * This function should not modify internal settins, but store it in application preferences.
+     * Internal settins are updated by @see applySettings() function.
+     * It guaranties thread-save behaviour.
+     */
+    virtual void saveSettings() = 0;
+
+    /**
+     * This function is called when highlighter should reread configuration
+     * from application preferences. It is guaranted it it's not called during @see highlightBlock() execution.
+     */
     virtual void applySettings() = 0;
+
     virtual bool isEnabled();
+
+    /**
+     * Function provides unique highlighter's GUID.
+     * @return highlighter's GUID.
+     */
+    virtual QString guid() const = 0;
+
+    /**
+     * Function provides highlighter's name.
+     * @return highlighter's name.
+     */
+    virtual QString name() const = 0;
+
 protected:
     bool m_enabled;
 };

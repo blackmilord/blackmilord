@@ -5,6 +5,7 @@
 
         <file>resource/icon/settings_editor.png</file>
         <file>resource/icon/settings_general.png</file>
+        <file>resource/icon/settings_highlighters.png</file>
 
         <file>resource/icon/menu_new.png</file>
         <file>resource/icon/menu_exit.png</file>

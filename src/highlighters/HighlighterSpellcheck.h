@@ -26,6 +26,7 @@
 #include "AbstractHighlighter.h"
 
 class QString;
+class QCheckBox;
 
 class HighlighterSpellcheck :
     public AbstractHighlighter
@@ -34,10 +35,19 @@ public:
     HighlighterSpellcheck();
     virtual ~HighlighterSpellcheck();
 
-    QVector<AbstractHighlighter::CharFormat> highlightBlock(const QString &text);
-    QString getOptionCheckBoxCaption() const;
-    Preferences::PropertyName getPropertyName() const;
+    FormatListPtr highlightBlock(const QString &text);
+
+    QLayout* configurationLayout();
+    void resetConfigurationLayout();
+    void saveSettings();
+
     virtual void applySettings();
+
+    QString guid() const;
+    QString name() const;
+
+private:
+    QCheckBox *m_enableCB;
 };
 
 #endif /* BLACK_MILORD_HIGHLIGHTER_SPELLING_ERROR_H */

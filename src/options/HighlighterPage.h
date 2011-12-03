@@ -19,54 +19,27 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BLACK_MILORD_HIGHLIGHTER_MANAGER_H
-#define BLACK_MILORD_HIGHLIGHTER_MANAGER_H
+#ifndef BLACK_MILORD_HIGHLIGHTER_PAGE_H
+#define BLACK_MILORD_HIGHLIGHTER_PAGE_H
 
-#include <QObject>
-#include <QSharedPointer>
-#include <QList>
-#include <QEvent>
-#include <QAtomicInt>
-#include <QSyntaxHighlighter>
-#include "AbstractHighlighter.h"
+#include <QWidget>
+#include <QVector>
+#include "IPageWidget.h"
 
-class QTextBlock;
-class PlainTextEditor;
-class HighlighterThread;
-class HighlightBlockEventResponse;
+class QListWidget;
+class QStackedWidget;
 
-class HighlighterManager :
-    public QSyntaxHighlighter
+class HighlighterPage : public QWidget, public IPageWidget
 {
     Q_OBJECT
-
-    HighlighterManager();
-    virtual ~HighlighterManager();
 public:
-    static HighlighterManager& instance();
-    void registerBlockToHighlight(const QTextBlock &block, bool invalidate);
-    void invalidateBlock(const QTextBlock &block);
-    void cancelHighlighting();
-    void rehighlight();
-    QVector<AbstractHighlighter*> getHighlighters() const;
-
-protected:
-    void customEvent(QEvent *event);
-    void highlightBlock(const QString &text);
-
+    explicit HighlighterPage(QWidget *parent = 0);
+    virtual ~HighlighterPage();
+    void registerPage(QListWidget *contentsWidget, QStackedWidget *pagesWidget);
+    void apply();
 private:
-    QAtomicInt m_inProgress;
-    QVector<AbstractHighlighter*> m_highlighters;
-    HighlighterThread *m_highlighterThread;
-
-    HighlightBlockEventResponse *m_preparedFormatting;
-
-    void applySettings();
-    void saveSettings();
-
-    friend class HighlighterPage;
-    friend class HighlightBlockEvent;
-    friend class HighlightBlockEventResponse;
+     void showEvent(QShowEvent *event);
 };
 
-#endif /* BLACK_MILORD_HIGHLIGHTER_MANAGER_H */
+
+#endif /* BLACK_MILORD_HIGHLIGHTER_PAGE_H */

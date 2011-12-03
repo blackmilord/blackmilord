@@ -25,6 +25,7 @@
 #include "AbstractHighlighter.h"
 
 class QString;
+class QCheckBox;
 
 class HighlighterHTMLTags :
     public AbstractHighlighter
@@ -33,10 +34,19 @@ public:
     HighlighterHTMLTags();
     virtual ~HighlighterHTMLTags();
 
-    QVector<AbstractHighlighter::CharFormat> highlightBlock(const QString &text);
-    QString getOptionCheckBoxCaption() const;
-    Preferences::PropertyName getPropertyName() const;
-    virtual void applySettings();
+    FormatListPtr highlightBlock(const QString &text);
+
+    QLayout* configurationLayout();
+    void resetConfigurationLayout();
+    void saveSettings();
+
+    void applySettings();
+
+    QString guid() const;
+    QString name() const;
+
+private:
+    QCheckBox *m_enableCB;
 };
 
 #endif /* BLACK_MILORD_HIGHLIGHTER_HTML_H */

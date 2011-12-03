@@ -28,37 +28,178 @@
 #include <QVariant>
 #include <QString>
 #include <QFont>
+#include <QFileInfo>
 #include <Version.h>
 
-void Preferences::saveLastUsedDirectory(const QString &dir)
-{
-    Q_ASSERT(m_threadGuard == QThread::currentThread());
-    setValue(PROP_LAST_USED_DIRECTORY, dir.left(
-            dir.lastIndexOf(QDir::separator())));
+namespace {
+    const QString PROP_VERSION                      = "core/version";
+    const QString PROP_MAKE_BACKUP_BEFORE_OVERWRITE = "core/backup_before_overwrite";
+    const QString PROP_ASPELL_DICTIONARY            = "core/aspell_language";
+    const QString PROP_LAST_USED_DIRECTORY          = "core/last_dir";
+    const QString PROP_WINDOW_WIDTH                 = "window/width";
+    const QString PROP_WINDOW_HEIGHT                = "window/height";
+    const QString PROP_WINDOW_POSITION_X            = "window/x";
+    const QString PROP_WINDOW_POSITION_Y            = "window/y";
+    const QString PROP_WINDOW_MAXIMIZED             = "window/maximized";
+    const QString PROP_HIGHLIGHTER_SPELLCHECK       = "editor/highlighter_spellchecking";
+    const QString PROP_HIGHLIGHTER_HTML_TAGS        = "editor/highlighter_htmltags";
+    const QString PROP_EDITOR_FONT_FAMILY           = "editor/font_editor_family";
+    const QString PROP_EDITOR_FONT_SIZE             = "editor/font_editor_size";
 }
 
-void Preferences::setValue(PropertyName key, const QVariant &value)
+double Preferences::getVersion() const
 {
     Q_ASSERT(m_threadGuard == QThread::currentThread());
-    m_settings->setValue(m_propertyMap[key], value);
+    return m_settings->value(PROP_VERSION, 0.0).toDouble();
+}
+
+void Preferences::setMakeBackupBeforeOverwrite(bool makeBackup)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(PROP_MAKE_BACKUP_BEFORE_OVERWRITE, makeBackup);
+}
+
+bool Preferences::getMakeBackupBeforeOverwrite() const
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    return m_settings->value(PROP_MAKE_BACKUP_BEFORE_OVERWRITE, true).toBool();
+}
+
+void Preferences::setAspellDictionary(const QString &dictionary)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(PROP_ASPELL_DICTIONARY, dictionary);
+}
+
+QString Preferences::getAspellDictionary() const
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    return m_settings->value(PROP_ASPELL_DICTIONARY, "").toString();
+}
+
+void Preferences::setWindowWidth(int width)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(PROP_WINDOW_WIDTH, width);
+    //No emit needed
+}
+
+int Preferences::getWindowWidth(int defWidth) const
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    return m_settings->value(PROP_WINDOW_WIDTH, defWidth).toInt();
+}
+
+void Preferences::setWindowHeight(int height)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(PROP_WINDOW_HEIGHT, height);
+    //No emit needed
+}
+
+int Preferences::getWindowHeight(int defHeight) const
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    return m_settings->value(PROP_WINDOW_HEIGHT, defHeight).toInt();
+}
+
+void Preferences::setWindowPositionX(int x)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(PROP_WINDOW_POSITION_X, x);
+    //No emit needed
+}
+
+int Preferences::getWindowPositionX(int defX) const
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    return m_settings->value(PROP_WINDOW_POSITION_X, defX).toInt();
+}
+
+void Preferences::setWindowPositionY(int y)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(PROP_WINDOW_POSITION_Y, y);
+    //No emit needed
+}
+
+int Preferences::getWindowPositionY(int defY) const
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    return m_settings->value(PROP_WINDOW_POSITION_Y, defY).toInt();
+}
+
+void Preferences::setWindowMaximized(bool maximized)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(PROP_WINDOW_MAXIMIZED, maximized);
+    //No emit needed
+}
+
+bool Preferences::getWindowMaximized() const
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    return m_settings->value(PROP_WINDOW_MAXIMIZED, 0).toBool();
+}
+
+void Preferences::setLastUsedDirectory(const QString &dir)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(PROP_LAST_USED_DIRECTORY,
+        QFileInfo(dir).absoluteDir().absolutePath());
+}
+
+QString Preferences::getLastUsedDirectory() const
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    return m_settings->value(PROP_LAST_USED_DIRECTORY, QString()).toString();
+}
+
+void Preferences::setEditorFontSize(int size)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(PROP_EDITOR_FONT_SIZE, size);
     emit settingsChanged();
 }
 
-QVariant Preferences::getValue(PropertyName key, const QVariant &defaultValue)
+int Preferences::getEditorFontSize() const
 {
     Q_ASSERT(m_threadGuard == QThread::currentThread());
-    return m_settings->value(m_propertyMap[key], defaultValue);
+    return m_settings->value(PROP_EDITOR_FONT_SIZE, 12).toInt();
 }
 
-QFont Preferences::getEditorFont()
+void Preferences::setEditorFontFamily(const QString &family)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(PROP_EDITOR_FONT_FAMILY, family);
+    emit settingsChanged();
+}
+
+QString Preferences::getEditorFontFamily() const
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    return m_settings->value(PROP_EDITOR_FONT_FAMILY, "Arial").toString();
+}
+
+QFont Preferences::getEditorFont() const
 {
     Q_ASSERT(m_threadGuard == QThread::currentThread());
     QFont defaultFontEditor;
-    defaultFontEditor.setFamily(
-            getValue(PROP_EDITOR_FONT_FAMILY, "Arial").toString());
-    defaultFontEditor.setPointSize(
-            getValue(PROP_EDITOR_FONT_SIZE, 12).toInt());
+    defaultFontEditor.setFamily(getEditorFontFamily());
+    defaultFontEditor.setPointSize(getEditorFontSize());
     return defaultFontEditor;
+}
+
+QVariant Preferences::getHighlighterValue(const QString &guid, const QString &key, const QVariant defValue)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    return m_settings->value(guid + "/" + key, defValue);
+}
+
+void Preferences::setHighlighterValue(const QString &guid, const QString &key, const QVariant &value)
+{
+    Q_ASSERT(m_threadGuard == QThread::currentThread());
+    m_settings->setValue(guid + "/" + key, value);
 }
 
 Preferences& Preferences::instance()
@@ -69,36 +210,15 @@ Preferences& Preferences::instance()
 
 void Preferences::createDefaultConfig()
 {
-    setValue(PROP_HIGHLIGHTER_SPELLCHECK, false);
-    setValue(PROP_HIGHLIGHTER_HTML_TAGS, false);
-    setValue(PROP_MAKE_BACKUP_BEFORE_OVERWRITE, true);
-    setValue(PROP_WINDOW_MAXIMIZED, false);
-    setValue(PROP_EDITOR_FONT_FAMILY, "Arial");
-    setValue(PROP_EDITOR_FONT_SIZE, 12);
-}
-
-void Preferences::initPropertiesMap()
-{
-    m_propertyMap[PROP_SETTINGS_VERSION]             = "core/version";
-    m_propertyMap[PROP_MAKE_BACKUP_BEFORE_OVERWRITE] = "core/backup_before_overwrite";
-    m_propertyMap[PROP_ASPELL_DICTIONARY]            = "core/aspell_language";
-    m_propertyMap[PROP_LAST_USED_DIRECTORY]          = "core/last_dir";
-    m_propertyMap[PROP_WINDOW_WIDTH]                 = "window/width";
-    m_propertyMap[PROP_WINDOW_HEIGHT]                = "window/height";
-    m_propertyMap[PROP_WINDOW_POSITION_X]            = "window/x";
-    m_propertyMap[PROP_WINDOW_POSITION_Y]            = "window/y";
-    m_propertyMap[PROP_WINDOW_MAXIMIZED]             = "window/maximized";
-    m_propertyMap[PROP_HIGHLIGHTER_SPELLCHECK]       = "editor/highlighter_spellchecking";
-    m_propertyMap[PROP_HIGHLIGHTER_HTML_TAGS]        = "editor/highlighter_htmltags";
-    m_propertyMap[PROP_EDITOR_FONT_FAMILY]           = "editor/font_editor_family";
-    m_propertyMap[PROP_EDITOR_FONT_SIZE]             = "editor/font_editor_size";
-    Q_ASSERT(m_propertyMap.size() == PROPERTY_NAME_SIZE);
+    setMakeBackupBeforeOverwrite(true);
+    setWindowMaximized(false);
+    setEditorFontFamily("Arial");
+    setEditorFontSize(12);
 }
 
 Preferences::Preferences() :
     m_threadGuard(QThread::currentThread())
 {
-    initPropertiesMap();
     QString configFile;
 #ifdef Q_WS_X11
     configFile = getenv("HOME");
@@ -113,7 +233,8 @@ Preferences::Preferences() :
     if (needDefault) {
         createDefaultConfig();
     }
-    setValue(PROP_SETTINGS_VERSION, BLACK_MILORD_VERSION);
+    //TODO: Version check and conversions.
+    m_settings->setValue(PROP_VERSION, BLACK_MILORD_VERSION);
 }
 
 Preferences::~Preferences()

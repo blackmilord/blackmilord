@@ -24,6 +24,7 @@
 
 #include <QPlainTextEdit>
 #include <QTextBlockUserData>
+#include <AbstractHighlighter.h>
 #include "PlainTextEditorUndoStack.h"
 
 class QLayout;
@@ -31,6 +32,7 @@ class QLayout;
 class PlainTextEditor :
     protected QPlainTextEdit
 {
+    friend class HighlighterManager;
     Q_OBJECT
 public:
     explicit PlainTextEditor(QWidget * parent = 0);
@@ -97,8 +99,6 @@ public:
     {
         return QPlainTextEdit::blockCount();
     }
-
-    bool blockSignals(bool block);
 
     void setFocus();
 

@@ -77,6 +77,7 @@ SOURCES += highlighters/event/HighlightBlockEventResponse.cpp
 SOURCES += options/OptionsWindow.cpp
 SOURCES += options/EditorPage.cpp
 SOURCES += options/MainPage.cpp
+SOURCES += options/HighlighterPage.cpp
 SOURCES += options/Preferences.cpp
 SOURCES += device/DeviceConfiguration.cpp
 
@@ -118,6 +119,7 @@ HEADERS += highlighters/event/HighlightBlockEventResponse.h
 HEADERS += options/OptionsWindow.h
 HEADERS += options/EditorPage.h
 HEADERS += options/MainPage.h
+HEADERS += options/HighlighterPage.h
 HEADERS += options/IPageWidget.h
 HEADERS += options/Preferences.h
 HEADERS += device/DeviceConfiguration.h

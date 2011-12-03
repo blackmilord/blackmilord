@@ -20,6 +20,7 @@
  ************************************************************************/
 
 #include "HighlightBlockEvent.h"
+#include <HighlighterManager.h>
 
 QEvent::Type HighlightBlockEvent::m_type =
     static_cast<QEvent::Type>(QEvent::registerEventType());
@@ -29,6 +30,7 @@ HighlightBlockEvent::HighlightBlockEvent(int blockIndex, const QString &text) :
     m_blockIndex(blockIndex),
     m_text(text)
 {
+    HighlighterManager::instance().m_inProgress.ref();
 }
 
 HighlightBlockEvent::~HighlightBlockEvent()

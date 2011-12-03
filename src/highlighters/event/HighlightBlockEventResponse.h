@@ -33,14 +33,22 @@ class HighlightBlockEventResponse :
     public QEvent
 {
 public:
-    HighlightBlockEventResponse(int blockIndex);
+    HighlightBlockEventResponse(int blockIndex, int blockLength);
     virtual ~HighlightBlockEventResponse();
-    int getBlockIndex() const;
-    AbstractHighlighter::MultiFormatListPtr getResults() const;
+    inline int getBlockIndex() const
+    {
+        return m_blockIndex;
+    }
+    inline int getBlockLength() const
+    {
+        return m_blockLength;
+    }
+    AbstractHighlighter::FormatListPtr getResults() const;
     static QEvent::Type getType() { return m_type; }
 private:
     int m_blockIndex;
-    QSharedPointer<QVector<AbstractHighlighter::FormatList> > m_results;
+    int m_blockLength;
+    AbstractHighlighter::FormatListPtr m_results;
 protected:
     static QEvent::Type m_type;
 };

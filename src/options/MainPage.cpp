@@ -37,10 +37,9 @@ MainPage::MainPage(QWidget *parent) :
     m_language(NULL)
 {
     QGridLayout *optionsLayout = new QGridLayout();
-    m_makeBackupOverwrite = new QCheckBox(tr("Make a copy before overwriting original file."));
 
-    m_makeBackupOverwrite->setChecked(Preferences::instance().getValue(
-            Preferences::PROP_MAKE_BACKUP_BEFORE_OVERWRITE, true).toBool());
+    m_makeBackupOverwrite = new QCheckBox(tr("Make a copy before overwriting original file."));
+    m_makeBackupOverwrite->setChecked(Preferences::instance().getMakeBackupBeforeOverwrite());
 
     optionsLayout->addWidget(m_makeBackupOverwrite, 0, 0);
 
@@ -62,21 +61,23 @@ MainPage::MainPage(QWidget *parent) :
     setLayout(mainLayout);
 }
 
+MainPage::~MainPage()
+{
+}
+
 void MainPage::registerPage(QListWidget *contentsWidget, QStackedWidget *pagesWidget)
 {
     pagesWidget->addWidget(this);
     QListWidgetItem *mainButton = new QListWidgetItem(contentsWidget);
+    mainButton->setIcon(QIcon(":/resource/icon/settings_general.png"));
     mainButton->setText(tr("Main"));
     mainButton->setTextAlignment(Qt::AlignHCenter);
-    mainButton->setFlags(Qt::ItemIsEnabled);
-    mainButton->setIcon(QIcon(":/resource/icon/settings_general.png"));
+    mainButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 }
 
 void MainPage::apply()
 {
-    Preferences::instance().setValue(
-            Preferences::PROP_MAKE_BACKUP_BEFORE_OVERWRITE,
-            m_makeBackupOverwrite->isChecked());
+    Preferences::instance().setMakeBackupBeforeOverwrite(m_makeBackupOverwrite->isChecked());
     if (ASpellWrapper::instance().isLoaded()) {
         ASpellWrapper::instance().changeLanguage(
                 m_language->itemData(m_language->currentIndex(), Qt::UserRole).toString());
@@ -100,8 +101,7 @@ void MainPage::loadLanguages()
 void MainPage::selectLanguageFromPreference()
 {
     Q_ASSERT(NULL != m_language);
-    QString language = Preferences::instance().getValue(
-            Preferences::PROP_ASPELL_DICTIONARY, "").toString();
+    QString language = Preferences::instance().getAspellDictionary();
     m_language->setCurrentIndex(0);
     for (int i = 0; i < m_language->count(); ++i) {
         if (language == m_language->itemData(i, Qt::UserRole).toString()) {
@@ -113,8 +113,8 @@ void MainPage::selectLanguageFromPreference()
 
 void MainPage::showEvent(QShowEvent *event)
 {
-    Q_UNUSED(event);
     if (ASpellWrapper::instance().isLoaded()) {
         selectLanguageFromPreference();
     }
+    QWidget::showEvent(event);
 }

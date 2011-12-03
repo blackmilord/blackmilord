@@ -20,25 +20,33 @@
  ************************************************************************/
 
 #include "HighlighterSpellcheck.h"
+#include "FindReplaceWindow.h"
 #include <QDebug>
 #include <QString>
+#include <QVBoxLayout>
+#include <QCheckBox>
 
 #include <Preferences.h>
 #include <AspellWrapper.h>
 #include <Dictionary.h>
 
-HighlighterSpellcheck::HighlighterSpellcheck()
+namespace {
+    const QString PROP_ENABLED = "enabled";
+}
+
+HighlighterSpellcheck::HighlighterSpellcheck() :
+    AbstractHighlighter(Preferences::instance().getHighlighterValue(guid(), PROP_ENABLED, true).toBool() &&
+                        ASpellWrapper::instance().isLoaded())
 {
-    applySettings();
 }
 
 HighlighterSpellcheck::~HighlighterSpellcheck()
 {
 }
 
-QVector<AbstractHighlighter::CharFormat> HighlighterSpellcheck::highlightBlock(const QString &text)
+AbstractHighlighter::FormatListPtr HighlighterSpellcheck::highlightBlock(const QString &text)
 {
-    QVector<AbstractHighlighter::CharFormat> result;
+    FormatListPtr result(new FormatList());
     QTextCharFormat errorFormat;
     errorFormat.setFontUnderline(true);
     errorFormat.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
@@ -76,11 +84,11 @@ QVector<AbstractHighlighter::CharFormat> HighlighterSpellcheck::highlightBlock(c
         if (!insideTag) {
             /* if (word == " ") {
                 //double spaces
-                result.push_back(AbstractHighlighter::CharFormat(startPos, endPos - startPos, errorFormat));
+                result.push_back(AbstractHighlighter::CharFormat(startPos, endPos, errorFormat));
             } else */
             if (!Dictionary::skipSpellCheck(word)) {
                 if (!ASpellWrapper::instance().checkWord(word)) {
-                    result.push_back(AbstractHighlighter::CharFormat(startPos, endPos - startPos, errorFormat));
+                    result->push_back(AbstractHighlighter::CharFormat(startPos, endPos, errorFormat));
                 }
             }
         }
@@ -99,18 +107,38 @@ QVector<AbstractHighlighter::CharFormat> HighlighterSpellcheck::highlightBlock(c
     return result;
 }
 
-QString HighlighterSpellcheck::getOptionCheckBoxCaption() const
+QString HighlighterSpellcheck::name() const
 {
-    return QObject::tr("Highlight spelling errors");
+    return QObject::tr("Spellcheck");
 }
 
-Preferences::PropertyName HighlighterSpellcheck::getPropertyName() const
+QLayout* HighlighterSpellcheck::configurationLayout()
 {
-    return Preferences::PROP_HIGHLIGHTER_SPELLCHECK;
+    QVBoxLayout *layout = new QVBoxLayout();
+    m_enableCB = new QCheckBox(QObject::tr("Enabled"));
+    layout->addWidget(m_enableCB);
+    resetConfigurationLayout();
+    return layout;
+}
+
+void HighlighterSpellcheck::resetConfigurationLayout()
+{
+    m_enableCB->setChecked(m_enabled);
+    m_enableCB->setEnabled(ASpellWrapper::instance().isLoaded());
+}
+
+void HighlighterSpellcheck::saveSettings()
+{
+    Preferences::instance().setHighlighterValue(guid(), PROP_ENABLED, m_enableCB->isChecked());
+}
+
+QString HighlighterSpellcheck::guid() const
+{
+    return "B70AD074-B926-437f-9720-B6CDF0E422AB";
 }
 
 void HighlighterSpellcheck::applySettings()
 {
-    m_enabled = Preferences::instance().getValue(Preferences::PROP_HIGHLIGHTER_SPELLCHECK, false).toBool();
-    m_enabled &= ASpellWrapper::instance().isLoaded();
+    m_enabled = Preferences::instance().getHighlighterValue(guid(), PROP_ENABLED, true).toBool() &&
+                ASpellWrapper::instance().isLoaded();
 }

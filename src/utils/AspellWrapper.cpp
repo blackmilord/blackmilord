@@ -68,8 +68,7 @@ ASpellWrapper::ASpellWrapper() :
     if (!m_spellConfig) {
         return;
     }
-    changeLanguage(Preferences::instance().getValue(
-            Preferences::PROP_ASPELL_DICTIONARY, "").toString());
+    changeLanguage(Preferences::instance().getAspellDictionary());
     qDebug() << "Aspell is loaded";
 }
 
@@ -119,8 +118,7 @@ void ASpellWrapper::changeLanguage(const QString &code)
     else {
         m_spellChecker = (*m_to_aspell_speller)(possibleErr);
         m_language = code;
-        Preferences::instance().setValue(
-                Preferences::PROP_ASPELL_DICTIONARY, m_language);
+        Preferences::instance().setAspellDictionary(m_language);
     }
 }
 

@@ -31,6 +31,7 @@ class QStackedWidget;
 
 class EditorPage;
 class MainPage;
+class HighlighterPage;
 
 class OptionsWindow : public QDialog
 {
@@ -43,8 +44,9 @@ public:
 private:
     QListWidget *m_contentsWidget;
     QStackedWidget *m_pagesWidget;
-    EditorPage *m_editorPage;
     MainPage *m_mainPage;
+    EditorPage *m_editorPage;
+    HighlighterPage *m_highlighterPage;
 
 private slots:
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);

@@ -31,9 +31,6 @@
 #include <QDebug>
 
 #include "Preferences.h"
-#include <AspellWrapper.h>
-#include <HighlighterManager.h>
-#include <AbstractHighlighter.h>
 
 EditorPage::EditorPage(QWidget *parent) :
     QWidget(parent)
@@ -44,22 +41,10 @@ EditorPage::EditorPage(QWidget *parent) :
     QLabel *fontSizeLabel = new QLabel(tr("Font size: "));
     m_fontSize = new QComboBox();
 
-    int verticalIndex = 0;
-    optionsLayout->addWidget(fontLabel, verticalIndex, 0);
-    optionsLayout->addWidget(m_font, verticalIndex++, 1);
-    optionsLayout->addWidget(fontSizeLabel, verticalIndex, 0);
-    optionsLayout->addWidget(m_fontSize, verticalIndex++, 1);
-
-    const QVector<AbstractHighlighter*> &highlighters =
-            HighlighterManager::instance().getHighlighters();
-    for(int i = 0; i < highlighters.size(); ++i) {
-        QCheckBox *check = new QCheckBox(highlighters[i]->getOptionCheckBoxCaption(), this);
-        optionsLayout->addWidget(check, verticalIndex++, 0);
-        check->setChecked(Preferences::instance().getValue(
-            highlighters[i]->getPropertyName(), false).toBool());
-        m_highlighterCheckBox.push_back(check);
-    }
-
+    optionsLayout->addWidget(fontLabel, 0, 0);
+    optionsLayout->addWidget(m_font, 0, 1);
+    optionsLayout->addWidget(fontSizeLabel, 1, 0);
+    optionsLayout->addWidget(m_fontSize, 1, 1);
     optionsLayout->setColumnMinimumWidth(0, 75);
     optionsLayout->setColumnStretch(0, 0);
     optionsLayout->setColumnStretch(1, 1);
@@ -76,28 +61,24 @@ EditorPage::EditorPage(QWidget *parent) :
     setLayout(mainLayout);
 }
 
+EditorPage::~EditorPage()
+{
+}
+
 void EditorPage::registerPage(QListWidget *contentsWidget, QStackedWidget *pagesWidget)
 {
     pagesWidget->addWidget(this);
     QListWidgetItem *editorButton = new QListWidgetItem(contentsWidget);
+    editorButton->setIcon(QIcon(":/resource/icon/settings_editor.png"));
     editorButton->setText(tr("Editor"));
     editorButton->setTextAlignment(Qt::AlignHCenter);
-    editorButton->setFlags(Qt::ItemIsEnabled);
-    editorButton->setIcon(QIcon(":/resource/icon/settings_editor.png"));
+    editorButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 }
 
 void EditorPage::apply()
 {
-    Preferences::instance().setValue(
-            Preferences::PROP_EDITOR_FONT_FAMILY, m_font->currentText());
-    Preferences::instance().setValue(
-            Preferences::PROP_EDITOR_FONT_SIZE, m_fontSize->currentText());
-    const QVector<AbstractHighlighter*> &highlighters =
-            HighlighterManager::instance().getHighlighters();
-    for(int i = 0; i < highlighters.size(); ++i) {
-        Preferences::instance().setValue(
-                highlighters[i]->getPropertyName(), m_highlighterCheckBox[i]->isChecked());
-    }
+    Preferences::instance().setEditorFontFamily(m_font->currentText());
+    Preferences::instance().setEditorFontSize(m_fontSize->currentText().toInt());
 }
 
 void EditorPage::fontFamilyChanged(const QString& fontName)
@@ -106,7 +87,7 @@ void EditorPage::fontFamilyChanged(const QString& fontName)
     m_fontSize->clear();
     foreach (int points, database.pointSizes(fontName)) {
         m_fontSize->addItem(QString::number(points));
-        if (Preferences::instance().getValue(Preferences::PROP_EDITOR_FONT_SIZE, -1).toInt() == points) {
+        if (Preferences::instance().getEditorFontSize() == points) {
             m_fontSize->setCurrentIndex(m_fontSize->count() - 1);
         }
     }
@@ -114,5 +95,5 @@ void EditorPage::fontFamilyChanged(const QString& fontName)
 
 void EditorPage::showEvent(QShowEvent *event)
 {
-    Q_UNUSED(event);
+    QWidget::showEvent(event);
 }

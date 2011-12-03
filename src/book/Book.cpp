@@ -68,7 +68,7 @@ bool Book::saveFile()
     if (m_fileName.isEmpty()) {
         return false;
     }
-    if (QFile::exists(m_fileName) && Preferences::instance().getValue(Preferences::PROP_MAKE_BACKUP_BEFORE_OVERWRITE, true).toBool()) {
+    if (QFile::exists(m_fileName) && Preferences::instance().getMakeBackupBeforeOverwrite()) {
         if (!BackupManager::create(m_fileName)) {
             m_why = tr("Cannot create backup file.");
             return false;

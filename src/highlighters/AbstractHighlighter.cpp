@@ -21,8 +21,8 @@
 
 #include "AbstractHighlighter.h"
 
-AbstractHighlighter::AbstractHighlighter() :
-    m_enabled(false)
+AbstractHighlighter::AbstractHighlighter(bool enabled) :
+    m_enabled(enabled)
 {
 }
 

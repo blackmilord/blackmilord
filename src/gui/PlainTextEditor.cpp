@@ -45,6 +45,7 @@ PlainTextEditor::PlainTextEditor(QWidget * parent) :
     connect(this, SIGNAL(updateRequest(const QRect &, int)), this, SLOT(updateRequestSlot(const QRect &, int)));
     setUndoRedoEnabled(false);
     installEventFilter(this);
+    applySettings();
 }
 
 PlainTextEditor::~PlainTextEditor()
@@ -156,6 +157,7 @@ void PlainTextEditor::contentsChangedSlot()
     Gui::statusBar()->setStatusBarDocLength(QString::number(m_textReadOnly.size()));
     emit contentsChanged();
     if (m_textReadOnly.isEmpty()) {
+        //when filed closed
         HighlighterManager::instance().cancelHighlighting();
     }
 }
@@ -180,10 +182,6 @@ void PlainTextEditor::contentsChangeSlot(int position, int charsRemoved, int cha
         HighlighterManager::instance().registerBlockToHighlight(last, true);
     }
     else {
-        HighlighterManager::instance().registerBlockToHighlight(first, true);
-        HighlighterManager::instance().registerBlockToHighlight(last, true);
-        ++firstBlockNumber;
-        --lastBlockNumber;
         for (int blockNumber = firstBlockNumber; blockNumber <= lastBlockNumber; ++blockNumber ) {
             HighlighterManager::instance().registerBlockToHighlight(findBlockByNumber(blockNumber), true);
         }
@@ -273,12 +271,6 @@ void PlainTextEditor::setPlainText(const QString &text)
 QTextCursor PlainTextEditor::textCursor() const
 {
     return QPlainTextEdit::textCursor();
-}
-
-bool PlainTextEditor::blockSignals(bool block)
-{
-    document()->blockSignals(block);
-    return QObject::blockSignals(block);
 }
 
 void PlainTextEditor::setFocus()

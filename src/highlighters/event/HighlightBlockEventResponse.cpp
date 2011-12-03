@@ -20,27 +20,25 @@
  ************************************************************************/
 
 #include "HighlightBlockEventResponse.h"
+#include <HighlighterManager.h>
 
 QEvent::Type HighlightBlockEventResponse::m_type =
     static_cast<QEvent::Type>(QEvent::registerEventType());
 
-HighlightBlockEventResponse::HighlightBlockEventResponse(int blockIndex) :
+HighlightBlockEventResponse::HighlightBlockEventResponse(int blockIndex, int blockLength) :
     QEvent(m_type),
     m_blockIndex(blockIndex),
-    m_results(new QVector<AbstractHighlighter::FormatList>())
+    m_blockLength(blockLength),
+    m_results(new AbstractHighlighter::FormatList())
 {
 }
 
 HighlightBlockEventResponse::~HighlightBlockEventResponse()
 {
+    HighlighterManager::instance().m_inProgress.deref();
 }
 
-AbstractHighlighter::MultiFormatListPtr HighlightBlockEventResponse::getResults() const
+AbstractHighlighter::FormatListPtr HighlightBlockEventResponse::getResults() const
 {
     return m_results;
-}
-
-int HighlightBlockEventResponse::getBlockIndex() const
-{
-    return m_blockIndex;
 }

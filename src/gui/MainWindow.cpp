@@ -163,16 +163,13 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     int defY = (available.height() - defHeight) / 2;
     setMinimumSize(defWidth, defHeight);
     setGeometry(
-        Preferences::instance().getValue(Preferences::PROP_WINDOW_POSITION_X, defX).toInt(),
-        Preferences::instance().getValue(Preferences::PROP_WINDOW_POSITION_Y, defY).toInt(),
-        Preferences::instance().getValue(Preferences::PROP_WINDOW_WIDTH, defWidth).toInt(),
-        Preferences::instance().getValue(Preferences::PROP_WINDOW_HEIGHT, defHeight).toInt());
+        Preferences::instance().getWindowPositionX(defX),
+        Preferences::instance().getWindowPositionY(defY),
+        Preferences::instance().getWindowWidth(defWidth),
+        Preferences::instance().getWindowHeight(defHeight));
     if (QDesktopWidget().screenNumber(this) == -1) {
         //reset position if not visible;
         setGeometry(0, 0, 300, 300);
-    }
-    if (Preferences::instance().getValue(Preferences::PROP_WINDOW_MAXIMIZED, isMaximized()).toBool()) {
-        showMaximized();
     }
 
     applySettings();
@@ -210,16 +207,16 @@ void MainWindow::openMobiFile()
     }
     QString allFiles(tr("All files (*.*)"));
     QString mobiFiles(tr("Mobi files (*.mobi *.prc)"));
-    QString fileName = QFileDialog::getOpenFileName(this,
+    QString fileName = QFileDialog::getOpenFileName(
+            this,
             tr("Open file"),
-            Preferences::instance().getValue(
-                    Preferences::PROP_LAST_USED_DIRECTORY, "").toString(),
+            Preferences::instance().getLastUsedDirectory(),
             allFiles + ";;" + mobiFiles,
             &mobiFiles);
     if (fileName.isNull()) {
         return;
     }
-    Preferences::instance().saveLastUsedDirectory(fileName);
+    Preferences::instance().setLastUsedDirectory(fileName);
     if (!Book::instance().openFile(fileName)) {
         QMessageBox::warning(this,
                 tr("Cannot open file"),
@@ -240,14 +237,14 @@ void MainWindow::saveFile()
 {
     QString fileName = Book::instance().getFileName();
     if (fileName.isEmpty()) {
-        fileName = QFileDialog::getSaveFileName(this,
+        fileName = QFileDialog::getSaveFileName(
+                this,
                 tr("Save file"),
-                Preferences::instance().getValue(
-                        Preferences::PROP_LAST_USED_DIRECTORY, "").toString());
+                Preferences::instance().getLastUsedDirectory());
         if (fileName.isEmpty()) {
             return;
         }
-        Preferences::instance().saveLastUsedDirectory(fileName);
+        Preferences::instance().setLastUsedDirectory(fileName);
         Book::instance().setFileName(fileName);
     }
     if (!Book::instance().saveFile())
@@ -260,14 +257,14 @@ void MainWindow::saveFile()
 
 void MainWindow::saveFileAs()
 {
-    QString fileName = QFileDialog::getSaveFileName(this,
+    QString fileName = QFileDialog::getSaveFileName(
+            this,
             tr("Save file as..."),
-            Preferences::instance().getValue(
-                    Preferences::PROP_LAST_USED_DIRECTORY, "").toString());
+            Preferences::instance().getLastUsedDirectory());
     if (fileName.isEmpty()) {
         return;
     }
-    Preferences::instance().saveLastUsedDirectory(fileName);
+    Preferences::instance().setLastUsedDirectory(fileName);
     Book::instance().setFileName(fileName);
     saveFile();
 }
@@ -391,18 +388,18 @@ void MainWindow::quit()
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    if (!Preferences::instance().getValue(Preferences::PROP_WINDOW_MAXIMIZED, isMaximized()).toBool()) {
-        Preferences::instance().setValue(Preferences::PROP_WINDOW_WIDTH, event->size().width());
-        Preferences::instance().setValue(Preferences::PROP_WINDOW_HEIGHT, event->size().height());
+    if (!Preferences::instance().getWindowMaximized()) {
+        Preferences::instance().setWindowWidth(event->size().width());
+        Preferences::instance().setWindowHeight(event->size().height());
     }
     event->ignore();
 }
 
 void MainWindow::moveEvent(QMoveEvent *event)
 {
-    if (!Preferences::instance().getValue(Preferences::PROP_WINDOW_MAXIMIZED, isMaximized()).toBool()) {
-        Preferences::instance().setValue(Preferences::PROP_WINDOW_POSITION_X, event->pos().x());
-        Preferences::instance().setValue(Preferences::PROP_WINDOW_POSITION_Y, event->pos().y());
+    if (!Preferences::instance().getWindowMaximized()) {
+        Preferences::instance().setWindowWidth(event->pos().x());
+        Preferences::instance().setWindowHeight(event->pos().y());
     }
     event->ignore();
 }
@@ -410,7 +407,7 @@ void MainWindow::moveEvent(QMoveEvent *event)
 void MainWindow::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::WindowStateChange) {
-        Preferences::instance().setValue(Preferences::PROP_WINDOW_MAXIMIZED, isMaximized());
+        Preferences::instance().setWindowMaximized(isMaximized());
     }
     event->ignore();
 }

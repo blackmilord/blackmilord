@@ -35,37 +35,54 @@ class Preferences : public QObject
 {
     Q_OBJECT
     Preferences();
-public:
-    enum PropertyName {
-        PROP_SETTINGS_VERSION,
-        PROP_WINDOW_WIDTH,
-        PROP_WINDOW_HEIGHT,
-        PROP_WINDOW_POSITION_X,
-        PROP_WINDOW_POSITION_Y,
-        PROP_WINDOW_MAXIMIZED,
-        PROP_LAST_USED_DIRECTORY,
-        PROP_EDITOR_FONT_FAMILY,
-        PROP_EDITOR_FONT_SIZE,
-        PROP_ASPELL_DICTIONARY,
-        PROP_MAKE_BACKUP_BEFORE_OVERWRITE,
-        PROP_HIGHLIGHTER_HTML_TAGS,
-        PROP_HIGHLIGHTER_SPELLCHECK,
-        PROPERTY_NAME_SIZE //keep it last
-    };
-
     ~Preferences();
+
+public:
+
     static Preferences& instance();
-    void setValue(PropertyName key, const QVariant &value);
-    QVariant getValue(PropertyName key, const QVariant &defaultValue);
-    void saveLastUsedDirectory(const QString &dir);
-    QFont getEditorFont();
+
+    double getVersion() const;
+
+    void setMakeBackupBeforeOverwrite(bool makeBackup);
+    bool getMakeBackupBeforeOverwrite() const;
+
+    void setAspellDictionary(const QString &dictionary);
+    QString getAspellDictionary() const;
+
+    void setWindowWidth(int width);
+    int getWindowWidth(int defWidth = 0) const;
+
+    void setWindowHeight(int height);
+    int getWindowHeight(int defHeight = 0) const;
+
+    void setWindowPositionX(int x);
+    int getWindowPositionX(int defX = 0) const;
+
+    void setWindowPositionY(int y);
+    int getWindowPositionY(int defY = 0) const;
+
+    void setWindowMaximized(bool maximized);
+    bool getWindowMaximized() const;
+
+    void setLastUsedDirectory(const QString &dir);
+    QString getLastUsedDirectory() const;
+
+    void setEditorFontSize(int size);
+    int getEditorFontSize() const;
+
+    void setEditorFontFamily(const QString &family);
+    QString getEditorFontFamily() const;
+    QFont getEditorFont() const;
+
+    QVariant getHighlighterValue(const QString &guid, const QString &key, const QVariant defValue);
+    void setHighlighterValue(const QString &guid, const QString &key, const QVariant &value);
+
 private:
     void createDefaultConfig();
-    void initPropertiesMap();
 
     QThread *m_threadGuard;
-    QMap<PropertyName, QString> m_propertyMap;
     QSettings *m_settings;
+
 signals:
     void settingsChanged();
 };

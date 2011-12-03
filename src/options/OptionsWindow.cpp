@@ -29,30 +29,29 @@
 
 #include "MainPage.h"
 #include "EditorPage.h"
+#include "HighlighterPage.h"
 
 OptionsWindow::~OptionsWindow()
 {
 }
 
 OptionsWindow::OptionsWindow(QWidget *parent) :
-    QDialog(parent)
+    QDialog(parent),
+    m_contentsWidget(new QListWidget()),
+    m_pagesWidget(new QStackedWidget()),
+    m_mainPage(new MainPage()),
+    m_editorPage(new EditorPage()),
+    m_highlighterPage(new HighlighterPage())
 {
-    m_contentsWidget = new QListWidget(this);
     m_contentsWidget->setViewMode(QListView::IconMode);
+    m_contentsWidget->setIconSize(QSize(72, 72));
     m_contentsWidget->setMovement(QListView::Static);
-    m_contentsWidget->setIconSize(QSize(48, 48));
-    m_contentsWidget->setFixedWidth(66);
-    m_contentsWidget->setMinimumHeight(200);
+    m_contentsWidget->setFixedWidth(104);
     m_contentsWidget->setSpacing(4);
-    m_contentsWidget->setFlow(QListView::TopToBottom);
 
-    m_pagesWidget = new QStackedWidget(this);
-    m_pagesWidget->setMinimumWidth(300);
-
-    m_mainPage = new MainPage(this);
     m_mainPage->registerPage(m_contentsWidget, m_pagesWidget);
-    m_editorPage = new EditorPage(this);
     m_editorPage->registerPage(m_contentsWidget, m_pagesWidget);
+    m_highlighterPage->registerPage(m_contentsWidget, m_pagesWidget);
 
     QPushButton *cancelButton = new QPushButton(tr("Cancel"), this);
     QPushButton *applyButton = new QPushButton(tr("Apply"), this);
@@ -83,6 +82,7 @@ OptionsWindow::OptionsWindow(QWidget *parent) :
     setLayout(mainLayout);
     setWindowTitle((tr("Settings")));
     setWindowIcon(QIcon(":/resource/icon/menu_settings.png"));
+    resize(700, 450);
 }
 
 void OptionsWindow::changePage(QListWidgetItem *current, QListWidgetItem *previous)

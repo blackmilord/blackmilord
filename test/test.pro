@@ -71,6 +71,7 @@ SOURCES += ../src/highlighters/event/HighlightBlockEventResponse.cpp
 SOURCES += ../src/options/OptionsWindow.cpp
 SOURCES += ../src/options/EditorPage.cpp
 SOURCES += ../src/options/MainPage.cpp
+SOURCES += ../src/options/HighlighterPage.cpp
 SOURCES += ../src/options/Preferences.cpp
 SOURCES += ../src/device/DeviceConfiguration.cpp
 
@@ -113,6 +114,7 @@ HEADERS += ../src/highlighters/event/HighlightBlockEventResponse.h
 HEADERS += ../src/options/OptionsWindow.h
 HEADERS += ../src/options/EditorPage.h
 HEADERS += ../src/options/MainPage.h
+HEADERS += ../src/options/HighlighterPage.h
 HEADERS += ../src/options/IPageWidget.h
 HEADERS += ../src/options/Preferences.h
 HEADERS += ../src/device/DeviceConfiguration.h

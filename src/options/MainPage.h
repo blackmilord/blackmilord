@@ -35,6 +35,7 @@ class MainPage : public QWidget, public IPageWidget
     Q_OBJECT
 public:
     explicit MainPage(QWidget *parent = 0);
+    virtual ~MainPage();
     void registerPage(QListWidget *contentsWidget, QStackedWidget *pagesWidget);
     void apply();
 
