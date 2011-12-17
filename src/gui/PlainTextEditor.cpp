@@ -34,16 +34,13 @@
 #include <Book.h>
 
 PlainTextEditor::PlainTextEditor(QWidget * parent) :
-    QPlainTextEdit(parent),
-    m_undoStack(this)
+    QPlainTextEdit(parent)
 {
     connect(&Preferences::instance(), SIGNAL(settingsChanged()), this, SLOT(applySettings()));
     connect(document(), SIGNAL(contentsChange(int, int, int)), this, SLOT(contentsChangeSlot(int, int, int)));
     connect(document(), SIGNAL(contentsChanged()), this, SLOT(contentsChangedSlot()));
-    connect(&m_undoStack, SIGNAL(canUndo(bool)), this, SLOT(canUndoSlot(bool)));
-    connect(&m_undoStack, SIGNAL(canRedo(bool)), this, SLOT(canRedoSlot(bool)));
     connect(this, SIGNAL(updateRequest(const QRect &, int)), this, SLOT(updateRequestSlot(const QRect &, int)));
-    setUndoRedoEnabled(false);
+    setUndoRedoEnabled(true);
     installEventFilter(this);
     applySettings();
 }
@@ -54,24 +51,13 @@ PlainTextEditor::~PlainTextEditor()
 
 bool PlainTextEditor::eventFilter(QObject *watched, QEvent *event)
 {
-    if (watched == this) {
-        if (event->type() == QEvent::KeyPress) {
-            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-            if (keyEvent->matches(QKeySequence::Undo)) {
-                if (m_undoStack.canUndo()) {
-                    undo();
-                }
-                return true;
-            }
-            else if (keyEvent->matches(QKeySequence::Redo)) {
-                if (m_undoStack.canRedo()) {
-                    redo();
-                }
-                return true;
-            }
-        }
-        return false;
-    }
+    //TODO: Remove when really not needed
+//    if (watched == this) {
+//        if (event->type() == QEvent::KeyPress) {
+//            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+//        }
+//        return false;
+//    }
     return QPlainTextEdit::eventFilter(watched, event);
 }
 
@@ -80,9 +66,9 @@ void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
     QMenu *menu = new QMenu();
 
     QAction *action = menu->addAction(tr("Undo"), this, SLOT(undo()), QKeySequence::Undo);
-    action->setEnabled(m_undoStack.canUndo());
+    action->setEnabled(canUndo());
     action = menu->addAction(tr("Redo"), this, SLOT(redo()), QKeySequence::Redo);
-    action->setEnabled(m_undoStack.canRedo());
+    action->setEnabled(canRedo());
 
     menu->addSeparator();
     action = menu->addAction(tr("Copy"), this, SLOT(copy()), QKeySequence::Copy);
@@ -139,17 +125,17 @@ void PlainTextEditor::applySettings()
 
 void PlainTextEditor::redo()
 {
-    m_undoStack.redo();
+    QPlainTextEdit::redo();
 }
 
 void PlainTextEditor::undo()
 {
-    m_undoStack.undo();
+    QPlainTextEdit::undo();
 }
 
 void PlainTextEditor::clearRedoUndoHistory()
 {
-    m_undoStack.clear();
+    document()->clearUndoRedoStacks();
 }
 
 void PlainTextEditor::contentsChangedSlot()
@@ -195,16 +181,6 @@ void PlainTextEditor::applyHintSlot(QAction *action)
         cursor.select(QTextCursor::WordUnderCursor);
         cursor.insertText(action->text());
     }
-}
-
-void PlainTextEditor::canUndoSlot(bool value)
-{
-    emit canUndo(value);
-}
-
-void PlainTextEditor::canRedoSlot(bool value)
-{
-    emit canRedo(value);
 }
 
 void PlainTextEditor::replace(int position, int length, const QString &after)

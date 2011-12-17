@@ -20,8 +20,6 @@
  ************************************************************************/
 
 #include "AboutWindow.h"
-#include "SpellCheckingWindow.h"
-#include "PlainTextEditorUndoStack.h"
 #include <QTabWidget>
 #include <QVBoxLayout>
 #include <QHBoxLayout>

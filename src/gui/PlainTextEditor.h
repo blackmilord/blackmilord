@@ -25,7 +25,6 @@
 #include <QPlainTextEdit>
 #include <QTextBlockUserData>
 #include <AbstractHighlighter.h>
-#include "PlainTextEditorUndoStack.h"
 
 class QLayout;
 
@@ -110,11 +109,11 @@ public:
 
     inline bool canRedo()
     {
-        return m_undoStack.canRedo();
+        return document()->isRedoAvailable();
     }
     inline bool canUndo()
     {
-        return m_undoStack.canUndo();
+        return document()->isUndoAvailable();
     }
 
     QWidget* asWidget();
@@ -125,12 +124,9 @@ protected:
     void contextMenuEvent(QContextMenuEvent * event);
 
 private:
-    PlainTextEditorUndoStack m_undoStack;
     QString m_textReadOnly;
 
 signals:
-    void canUndo(bool);
-    void canRedo(bool);
     void contentsChange(int, int, int);
     void contentsChanged();
 
@@ -145,8 +141,6 @@ private slots:
     void contentsChangedSlot();
     void contentsChangeSlot(int position, int charsRemoved, int charsAdded);
     void applyHintSlot(QAction *action);
-    void canUndoSlot(bool value);
-    void canRedoSlot(bool value);
 };
 
 class BlockData :

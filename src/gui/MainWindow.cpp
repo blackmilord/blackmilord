@@ -145,8 +145,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     connect(&Preferences::instance(), SIGNAL(settingsChanged()),
             this, SLOT(applySettings()));
     connect(Gui::plainTextEditor()->asObject(), SIGNAL(modificationChanged(bool)), this, SLOT(setWindowTitle(bool)));
-    connect(Gui::plainTextEditor()->asObject(), SIGNAL(canRedo(bool)), redoAction, SLOT(setEnabled(bool)));
-    connect(Gui::plainTextEditor()->asObject(), SIGNAL(canUndo(bool)), undoAction, SLOT(setEnabled(bool)));
+    connect(Gui::plainTextEditor()->asObject(), SIGNAL(redoAvailable(bool)), redoAction, SLOT(setEnabled(bool)));
+    connect(Gui::plainTextEditor()->asObject(), SIGNAL(undoAvailable(bool)), undoAction, SLOT(setEnabled(bool)));
     connect(undoAction, SIGNAL(triggered()), Gui::plainTextEditor()->asObject(), SLOT(undo()));
     connect(redoAction, SIGNAL(triggered()), Gui::plainTextEditor()->asObject(), SLOT(redo()));
 
