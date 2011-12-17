@@ -91,9 +91,6 @@ public:
         return document()->findBlock(pos);
     }
 
-    //TODO: remove
-    QTextCursor textCursor() const;
-
     inline int blockCount() const
     {
         return QPlainTextEdit::blockCount();
@@ -122,6 +119,7 @@ public:
 protected:
     bool eventFilter(QObject *watched, QEvent *event);
     void contextMenuEvent(QContextMenuEvent * event);
+    void resizeEvent(QResizeEvent *event);
 
 private:
     QString m_textReadOnly;

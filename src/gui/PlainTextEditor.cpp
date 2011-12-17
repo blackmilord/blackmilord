@@ -101,9 +101,18 @@ void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
             }
         }
     }
-
     menu->exec(event->globalPos());
     delete menu;
+}
+
+void PlainTextEditor::resizeEvent(QResizeEvent *event)
+{
+    QPlainTextEdit::resizeEvent(event);
+    int firstVisibleBlockNumber = firstVisibleBlock();
+    int lastVisibleBlockNumber = lastVisibleBlock();
+    for (int blockNumber = firstVisibleBlockNumber; blockNumber <= lastVisibleBlockNumber; ++blockNumber ) {
+        HighlighterManager::instance().registerBlockToHighlight(findBlockByNumber(blockNumber), false);
+    }
 }
 
 void PlainTextEditor::updateRequestSlot(const QRect &rect, int dy)
@@ -242,11 +251,6 @@ void PlainTextEditor::setPlainText(const QString &text)
     QTextCursor cursor = textCursor();
     cursor.select(QTextCursor::Document);
     cursor.insertText(text);
-}
-
-QTextCursor PlainTextEditor::textCursor() const
-{
-    return QPlainTextEdit::textCursor();
 }
 
 void PlainTextEditor::setFocus()
