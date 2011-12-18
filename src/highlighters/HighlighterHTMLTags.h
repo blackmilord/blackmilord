@@ -23,13 +23,18 @@
 #define BLACK_MILORD_HIGHLIGHTER_HTML_H
 
 #include "AbstractHighlighter.h"
+#include <QObject>
+#include <QColor>
 
 class QString;
 class QCheckBox;
+class QPushButton;
 
 class HighlighterHTMLTags :
+    public QObject,
     public AbstractHighlighter
 {
+    Q_OBJECT
 public:
     HighlighterHTMLTags();
     virtual ~HighlighterHTMLTags();
@@ -45,8 +50,33 @@ public:
     QString guid() const;
     QString name() const;
 
+private slots:
+    void updateConfigurationLayoutState();
+    void pickColor();
+
 private:
+    void updateConfigurationLayoutColors();
+
+    //internal configuration objects
+    bool m_hasForegroundNormal;
+    bool m_hasBackgroundNormal;
+    bool m_hasForegroundInvalid;
+    bool m_hasBackgroundInvalid;
+    QColor m_foregroundNormal;
+    QColor m_backgroundNormal;
+    QColor m_foregroundInvalid;
+    QColor m_backgroundInvalid;
+
+    //configuration layout objects
     QCheckBox *m_enableCB;
+    QCheckBox *m_colorForegroundNormalCB;
+    QCheckBox *m_colorBackgroundNormalCB;
+    QCheckBox *m_colorForegroundInvalidCB;
+    QCheckBox *m_colorBackgroundInvalidCB;
+    QPushButton *m_settingColorForegroundNormalPB;
+    QPushButton *m_settingColorBackgroundNormalPB;
+    QPushButton *m_settingColorForegroundInvalidPB;
+    QPushButton *m_settingColorBackgroundInvalidPB;
 };
 
 #endif /* BLACK_MILORD_HIGHLIGHTER_HTML_H */

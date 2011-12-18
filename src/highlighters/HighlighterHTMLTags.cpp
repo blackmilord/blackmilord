@@ -20,19 +20,30 @@
  ************************************************************************/
 
 #include "HighlighterHTMLTags.h"
+#include "SpellCheckingWindow.h"
 #include <QDebug>
 #include <QString>
 #include <QRegExp>
 #include <QBrush>
 #include <QColor>
-#include <QVBoxLayout>
+#include <QGridLayout>
 #include <QCheckBox>
+#include <QColorDialog>
+#include <QPushButton>
 
 #include <Preferences.h>
 #include <DeviceConfiguration.h>
 
 namespace {
     const QString PROP_ENABLED = "enabled";
+    const QString PROP_NORMAL_FOREGROUND = "normal_foreground_color";
+    const QString PROP_NORMAL_BACKGROUND = "normal_background_color";
+    const QString PROP_INVALID_FOREGROUND = "invalid_foreground_color";
+    const QString PROP_INVALID_BACKGROUND = "invalid_background_color";
+    const QString PROP_NORMAL_FOREGROUND_ENABLED = "normal_foreground_color_enabled";
+    const QString PROP_NORMAL_BACKGROUND_ENABLED = "normal_background_color_enabled";
+    const QString PROP_INVALID_FOREGROUND_ENABLED = "invalid_foreground_color_enabled";
+    const QString PROP_INVALID_BACKGROUND_ENABLED = "invalid_background_color_enabled";
 }
 
 HighlighterHTMLTags::HighlighterHTMLTags() :
@@ -48,13 +59,19 @@ AbstractHighlighter::FormatListPtr HighlighterHTMLTags::highlightBlock(const QSt
 {
     FormatListPtr result(new FormatList());
     QTextCharFormat htmlFormat;
-    //TODO: add to setting this
-    htmlFormat.setForeground(Qt::white);
-    htmlFormat.setBackground(QBrush(QColor(0xB3,0xC6,0xF2)));
+    if (m_hasForegroundNormal) {
+        htmlFormat.setForeground(m_foregroundNormal);
+    }
+    if (m_hasBackgroundNormal) {
+        htmlFormat.setBackground(QBrush(m_backgroundNormal));
+    }
     QTextCharFormat htmlInvalidFormat;
-    //TODO: add to setting this
-    htmlInvalidFormat.setForeground(Qt::white);
-    htmlInvalidFormat.setBackground(QBrush(QColor(0xFF,0x00,0x00)));
+    if (m_hasForegroundInvalid) {
+        htmlInvalidFormat.setForeground(m_foregroundInvalid);
+    }
+    if (m_hasBackgroundInvalid) {
+        htmlInvalidFormat.setBackground(QBrush(m_backgroundInvalid));
+    }
 
     QRegExp rx("<\\s*/?\\s*([^\\s>/]*)\\s*([A-Za-z]+\\s*=\\s*\"[ A-Za-z0-9]*\"\\s*)*/?\\s*>");
     rx.setMinimal(true);
@@ -82,21 +99,103 @@ QString HighlighterHTMLTags::name() const
 
 QLayout* HighlighterHTMLTags::configurationLayout()
 {
-    QVBoxLayout *layout = new QVBoxLayout();
-    m_enableCB = new QCheckBox(QObject::tr("Enabled"));
-    layout->addWidget(m_enableCB);
+    QGridLayout *layout = new QGridLayout();
+
+    layout->addWidget(m_enableCB =
+        new QCheckBox(QObject::tr("Enabled")), 0, 0);
+
+    layout->addWidget(m_colorForegroundNormalCB =
+        new QCheckBox(QObject::tr("HTML tag font color")), 1, 0);
+    layout->addWidget(m_colorBackgroundNormalCB =
+        new QCheckBox(QObject::tr("HTML tag font background color")), 2, 0);
+    layout->addWidget(m_colorForegroundInvalidCB =
+        new QCheckBox(QObject::tr("Invalid HTML tag font color")), 3, 0);
+    layout->addWidget(m_colorBackgroundInvalidCB =
+        new QCheckBox(QObject::tr("Invalid HTML tag font background color")), 4, 0);
+
+    layout->addWidget(m_settingColorForegroundNormalPB =
+        new QPushButton(), 1, 1);
+    layout->addWidget(m_settingColorBackgroundNormalPB =
+        new QPushButton(), 2, 1);
+    layout->addWidget(m_settingColorForegroundInvalidPB =
+        new QPushButton(), 3, 1);
+    layout->addWidget(m_settingColorBackgroundInvalidPB =
+        new QPushButton(), 4, 1);
+
+    connect(m_enableCB, SIGNAL(released()), this, SLOT(updateConfigurationLayoutState()));
+    connect(m_colorForegroundNormalCB, SIGNAL(released()), this, SLOT(updateConfigurationLayoutState()));
+    connect(m_colorBackgroundNormalCB, SIGNAL(released()), this, SLOT(updateConfigurationLayoutState()));
+    connect(m_colorForegroundInvalidCB, SIGNAL(released()), this, SLOT(updateConfigurationLayoutState()));
+    connect(m_colorBackgroundInvalidCB, SIGNAL(released()), this, SLOT(updateConfigurationLayoutState()));
+
+    connect(m_settingColorForegroundNormalPB, SIGNAL(pressed()), this, SLOT(pickColor()));
+    connect(m_settingColorBackgroundNormalPB, SIGNAL(pressed()), this, SLOT(pickColor()));
+    connect(m_settingColorForegroundInvalidPB, SIGNAL(pressed()), this, SLOT(pickColor()));
+    connect(m_settingColorBackgroundInvalidPB, SIGNAL(pressed()), this, SLOT(pickColor()));
+
     resetConfigurationLayout();
     return layout;
+}
+
+void HighlighterHTMLTags::pickColor()
+{
+    QColor &color =
+        sender() == m_settingColorForegroundNormalPB ? m_foregroundNormal :
+        sender() == m_settingColorBackgroundNormalPB ? m_backgroundNormal :
+        sender() == m_settingColorForegroundInvalidPB ? m_foregroundInvalid : m_foregroundInvalid;
+    const QColor &newColor = QColorDialog::getColor(color, NULL);
+    if (newColor.isValid()) {
+        color = newColor;
+        updateConfigurationLayoutColors();
+    }
+}
+
+void HighlighterHTMLTags::updateConfigurationLayoutState()
+{
+    m_colorForegroundNormalCB->setEnabled(m_enableCB->isChecked());
+    m_colorBackgroundNormalCB->setEnabled(m_enableCB->isChecked());
+    m_colorForegroundInvalidCB->setEnabled(m_enableCB->isChecked());
+    m_colorBackgroundInvalidCB->setEnabled(m_enableCB->isChecked());
+    m_settingColorForegroundNormalPB->setVisible(m_enableCB->isChecked() && m_colorForegroundNormalCB->isChecked());
+    m_settingColorBackgroundNormalPB->setVisible(m_enableCB->isChecked() && m_colorBackgroundNormalCB->isChecked());
+    m_settingColorForegroundInvalidPB->setVisible(m_enableCB->isChecked() && m_colorForegroundInvalidCB->isChecked());
+    m_settingColorBackgroundInvalidPB->setVisible(m_enableCB->isChecked() && m_colorBackgroundInvalidCB->isChecked());
 }
 
 void HighlighterHTMLTags::resetConfigurationLayout()
 {
     m_enableCB->setChecked(m_enabled);
+    m_colorForegroundNormalCB->setChecked(m_hasForegroundNormal);
+    m_colorBackgroundNormalCB->setChecked(m_hasBackgroundNormal);
+    m_colorForegroundInvalidCB->setChecked(m_hasForegroundInvalid);
+    m_colorBackgroundInvalidCB->setChecked(m_hasBackgroundInvalid);
+    updateConfigurationLayoutColors();
+    updateConfigurationLayoutState();
+}
+
+void HighlighterHTMLTags::updateConfigurationLayoutColors()
+{
+    m_settingColorForegroundNormalPB->setStyleSheet(
+        "QPushButton{background-color:" + m_foregroundNormal.name() + ";}");
+    m_settingColorBackgroundNormalPB->setStyleSheet(
+        "QPushButton{background-color:" + m_backgroundNormal.name() + ";}");
+    m_settingColorForegroundInvalidPB->setStyleSheet(
+        "QPushButton{background-color:" + m_foregroundInvalid.name() + ";}");
+    m_settingColorBackgroundInvalidPB->setStyleSheet(
+        "QPushButton{background-color:" + m_backgroundInvalid.name() + ";}");
 }
 
 void HighlighterHTMLTags::saveSettings()
 {
     Preferences::instance().setHighlighterValue(guid(), PROP_ENABLED, m_enableCB->isChecked());
+    Preferences::instance().setHighlighterValue(guid(), PROP_INVALID_BACKGROUND_ENABLED, m_colorBackgroundInvalidCB->isChecked());
+    Preferences::instance().setHighlighterValue(guid(), PROP_INVALID_FOREGROUND_ENABLED, m_colorForegroundInvalidCB->isChecked());
+    Preferences::instance().setHighlighterValue(guid(), PROP_NORMAL_BACKGROUND_ENABLED, m_colorBackgroundNormalCB->isChecked());
+    Preferences::instance().setHighlighterValue(guid(), PROP_NORMAL_FOREGROUND_ENABLED, m_colorForegroundNormalCB->isChecked());
+    Preferences::instance().setHighlighterValue(guid(), PROP_NORMAL_FOREGROUND, m_foregroundNormal.name());
+    Preferences::instance().setHighlighterValue(guid(), PROP_NORMAL_BACKGROUND, m_backgroundNormal.name());
+    Preferences::instance().setHighlighterValue(guid(), PROP_INVALID_FOREGROUND, m_foregroundInvalid.name());
+    Preferences::instance().setHighlighterValue(guid(), PROP_INVALID_BACKGROUND, m_backgroundInvalid.name());
 }
 
 QString HighlighterHTMLTags::guid() const
@@ -107,4 +206,13 @@ QString HighlighterHTMLTags::guid() const
 void HighlighterHTMLTags::applySettings()
 {
     m_enabled = Preferences::instance().getHighlighterValue(guid(), PROP_ENABLED, true).toBool();
+    m_hasForegroundNormal = Preferences::instance().getHighlighterValue(guid(), PROP_NORMAL_FOREGROUND_ENABLED, true).toBool();
+    m_hasBackgroundNormal = Preferences::instance().getHighlighterValue(guid(), PROP_NORMAL_BACKGROUND_ENABLED, false).toBool();
+    m_hasForegroundInvalid = Preferences::instance().getHighlighterValue(guid(), PROP_INVALID_FOREGROUND_ENABLED, true).toBool();
+    m_hasBackgroundInvalid = Preferences::instance().getHighlighterValue(guid(), PROP_INVALID_BACKGROUND_ENABLED, false).toBool();
+    m_foregroundNormal = QColor(Preferences::instance().getHighlighterValue(guid(), PROP_NORMAL_FOREGROUND, "#0000FF").toString());
+    m_backgroundNormal = QColor(Preferences::instance().getHighlighterValue(guid(), PROP_NORMAL_BACKGROUND, "#FFFFFF").toString());
+    m_foregroundInvalid = QColor(Preferences::instance().getHighlighterValue(guid(), PROP_INVALID_FOREGROUND, "#FF0000").toString());
+    m_backgroundInvalid = QColor(Preferences::instance().getHighlighterValue(guid(), PROP_INVALID_BACKGROUND, "#FFFFFF").toString());
+
 }

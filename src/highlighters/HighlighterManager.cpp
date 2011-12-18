@@ -46,6 +46,9 @@ HighlighterManager::HighlighterManager(QTextDocument *document) :
     m_highlighters.push_back(new HighlighterHTMLTags());
     m_highlighters.push_back(new HighlighterSpellcheck());
     m_highlighterThread->start();
+    foreach(AbstractHighlighter* highlighter, m_highlighters) {
+        highlighter->applySettings();
+    }
 }
 
 HighlighterManager::~HighlighterManager()
