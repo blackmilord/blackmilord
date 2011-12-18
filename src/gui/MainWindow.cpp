@@ -231,6 +231,8 @@ void MainWindow::fileOpened()
     setWindowTitle(false);
     Gui::plainTextEditor()->setModified(false);
     Gui::plainTextEditor()->setFocus();
+    Gui::plainTextEditor()->setCursorPosition(0);
+    Gui::plainTextEditor()->clearRedoUndoHistory();
 }
 
 void MainWindow::saveFile()

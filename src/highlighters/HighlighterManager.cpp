@@ -35,8 +35,10 @@
 #include "HighlighterThread.h"
 #include "DatabaseHeader.h"
 
-HighlighterManager::HighlighterManager() :
-    QSyntaxHighlighter(Gui::plainTextEditor()->document()),
+HighlighterManager* HighlighterManager::m_instance = NULL;
+
+HighlighterManager::HighlighterManager(QTextDocument *document) :
+    QSyntaxHighlighter(document),
     m_inProgress(0),
     m_highlighterThread(new HighlighterThread(this)),
     m_preparedFormatting(NULL)
@@ -56,10 +58,16 @@ HighlighterManager::~HighlighterManager()
     }
 }
 
+void HighlighterManager::createInstance(QTextDocument *document)
+{
+    delete m_instance;
+    m_instance = new HighlighterManager(document);
+}
+
 HighlighterManager& HighlighterManager::instance()
 {
-    static HighlighterManager *instance = new HighlighterManager();
-    return *instance;
+    Q_ASSERT(NULL != m_instance);
+    return *m_instance;
 }
 
 void HighlighterManager::applySettings()
@@ -168,22 +176,15 @@ QVector<AbstractHighlighter*> HighlighterManager::getHighlighters() const
 
 void HighlighterManager::highlightBlock(const QString &text)
 {
-    if (m_preparedFormatting == NULL) {
-        //no prepared data
-        return;
-    }
-    if (m_preparedFormatting->getBlockLength() != text.length()) {
-        //prepared data is out of date.
-        return;
-    }
-    if (m_preparedFormatting->getBlockIndex() != QSyntaxHighlighter::currentBlock().blockNumber()) {
-        //this is not prepared block.
-        //User might type somothing during preparing formatting.
+    if (m_preparedFormatting == NULL ||
+        m_preparedFormatting->getBlockLength() != text.length() ||
+        m_preparedFormatting->getBlockIndex() != QSyntaxHighlighter::currentBlock().blockNumber())
+    {
+        registerBlockToHighlight(QSyntaxHighlighter::currentBlock(), true);
         return;
     }
     //apply formatting
-    setFormat(0, text.length(), QTextCharFormat());
     foreach(const AbstractHighlighter::CharFormat &format, *m_preparedFormatting->getResults().data()) {
-        setFormat(format.m_start, format.m_end, format.m_format);
+        setFormat(format.m_start, format.m_end - format.m_start, format.m_format);
     }
 }

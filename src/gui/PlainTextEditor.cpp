@@ -41,24 +41,12 @@ PlainTextEditor::PlainTextEditor(QWidget * parent) :
     connect(document(), SIGNAL(contentsChanged()), this, SLOT(contentsChangedSlot()));
     connect(this, SIGNAL(updateRequest(const QRect &, int)), this, SLOT(updateRequestSlot(const QRect &, int)));
     setUndoRedoEnabled(true);
-    installEventFilter(this);
     applySettings();
+    HighlighterManager::createInstance(document());
 }
 
 PlainTextEditor::~PlainTextEditor()
 {
-}
-
-bool PlainTextEditor::eventFilter(QObject *watched, QEvent *event)
-{
-    //TODO: Remove when really not needed
-//    if (watched == this) {
-//        if (event->type() == QEvent::KeyPress) {
-//            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-//        }
-//        return false;
-//    }
-    return QPlainTextEdit::eventFilter(watched, event);
 }
 
 void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
@@ -149,38 +137,13 @@ void PlainTextEditor::clearRedoUndoHistory()
 
 void PlainTextEditor::contentsChangedSlot()
 {
-    Gui::statusBar()->setStatusBarDocLength(QString::number(m_textReadOnly.size()));
+    Gui::statusBar()->setStatusBarDocLength(QString::number(toPlainText().size()));
     emit contentsChanged();
-    if (m_textReadOnly.isEmpty()) {
-        //when filed closed
-        HighlighterManager::instance().cancelHighlighting();
-    }
 }
 
 void PlainTextEditor::contentsChangeSlot(int position, int charsRemoved, int charsAdded)
 {
-    m_textReadOnly = QPlainTextEdit::toPlainText();
     emit contentsChange(position, charsRemoved, charsAdded);
-
-    //highlighting code
-    const QTextBlock &first = findBlock(position);
-    const QTextBlock &last = findBlock(position + charsAdded);
-    int firstBlockNumber = first.blockNumber();
-    int lastBlockNumber = last.blockNumber();
-    if (firstBlockNumber == lastBlockNumber) {
-        //Check is simple and fast. Make it this way.
-        HighlighterManager::instance().registerBlockToHighlight(first, true);
-    }
-    else if (firstBlockNumber == lastBlockNumber + 1) {
-        //Occurs a lot when pressing enter
-        HighlighterManager::instance().registerBlockToHighlight(first, true);
-        HighlighterManager::instance().registerBlockToHighlight(last, true);
-    }
-    else {
-        for (int blockNumber = firstBlockNumber; blockNumber <= lastBlockNumber; ++blockNumber ) {
-            HighlighterManager::instance().registerBlockToHighlight(findBlockByNumber(blockNumber), true);
-        }
-    }
 }
 
 void PlainTextEditor::applyHintSlot(QAction *action)
@@ -195,7 +158,6 @@ void PlainTextEditor::applyHintSlot(QAction *action)
 void PlainTextEditor::replace(int position, int length, const QString &after)
 {
     Q_ASSERT(position >= 0);
-    Q_ASSERT(position + length <= m_textReadOnly.length());
 
     QTextCursor cursor = textCursor();
     cursor.setPosition(position);

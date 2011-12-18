@@ -76,9 +76,9 @@ public:
         return textCursor().selectedText();
     }
 
-    inline const QString& toPlainText() const
+    inline QString toPlainText() const
     {
-        return m_textReadOnly;
+        return QPlainTextEdit::toPlainText();
     }
     void setPlainText(const QString &text);
 
@@ -117,12 +117,8 @@ public:
     QObject* asObject();
 
 protected:
-    bool eventFilter(QObject *watched, QEvent *event);
     void contextMenuEvent(QContextMenuEvent * event);
     void resizeEvent(QResizeEvent *event);
-
-private:
-    QString m_textReadOnly;
 
 signals:
     void contentsChange(int, int, int);

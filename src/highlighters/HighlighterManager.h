@@ -34,14 +34,19 @@ class QTextBlock;
 class PlainTextEditor;
 class HighlighterThread;
 class HighlightBlockEventResponse;
+class QTextDocument;
 
 class HighlighterManager :
     public QSyntaxHighlighter
 {
+    friend class PlainTextEditor;
+
     Q_OBJECT
 
-    HighlighterManager();
+    HighlighterManager(QTextDocument *document);
     virtual ~HighlighterManager();
+    static void createInstance(QTextDocument *document);
+
 public:
     static HighlighterManager& instance();
     void registerBlockToHighlight(const QTextBlock &block, bool invalidate);
@@ -55,6 +60,7 @@ protected:
     void highlightBlock(const QString &text);
 
 private:
+    static HighlighterManager *m_instance;
     QAtomicInt m_inProgress;
     QVector<AbstractHighlighter*> m_highlighters;
     HighlighterThread *m_highlighterThread;
