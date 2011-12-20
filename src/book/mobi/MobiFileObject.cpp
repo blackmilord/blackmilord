@@ -331,7 +331,6 @@ bool MobiFileObject::readImageRecords(QDataStream &data)
             ++count;
         }
         ++record;
-        Q_UNUSED(image);
     } while (loaded);
     qDebug() << "loaded" << count << "images.";
     return true;
@@ -354,7 +353,7 @@ bool MobiFileObject::readTextRecords(QDataStream &data)
     qint64 overlap = 0;
     QByteArray rawData;
     rawData.reserve(m_palmDOCHeader.getTextLength());
-    for (quint16 i=1; i <= m_palmDOCHeader.getTextRecordCount(); ++i) {
+    for (quint16 i = 1; i <= m_palmDOCHeader.getTextRecordCount(); ++i) {
         //qDebug() << "loading record" << i;
         length = m_databaseHeader.getRecordLength(i);
         data.device()->seek(m_databaseHeader.getRecordOffset(i));

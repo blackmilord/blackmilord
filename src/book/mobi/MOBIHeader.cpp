@@ -114,16 +114,20 @@ bool MOBIHeader::read(QDataStream &data)
     data >> m_DRMSize;
     data >> m_DRMFlags;
 
-    if (m_fileVersion >= 5 && (m_headerLength == 228 || m_headerLength == 232)) {
+    if (m_fileVersion >= 5 && m_headerLength == 228) {
+        data.device()->seek(recordOffset + m_headerLength - 2);
+        data >> m_extraDataFlags;
+        m_indexRecordOffset = 0xFFFFFFFF;
+    }
+    if (m_fileVersion >= 5 && m_headerLength == 232) {
         data.device()->seek(recordOffset + m_headerLength - 6);
         data >> m_extraDataFlags;
+        data >> m_indexRecordOffset;
     }
     else {
         m_extraDataFlags = 0;
-        data.device()->seek(recordOffset + m_headerLength - 4);
+        m_indexRecordOffset = 0xFFFFFFFF;
     }
-
-    data >> m_indexRecordOffset;
 
 #ifndef QT_NO_DEBUG_OUTPUT
     print();
