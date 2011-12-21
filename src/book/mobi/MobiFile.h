@@ -40,7 +40,7 @@ class QDataStream;
 class QByteArray;
 class WriteState;
 
-class MobiFileObject : public QObject, public AbstractBook
+class MobiFile : public QObject, public AbstractBook
 {
     Q_OBJECT
 public:
@@ -61,8 +61,8 @@ private:
     MOBIHeader m_MOBIHeader;
     EXTHHeader m_EXTHHeader;
 
-    MobiFileObject();
-    virtual ~MobiFileObject();
+    MobiFile();
+    virtual ~MobiFile();
 
     QString textToWrite() const;
     QList<QByteArray> prepareTextRecords() const;

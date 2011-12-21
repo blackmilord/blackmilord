@@ -20,7 +20,7 @@
  ************************************************************************/
 
 #include "AbstractBook.h"
-#include <MobiFileObject.h>
+#include <MobiFile.h>
 
 AbstractBook::AbstractBook()
 {
@@ -32,5 +32,5 @@ AbstractBook::~AbstractBook()
 
 AbstractBookPtr AbstractBookFactory::getObject()
 {
-    return AbstractBookPtr(new MobiFileObject());
+    return AbstractBookPtr(new MobiFile());
 }

@@ -24,7 +24,6 @@
 
 #include <QDateTime>
 #include <QList>
-#include <MobiFileObject.h>
 #include "MetadataEnum.h"
 #include "BookPicture.h"
 

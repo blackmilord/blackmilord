@@ -19,7 +19,7 @@
  *                                                                      *
  ************************************************************************/
 
-#include "MobiFileObject.h"
+#include "MobiFile.h"
 #include <QDebug>
 #include <QFile>
 #include <QDataStream>
@@ -39,15 +39,15 @@
 #include "DatabaseRecordInfoEntry.h"
 #include "MobiCodec.h"
 
-MobiFileObject::MobiFileObject()
+MobiFile::MobiFile()
 {
 }
 
-MobiFileObject::~MobiFileObject()
+MobiFile::~MobiFile()
 {
 }
 
-bool MobiFileObject::openFile(const QString &fileName)
+bool MobiFile::openFile(const QString &fileName)
 {
     qDebug() << "loading" << fileName;
     QFile file(fileName);
@@ -117,12 +117,12 @@ bool MobiFileObject::openFile(const QString &fileName)
     return true;
 }
 
-bool MobiFileObject::newFile()
+bool MobiFile::newFile()
 {
     return true;
 }
 
-bool MobiFileObject::saveFile(const QString &fileName)
+bool MobiFile::saveFile(const QString &fileName)
 {
     QFile file(fileName);
     if (!file.open(QIODevice::ReadWrite)) {
@@ -242,12 +242,12 @@ bool MobiFileObject::saveFile(const QString &fileName)
     return writeOk;
 }
 
-QString MobiFileObject::textToWrite() const
+QString MobiFile::textToWrite() const
 {
     return Book::instance().getText().remove("\n");
 }
 
-quint32 MobiFileObject::encodedTextSize() const
+quint32 MobiFile::encodedTextSize() const
 {
     QTextCodec* codec = NULL;
     if (m_MOBIHeader.getTextEncoding() == MOBIHeader::ENCODING_UTF_8) {
@@ -267,7 +267,7 @@ quint32 MobiFileObject::encodedTextSize() const
     return rawData.size();
 }
 
-QList<QByteArray> MobiFileObject::prepareTextRecords() const
+QList<QByteArray> MobiFile::prepareTextRecords() const
 {
     QList<QByteArray> textRecords;
     QString text = textToWrite();
@@ -312,7 +312,7 @@ QList<QByteArray> MobiFileObject::prepareTextRecords() const
     return textRecords;
 }
 
-bool MobiFileObject::readImageRecords(QDataStream &data)
+bool MobiFile::readImageRecords(QDataStream &data)
 {
     bool loaded;
     int count = 0;
@@ -336,7 +336,7 @@ bool MobiFileObject::readImageRecords(QDataStream &data)
     return true;
 }
 
-bool MobiFileObject::readTextRecords(QDataStream &data)
+bool MobiFile::readTextRecords(QDataStream &data)
 {
     QTextCodec* codec = NULL;
     if (m_MOBIHeader.getTextEncoding() == 65001) {
@@ -397,37 +397,37 @@ bool MobiFileObject::readTextRecords(QDataStream &data)
     return true;
 }
 
-const DatabaseHeader& MobiFileObject::getDatabaseHeader() const
+const DatabaseHeader& MobiFile::getDatabaseHeader() const
 {
     return m_databaseHeader;
 }
 
-const PalmDOCHeader& MobiFileObject::getPalmDOCHeader() const
+const PalmDOCHeader& MobiFile::getPalmDOCHeader() const
 {
     return m_palmDOCHeader;
 }
 
-const MOBIHeader& MobiFileObject::getMOBIHeader() const
+const MOBIHeader& MobiFile::getMOBIHeader() const
 {
     return m_MOBIHeader;
 }
 
-const EXTHHeader& MobiFileObject::getEXTHHeader() const
+const EXTHHeader& MobiFile::getEXTHHeader() const
 {
     return m_EXTHHeader;
 }
 
-bool MobiFileObject::hasEXTH() const
+bool MobiFile::hasEXTH() const
 {
     return (m_MOBIHeader.getEXTHflags() & 0x40) != 0;
 }
 
-bool MobiFileObject::hasOverlaps() const
+bool MobiFile::hasOverlaps() const
 {
     return (m_MOBIHeader.getExtraDataFlags() & 0x01) != 0;
 }
 
-int MobiFileObject::trailingEntriesCount() const
+int MobiFile::trailingEntriesCount() const
 {
     int count = 0;
     for (int i = 1; i < 16; ++i) {
