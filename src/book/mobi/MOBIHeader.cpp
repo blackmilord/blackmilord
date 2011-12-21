@@ -119,7 +119,7 @@ bool MOBIHeader::read(QDataStream &data)
         data >> m_extraDataFlags;
         m_indexRecordOffset = 0xFFFFFFFF;
     }
-    if (m_fileVersion >= 5 && m_headerLength == 232) {
+    else if (m_fileVersion >= 5 && m_headerLength == 232) {
         data.device()->seek(recordOffset + m_headerLength - 6);
         data >> m_extraDataFlags;
         data >> m_indexRecordOffset;
