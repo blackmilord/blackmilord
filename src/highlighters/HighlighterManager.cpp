@@ -108,7 +108,7 @@ void HighlighterManager::registerBlockToHighlight(const QTextBlock &block, bool 
         data = new BlockData();
         const_cast<QTextBlock&>(block).setUserData(data);
     }
-    if (data->highlightingDone() && !invalidate) {
+    else if (data->highlightingDone() && !invalidate) {
         return;
     }
     data->setHighlightingDone(true);

@@ -23,7 +23,6 @@
 #include <QDebug>
 #include <QEvent>
 #include <QApplication>
-#include <QtCore/qmetatype.h>
 
 #include <event/HighlightBlockEvent.h>
 #include <event/HighlightBlockEventResponse.h>
@@ -39,6 +38,7 @@ HighlighterThread::HighlighterThread(QObject * parent) :
 
 HighlighterThread::~HighlighterThread()
 {
+    m_guard = 0;
     delete m_worker;
 }
 
@@ -61,7 +61,6 @@ HighlighterWorker* HighlighterThread::getWorker()
 HighlighterWorker::HighlighterWorker(QObject *parent) :
     QObject(parent)
 {
-
 }
 
 HighlighterWorker::~HighlighterWorker()
