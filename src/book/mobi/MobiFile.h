@@ -47,6 +47,8 @@ public:
     bool openFile(const QString &fileName);
     bool saveFile(const QString &fileName);
     bool newFile();
+    bool canOpenFile();
+    bool canSaveFile();
 
     const DatabaseHeader& getDatabaseHeader() const;
     const PalmDOCHeader& getPalmDOCHeader() const;

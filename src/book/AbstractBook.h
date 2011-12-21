@@ -29,11 +29,19 @@ class QString;
 class AbstractBook
 {
 public:
+    enum Type {
+        BOOK_TYPE_MOBI,
+        BOOK_TYPE_HTML,
+        BOOK_TYPE_PDF
+    };
+
     AbstractBook();
     virtual ~AbstractBook();
     virtual bool openFile(const QString &fileName) = 0;
     virtual bool saveFile(const QString &fileName) = 0;
     virtual bool newFile() = 0;
+    virtual bool canOpenFile() = 0;
+    virtual bool canSaveFile() = 0;
 };
 
 typedef QSharedPointer<AbstractBook> AbstractBookPtr;
@@ -41,7 +49,7 @@ typedef QSharedPointer<AbstractBook> AbstractBookPtr;
 class AbstractBookFactory
 {
 public:
-    static AbstractBookPtr getObject();
+    static AbstractBookPtr getObject(AbstractBook::Type type = AbstractBook::BOOK_TYPE_MOBI);
 };
 
 #endif /* BLACK_MILORD_ABSTRACT_BOOK_H */

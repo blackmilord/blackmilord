@@ -30,7 +30,11 @@ AbstractBook::~AbstractBook()
 {
 }
 
-AbstractBookPtr AbstractBookFactory::getObject()
+AbstractBookPtr AbstractBookFactory::getObject(AbstractBook::Type type)
 {
-    return AbstractBookPtr(new MobiFile());
+    if (AbstractBook::BOOK_TYPE_MOBI == type) {
+        return AbstractBookPtr(new MobiFile());
+    }
+    Q_ASSERT(false);
+    return AbstractBookPtr(NULL);
 }

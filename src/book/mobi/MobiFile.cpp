@@ -122,6 +122,16 @@ bool MobiFile::newFile()
     return true;
 }
 
+bool MobiFile::canOpenFile()
+{
+    return true;
+}
+
+bool MobiFile::canSaveFile()
+{
+    return true;
+}
+
 bool MobiFile::saveFile(const QString &fileName)
 {
     QFile file(fileName);
