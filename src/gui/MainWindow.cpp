@@ -229,10 +229,10 @@ void MainWindow::fileOpened()
     Gui::plainTextEditor()->setEnabled(true);
     updateMenuEnable(true);
     setWindowTitle(false);
-    Gui::plainTextEditor()->setModified(false);
     Gui::plainTextEditor()->setFocus();
     Gui::plainTextEditor()->setCursorPosition(0);
     Gui::plainTextEditor()->clearRedoUndoHistory();
+    Gui::plainTextEditor()->setModified(false);
 }
 
 void MainWindow::saveFile()
