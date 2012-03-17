@@ -85,9 +85,7 @@ bool Book::saveFile()
 bool Book::closeFile()
 {
     setText("");
-    Gui::plainTextEditor()->clearRedoUndoHistory();
     reset();
-    Gui::statusBar()->showMessage(tr("Document is closed"));
     emit fileClosed();
     return true;
 }

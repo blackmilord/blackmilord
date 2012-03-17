@@ -301,6 +301,9 @@ void MainWindow::fileClosed()
     updateMenuEnable(false);
     Gui::plainTextEditor()->setEnabled(false);
     Gui::plainTextEditor()->setModified(false);
+    Gui::statusBar()->showMessage(tr("Document is closed"));
+    Gui::plainTextEditor()->clearRedoUndoHistory();
+
     setWindowTitle(false);
 }
 

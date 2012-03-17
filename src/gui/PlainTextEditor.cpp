@@ -20,8 +20,7 @@
  ************************************************************************/
 
 #include "PlainTextEditor.h"
-#include "Gui.h"
-#include "StatusBar.h"
+#include <QtGlobal>
 #include <QDebug>
 #include <QMenu>
 #include <QLayout>
@@ -29,6 +28,8 @@
 #include <QTextCursor>
 #include <QTextDocument>
 
+#include "Gui.h"
+#include "StatusBar.h"
 #include <AspellWrapper.h>
 #include <HighlighterManager.h>
 #include <Book.h>
@@ -132,7 +133,13 @@ void PlainTextEditor::undo()
 
 void PlainTextEditor::clearRedoUndoHistory()
 {
+#if (QT_VERSION < QT_VERSION_CHECK(4, 7, 0))
+    //At this moment function is called only after closing and openning document.
+    //It may require to store more information like cursor position.
+    QPlainTextEdit::setPlainText(QPlainTextEdit::toPlainText());
+#else
     document()->clearUndoRedoStacks();
+#endif
 }
 
 void PlainTextEditor::contentsChangedSlot()
