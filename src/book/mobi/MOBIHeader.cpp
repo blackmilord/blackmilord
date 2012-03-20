@@ -142,11 +142,11 @@ bool MOBIHeader::read(QDataStream &data)
         m_why = QObject::tr("Not supported encoding.");
         return false;
     }
-    if (m_DRMOffset != 0xFFFFFFFF || m_DRMCount != 0xFFFFFFFF) {
+    if (m_DRMOffset != 0xFFFFFFFF /*|| m_DRMCount != 0xFFFFFFFF*/) {
         m_why = QObject::tr("Document is DRM'd.");
         return false;
     }
-    if (m_huffmanRecordCount != 0 || m_huffmanRecordOffset != 0) {
+    if (m_huffmanRecordCount != 0 || (m_huffmanRecordOffset != 0 && m_huffmanRecordOffset != 0xFFFFFFFF)) {
         m_why = QObject::tr("Huffman encoding is not supported.");
         return false;
     }
