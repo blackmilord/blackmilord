@@ -328,6 +328,9 @@ bool MobiFile::readImageRecords(QDataStream &data)
     int count = 0;
     int record = m_MOBIHeader.getFirstImageRecordIndex();
     do {
+        if (m_databaseHeader.getNumberOfRecords() <= record) {
+            break;
+        }
         data.device()->seek(m_databaseHeader.getRecordOffset(record));
         quint32 length = m_databaseHeader.getRecordLength(record);
         QByteArray imageData = data.device()->read(length);

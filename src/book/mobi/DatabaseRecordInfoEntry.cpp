@@ -25,7 +25,8 @@
 DatabaseRecordInfoEntry::DatabaseRecordInfoEntry() :
     m_recordDataOffset(0),
     m_recordAttributes(0),
-    m_uniqueID(0)
+    m_uniqueID(0),
+    m_length(0)
 {
 }
 
@@ -41,5 +42,6 @@ void DatabaseRecordInfoEntry::print() const
 {
     qDebug() << "DataOffset" << m_recordDataOffset
              << "Attributes" << m_recordAttributes
-             << "uniqueID" << m_uniqueID;
+             << "uniqueID" << m_uniqueID
+             << "length" << m_length;
 }

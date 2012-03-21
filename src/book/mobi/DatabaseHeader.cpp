@@ -63,7 +63,7 @@ bool DatabaseHeader::read(QDataStream &data)
     data >> m_numberOfRecords;
 
     quint8 tmp8;
-    for (int i=0; i<m_numberOfRecords; ++i) {
+    for (int i = 0; i < m_numberOfRecords; ++i) {
         DatabaseRecordInfoEntry entry;
         data >> entry.m_recordDataOffset;
         data >> entry.m_recordAttributes;
@@ -75,7 +75,16 @@ bool DatabaseHeader::read(QDataStream &data)
         entry.m_uniqueID += tmp8;
         m_recordInfoEntries.push_back(entry);
         //entry.print();
+        if (i != 0)
+        {
+            m_recordInfoEntries[i - 1].m_length =
+                m_recordInfoEntries[i].m_recordDataOffset -
+                m_recordInfoEntries[i - 1].m_recordDataOffset;
+        }
     }
+    data.device()->seek(m_recordInfoEntries[m_numberOfRecords - 1].m_recordDataOffset);
+    m_recordInfoEntries[m_numberOfRecords - 1].m_length = data.skipRawData(65536);
+
     quint16 tmp16;
     data >> tmp16;
     if (tmp16 != 0) {
@@ -171,12 +180,9 @@ void DatabaseHeader::setRecordOffset(int recordIndex, quint32 recordOffset)
 
 quint32 DatabaseHeader::getRecordLength(int recordIndex) const
 {
-    Q_ASSERT(recordIndex + 1 < m_recordInfoEntries.size());
-    return m_recordInfoEntries[recordIndex + 1].m_recordDataOffset -
-            m_recordInfoEntries[recordIndex].m_recordDataOffset;
+    Q_ASSERT(recordIndex < m_recordInfoEntries.size());
+    return m_recordInfoEntries[recordIndex].m_length;
 }
-
-
 
 QString DatabaseHeader::getDatabaseName() const
 {

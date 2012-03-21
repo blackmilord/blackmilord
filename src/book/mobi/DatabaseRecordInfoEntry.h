@@ -44,6 +44,8 @@ public:
     quint8  m_recordAttributes;
     //3 bytes
     quint32 m_uniqueID;
+
+    quint32 m_length;
 };
 
 
