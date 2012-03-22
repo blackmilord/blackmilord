@@ -153,7 +153,7 @@ void FindReplaceWindow::find(bool showDialogs)
 
     const QString &text = Gui::plainTextEditor()->toPlainText();
 
-    const QRegExp &rx = prepareQuery();
+    QRegExp rx = prepareQuery();
 
     //find text
     int from = Gui::plainTextEditor()->getCursorPosition();
@@ -259,7 +259,7 @@ void FindReplaceWindow::replaceAll()
     unsigned count = 0;
     PlainTextEditor *editor = Gui::plainTextEditor();
     const QString &replaceWith = m_replaceWith->currentText();
-    const QRegExp &rx = prepareQuery();
+    QRegExp rx = prepareQuery();
     QString text = editor->toPlainText();
 
     int offset = rx.indexIn(text);
