@@ -28,6 +28,7 @@
 #include <QPushButton>
 #include <QListWidget>
 #include <QString>
+#include <QMenu>
 #include "Book.h"
 
 PictureViewerWindow::PictureViewerWindow(QWidget *parent) :
@@ -37,6 +38,7 @@ PictureViewerWindow::PictureViewerWindow(QWidget *parent) :
     m_contentsWidget(new QListWidget())
 {
     m_contentsWidget->setFixedWidth(100);
+    m_contentsWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     QVBoxLayout *mainLayout = new QVBoxLayout();
     QHBoxLayout *buttonLayout = new QHBoxLayout();
@@ -51,7 +53,10 @@ PictureViewerWindow::PictureViewerWindow(QWidget *parent) :
     imageLayout->addWidget(m_contentsWidget, 0);
     imageLayout->addWidget(m_graphicsView, 1);
 
-    connect(m_contentsWidget, SIGNAL(currentRowChanged(int)), this, SLOT(currentRowChanged(int)));
+    connect(m_contentsWidget, SIGNAL(currentRowChanged(int)),
+            this, SLOT(currentRowChanged(int)));
+    connect(m_contentsWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
+            this, SLOT(showContextMenuForWidget(const QPoint &)));
 
     mainLayout->addLayout(imageLayout, 1);
     mainLayout->addLayout(buttonLayout);
@@ -108,4 +113,31 @@ void PictureViewerWindow::currentRowChanged(int currentRow)
     if (currentRow >= 0) {
         showImage(*Book::instance().getPicture(currentRow).getCurrentPicture());
     }
+}
+
+void PictureViewerWindow::showContextMenuForWidget(const QPoint &pos)
+{
+    QMenu contextMenu(tr("Context menu"), this);
+    QAction *action = NULL;
+    action = contextMenu.addAction(tr("&Find in book"), this,
+            SLOT(findInDocument()));
+    action = contextMenu.addAction(tr("&Remove"), this,
+            SLOT(removeImage()));
+    contextMenu.exec(mapToGlobal(pos));
+}
+
+void PictureViewerWindow::removeImage()
+{
+    int currentRow = m_contentsWidget->currentRow();
+    Book::instance().removePicture(currentRow);
+    reloadImageList();
+    if (currentRow >= m_contentsWidget->count()) {
+        currentRow = m_contentsWidget->count() - 1;
+    }
+    m_contentsWidget->setCurrentRow(currentRow, QItemSelectionModel::Select);
+}
+
+void PictureViewerWindow::findInDocument()
+{
+    qDebug() << "find";
 }

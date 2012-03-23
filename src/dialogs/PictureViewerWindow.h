@@ -52,6 +52,9 @@ private:
 private slots:
     void reloadImageList();
     void currentRowChanged(int currentRow);
+    void showContextMenuForWidget(const QPoint &);
+    void removeImage();
+    void findInDocument();
 };
 
 #endif /* BLACK_MILORD_PICTURE_VIEWER_WINDOW_H */

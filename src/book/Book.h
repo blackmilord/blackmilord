@@ -23,7 +23,6 @@
 #define BLACK_MILORD_BOOK_H
 
 #include <QDateTime>
-#include <QList>
 #include "MetadataEnum.h"
 #include "BookPicture.h"
 
@@ -52,6 +51,7 @@ public:
     //pictures accessors
     int getPicturesCount() const;
     void addPicture(const BookPicture & picture);
+    void removePicture(int index);
     BookPicture getPicture(int index) const;
 
     //book metadata

@@ -25,7 +25,7 @@
 #include <QDebug>
 #include <QVariant>
 #include <QTextCursor>
-
+#include <QList>
 #include <Gui.h>
 #include <PlainTextEditor.h>
 #include <StatusBar.h>
@@ -218,6 +218,11 @@ int Book::getPicturesCount() const
 void Book::addPicture(const BookPicture & picture)
 {
     m_pictures.push_back(picture);
+}
+
+void Book::removePicture(int index)
+{
+    m_pictures.removeAt(index);
 }
 
 BookPicture Book::getPicture(int index) const
