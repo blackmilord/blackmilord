@@ -50,6 +50,173 @@ PlainTextEditor::~PlainTextEditor()
 {
 }
 
+//Cursor
+
+int PlainTextEditor::getCursorPosition() const
+{
+    return textCursor().position();
+}
+
+void PlainTextEditor::setCursorPosition(int position)
+{
+    if (getCursorPosition() != position) {
+        QTextCursor cursor = textCursor();
+        cursor.setPosition(position);
+        setTextCursor(cursor);
+    }
+}
+
+void PlainTextEditor::setCursorPositionToStart()
+{
+    QTextCursor cursor = textCursor();
+    cursor.movePosition(QTextCursor::Start);
+    setTextCursor(cursor);
+}
+
+void PlainTextEditor::setCursorPositionToEnd()
+{
+    QTextCursor cursor = textCursor();
+    cursor.movePosition(QTextCursor::End);
+    setTextCursor(cursor);
+}
+
+//Selection
+
+int PlainTextEditor::getSelectionStart() const
+{
+    return textCursor().selectionStart();
+}
+
+int PlainTextEditor::getSelectionEnd() const
+{
+    return textCursor().selectionEnd();
+}
+
+bool PlainTextEditor::hasSelection() const
+{
+    return textCursor().hasSelection();
+}
+
+void PlainTextEditor::setSelection(int selectionStart, int selectionEnd)
+{
+    QTextCursor cursor = textCursor();
+    int oldSelectionStart = cursor.selectionStart();
+    int oldSelectionEnd = cursor.selectionEnd();
+    Q_ASSERT(selectionStart >= 0 && selectionEnd >= 0);
+    if (oldSelectionStart != selectionStart || oldSelectionEnd != selectionEnd) {
+        cursor.setPosition(selectionStart);
+        cursor.setPosition(selectionEnd, QTextCursor::KeepAnchor);
+        setTextCursor(cursor);
+    }
+}
+
+void PlainTextEditor::clearSelection()
+{
+    QTextCursor cursor = textCursor();
+    cursor.clearSelection();
+    setTextCursor(cursor);
+}
+
+QString PlainTextEditor::getSelectedText() const
+{
+    return textCursor().selectedText();
+}
+
+//Text handling
+
+QString PlainTextEditor::toPlainText() const
+{
+    return QPlainTextEdit::toPlainText();
+}
+
+void PlainTextEditor::setPlainText(const QString &text)
+{
+    QTextCursor cursor = textCursor();
+    cursor.select(QTextCursor::Document);
+    cursor.insertText(text);
+}
+
+void PlainTextEditor::replace(int position, int length, const QString &after)
+{
+    Q_ASSERT(position >= 0);
+
+    QTextCursor cursor = textCursor();
+    cursor.setPosition(position);
+    cursor.setPosition(position + length, QTextCursor::KeepAnchor);
+    cursor.insertText(after);
+}
+
+//Blocks handling
+
+int PlainTextEditor::firstVisibleBlock() const
+{
+    return QPlainTextEdit::firstVisibleBlock().blockNumber();
+}
+
+int PlainTextEditor::lastVisibleBlock() const
+{
+    return QPlainTextEdit::cursorForPosition(
+        QPoint(viewport()->width(), viewport()->height())).blockNumber();
+}
+
+QTextBlock PlainTextEditor::findBlockByNumber(int blockNumber) const
+{
+    return document()->findBlockByNumber(blockNumber);
+}
+
+int PlainTextEditor::blockCount() const
+{
+    return QPlainTextEdit::blockCount();
+}
+
+//Utils
+
+void PlainTextEditor::setFocus()
+{
+    QWidget::setFocus();
+}
+
+void PlainTextEditor::setEnabled(bool enabled)
+{
+    QWidget::setEnabled(enabled);
+}
+
+bool PlainTextEditor::isEnabled() const
+{
+    return QWidget::isEnabled();
+}
+
+void PlainTextEditor::setModified(bool modified)
+{
+    document()->setModified(modified);
+}
+
+bool PlainTextEditor::isModified() const
+{
+    return document()->isModified();
+}
+
+bool PlainTextEditor::canRedo() const
+{
+    return document()->isRedoAvailable();
+}
+bool PlainTextEditor::canUndo() const
+{
+    return document()->isUndoAvailable();
+}
+
+QWidget* PlainTextEditor::asWidget()
+{
+    return static_cast<QWidget*>(this);
+}
+
+QObject* PlainTextEditor::asObject()
+{
+    return static_cast<QObject*>(this);
+}
+
+//Reimplemented virtual functions
+
 void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
 {
     QMenu *menu = new QMenu();
@@ -104,17 +271,7 @@ void PlainTextEditor::resizeEvent(QResizeEvent *event)
     }
 }
 
-void PlainTextEditor::updateRequestSlot(const QRect &rect, int dy)
-{
-    Q_UNUSED(rect);
-    if (dy != 0) {
-        int firstVisibleBlockNumber = firstVisibleBlock();
-        int lastVisibleBlockNumber = lastVisibleBlock();
-        for (int blockNumber = firstVisibleBlockNumber; blockNumber <= lastVisibleBlockNumber; ++blockNumber ) {
-            HighlighterManager::instance().registerBlockToHighlight(findBlockByNumber(blockNumber), false);
-        }
-    }
-}
+//Public slots
 
 void PlainTextEditor::applySettings()
 {
@@ -142,6 +299,20 @@ void PlainTextEditor::clearRedoUndoHistory()
 #endif
 }
 
+//Private slots
+
+void PlainTextEditor::updateRequestSlot(const QRect &rect, int dy)
+{
+    Q_UNUSED(rect);
+    if (dy != 0) {
+        int firstVisibleBlockNumber = firstVisibleBlock();
+        int lastVisibleBlockNumber = lastVisibleBlock();
+        for (int blockNumber = firstVisibleBlockNumber; blockNumber <= lastVisibleBlockNumber; ++blockNumber ) {
+            HighlighterManager::instance().registerBlockToHighlight(findBlockByNumber(blockNumber), false);
+        }
+    }
+}
+
 void PlainTextEditor::contentsChangedSlot()
 {
     Gui::statusBar()->setStatusBarDocLength(QString::number(toPlainText().size()));
@@ -162,98 +333,4 @@ void PlainTextEditor::applyHintSlot(QAction *action)
     }
 }
 
-void PlainTextEditor::replace(int position, int length, const QString &after)
-{
-    Q_ASSERT(position >= 0);
-
-    QTextCursor cursor = textCursor();
-    cursor.setPosition(position);
-    cursor.setPosition(position + length, QTextCursor::KeepAnchor);
-    cursor.insertText(after);
-}
-
-void PlainTextEditor::setCursorPosition(int position)
-{
-    if (getCursorPosition() != position) {
-        QTextCursor cursor = textCursor();
-        cursor.setPosition(position);
-        setTextCursor(cursor);
-    }
-}
-
-void PlainTextEditor::setCursorPositionToStart()
-{
-    QTextCursor cursor = textCursor();
-    cursor.movePosition(QTextCursor::Start);
-    setTextCursor(cursor);
-}
-
-void PlainTextEditor::setCursorPositionToEnd()
-{
-    QTextCursor cursor = textCursor();
-    cursor.movePosition(QTextCursor::End);
-    setTextCursor(cursor);
-}
-
-void PlainTextEditor::setSelection(int selectionStart, int selectionEnd)
-{
-    QTextCursor cursor = textCursor();
-    int oldSelectionStart = cursor.selectionStart();
-    int oldSelectionEnd = cursor.selectionEnd();
-    Q_ASSERT(selectionStart >= 0 && selectionEnd >= 0);
-    if (oldSelectionStart != selectionStart || oldSelectionEnd != selectionEnd) {
-        cursor.setPosition(selectionStart);
-        cursor.setPosition(selectionEnd, QTextCursor::KeepAnchor);
-        setTextCursor(cursor);
-    }
-}
-
-void PlainTextEditor::clearSelection()
-{
-    QTextCursor cursor = textCursor();
-    cursor.clearSelection();
-    setTextCursor(cursor);
-}
-
-void PlainTextEditor::setPlainText(const QString &text)
-{
-    QTextCursor cursor = textCursor();
-    cursor.select(QTextCursor::Document);
-    cursor.insertText(text);
-}
-
-void PlainTextEditor::setFocus()
-{
-    QWidget::setFocus();
-}
-
-void PlainTextEditor::setEnabled(bool enabled)
-{
-    QWidget::setEnabled(enabled);
-}
-
-bool PlainTextEditor::isEnabled() const
-{
-    return QWidget::isEnabled();
-}
-
-void PlainTextEditor::setModified(bool modified)
-{
-    document()->setModified(modified);
-}
-
-bool PlainTextEditor::isModified() const
-{
-    return document()->isModified();
-}
-
-QWidget* PlainTextEditor::asWidget()
-{
-    return static_cast<QWidget*>(this);
-}
-
-QObject* PlainTextEditor::asObject()
-{
-    return static_cast<QObject*>(this);
-}
 

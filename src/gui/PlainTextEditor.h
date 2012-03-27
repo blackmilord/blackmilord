@@ -37,65 +37,32 @@ public:
     explicit PlainTextEditor(QWidget * parent = 0);
     virtual ~PlainTextEditor();
 
-    inline int firstVisibleBlock() const
-    {
-        return QPlainTextEdit::firstVisibleBlock().blockNumber();
-    }
-    inline int lastVisibleBlock() const
-    {
-        return QPlainTextEdit::cursorForPosition(
-            QPoint(viewport()->width(), viewport()->height())).blockNumber();
-    }
-
-    void replace(int position, int length, const QString &after);
-
-    inline int getCursorPosition() const
-    {
-        return textCursor().position();
-    }
+    //Cursor
+    int getCursorPosition() const;
     void setCursorPosition(int position);
     void setCursorPositionToStart();
     void setCursorPositionToEnd();
 
-    inline int getSelectionStart() const
-    {
-        return textCursor().selectionStart();
-    }
-    inline int getSelectionEnd() const
-    {
-        return textCursor().selectionEnd();
-    }
-    inline bool hasSelection() const
-    {
-        return textCursor().hasSelection();
-    }
+    //Selection
+    int getSelectionStart() const;
+    int getSelectionEnd() const;
+    bool hasSelection() const;
     void setSelection(int selectionStart, int selectionEnd);
     void clearSelection();
-    inline QString getSelectedText() const
-    {
-        return textCursor().selectedText();
-    }
+    QString getSelectedText() const;
 
-    inline QString toPlainText() const
-    {
-        return QPlainTextEdit::toPlainText();
-    }
+    //Text handling
+    QString toPlainText() const;
     void setPlainText(const QString &text);
+    void replace(int position, int length, const QString &after);
 
-    inline QTextBlock findBlockByNumber(int blockNumber) const
-    {
-        return document()->findBlockByNumber(blockNumber);
-    }
-    inline QTextBlock findBlock(int pos) const
-    {
-        return document()->findBlock(pos);
-    }
+    //Blocks handling
+    int firstVisibleBlock() const;
+    int lastVisibleBlock() const;
+    QTextBlock findBlockByNumber(int blockNumber) const;
+    int blockCount() const;
 
-    inline int blockCount() const
-    {
-        return QPlainTextEdit::blockCount();
-    }
-
+    //Utils
     void setFocus();
 
     void setEnabled(bool enabled);
@@ -104,14 +71,8 @@ public:
     void setModified(bool modified);
     bool isModified() const;
 
-    inline bool canRedo()
-    {
-        return document()->isRedoAvailable();
-    }
-    inline bool canUndo()
-    {
-        return document()->isUndoAvailable();
-    }
+    bool canRedo() const;
+    bool canUndo() const;
 
     QWidget* asWidget();
     QObject* asObject();
