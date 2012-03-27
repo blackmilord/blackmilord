@@ -23,7 +23,7 @@
 #define BLACK_MILORD_PLAIN_TEXT_EDITOR_H
 
 #include <QPlainTextEdit>
-#include <QTextBlockUserData>
+#include <XMLElement.h>
 #include <AbstractHighlighter.h>
 
 class QLayout;
@@ -62,6 +62,9 @@ public:
     QTextBlock findBlockByNumber(int blockNumber) const;
     int blockCount() const;
 
+    //XML utils
+    XMLElement findXMLElement(const QString &element, int from = 0) const;
+
     //Utils
     void setFocus();
 
@@ -97,33 +100,5 @@ private slots:
     void contentsChangeSlot(int position, int charsRemoved, int charsAdded);
     void applyHintSlot(QAction *action);
 };
-
-class BlockData :
-    public QTextBlockUserData
-{
-public:
-    BlockData() :
-        m_highlightingDone(false)
-    {
-    }
-
-    ~BlockData()
-    {
-    }
-
-    bool highlightingDone()
-    {
-        return m_highlightingDone;
-    }
-
-    void setHighlightingDone(bool highlightingDone)
-    {
-        m_highlightingDone = highlightingDone;
-    }
-
-private:
-    bool m_highlightingDone;
-};
-
 
 #endif /* BLACK_MILORD_PLAIN_TEXT_EDITOR_H */

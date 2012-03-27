@@ -25,6 +25,7 @@
 #include <QTextBlock>
 
 #include <PlainTextEditor.h>
+#include <BlockData.h>
 #include <Gui.h>
 #include <event/HighlightBlockEvent.h>
 #include <event/HighlightBlockEventResponse.h>

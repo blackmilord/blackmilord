@@ -36,14 +36,17 @@ INCLUDEPATH +=  . \
                 book/ \
                 book/mobi/ \
                 highlighters/ \
-                device \
-                gui
+                device/ \
+                gui/ \
+                gui/data
 
 SOURCES += main.cpp
 SOURCES += gui/Gui.cpp
 SOURCES += gui/MainWindow.cpp
 SOURCES += gui/StatusBar.cpp
 SOURCES += gui/PlainTextEditor.cpp
+SOURCES += gui/data/BlockData.cpp
+SOURCES += gui/data/XMLElement.cpp
 SOURCES += book/Book.cpp
 SOURCES += book/BookPicture.cpp
 SOURCES += book/AbstractBook.cpp
@@ -85,6 +88,8 @@ HEADERS += gui/Gui.h
 HEADERS += gui/MainWindow.h
 HEADERS += gui/StatusBar.h
 HEADERS += gui/PlainTextEditor.h
+HEADERS += gui/data/BlockData.h
+HEADERS += gui/data/XMLElement.h
 HEADERS += book/Book.h
 HEADERS += book/BookPicture.h
 HEADERS += book/AbstractBook.h

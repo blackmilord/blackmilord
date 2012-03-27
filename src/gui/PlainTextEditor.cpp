@@ -169,6 +169,58 @@ int PlainTextEditor::blockCount() const
     return QPlainTextEdit::blockCount();
 }
 
+//XML utils
+
+XMLElement PlainTextEditor::findXMLElement(const QString &element, int from) const
+{
+    XMLElement result(element);
+
+    QString pattern = "<\\s*\\b" + QRegExp::escape(element) + "\\b";
+    QRegExp rx(pattern);
+    rx.setMinimal(true);
+    rx.setCaseSensitivity(Qt::CaseInsensitive);
+
+    const QString text = toPlainText();
+
+    int start = text.indexOf(rx, from);
+    int end = text.indexOf(">", start + 1);
+    if (-1 != start && -1 != end)
+    {
+        QString elementCopy = text.mid(start + 1 + element.length(),
+                                       end - (start + 1 + element.length())).trimmed();
+
+        QRegExp attrPattern("([a-z]+)\\s*=\\s*((?:\"[^\"]*\")|(?:'[^']*'))");
+        QMap<QString, QString> attributes;
+        int attrPos = 0;
+        do
+        {
+            attrPos = elementCopy.indexOf(attrPattern, attrPos);
+            if (attrPos == -1) {
+                break;
+            }
+            QString attrName = attrPattern.cap(1);
+            QString attrValue = attrPattern.cap(2).mid(1);
+            attrValue = attrValue.left(attrValue.length() - 1);
+            attributes.insert(attrName, attrValue);
+            attrPos += attrPattern.matchedLength();
+        } while (attrPos != -1);
+
+        result.setStartPos(start);
+        result.setEndPos(end + 1);
+        result.setAttributes(attributes);
+
+//        qDebug() << "position of "
+//                 << result.elementName()
+//                 << " "
+//                 << result.startPos()
+//                 << " "
+//                 << result.endPos()
+//                 << " "
+//                 << result.attributes();
+    }
+    return result;
+}
+
 //Utils
 
 void PlainTextEditor::setFocus()

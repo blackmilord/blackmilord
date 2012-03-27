@@ -130,7 +130,6 @@ void FindReplaceWindow::showEvent(QShowEvent *event)
 
 QRegExp FindReplaceWindow::prepareQuery() const
 {
-    //prepare query
     QString pattern = m_findWhat->currentText();
     if (!m_regExp->isChecked()) {
         pattern = QRegExp::escape(pattern);
