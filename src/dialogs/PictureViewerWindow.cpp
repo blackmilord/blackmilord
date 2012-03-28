@@ -29,7 +29,16 @@
 #include <QListWidget>
 #include <QString>
 #include <QMenu>
-#include "Book.h"
+#include <QMessageBox>
+
+#include <Book.h>
+#include <XMLElement.h>
+#include <PlainTextEditor.h>
+#include <Gui.h>
+
+namespace {
+const char *BOOK_INDEX_ATTRIBUTE = "recindex";
+}
 
 PictureViewerWindow::PictureViewerWindow(QWidget *parent) :
     QDialog(parent, Qt::Window),
@@ -139,5 +148,35 @@ void PictureViewerWindow::removeImage()
 
 void PictureViewerWindow::findInDocument()
 {
-    qDebug() << "find";
+    int currentRow = m_contentsWidget->currentRow();
+    int from = 0;
+    XMLElement element;
+    do
+    {
+        element = Gui::plainTextEditor()->findXMLElement("img", from);
+        if (element.startPos() == -1 || element.endPos() == -1) {
+            break;
+        }
+
+        from = element.endPos() + 1;
+
+        if (!element.attributes().contains(BOOK_INDEX_ATTRIBUTE)) {
+            continue;
+        }
+
+        bool ok = false;
+        int index = element.attributes().value(BOOK_INDEX_ATTRIBUTE).toInt(&ok);
+        if (ok && (index == currentRow)) {
+            break;
+        }
+    } while (true);
+
+    if (element.startPos() != -1 && element.endPos() != -1) {
+        Gui::plainTextEditor()->setSelection(element.startPos(), element.endPos());
+    }
+    else {
+         QMessageBox::warning(this,
+                tr("Not found"),
+                tr("Image has beem not found in document."));
+    }
 }

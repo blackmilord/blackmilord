@@ -28,7 +28,7 @@
 class XMLElement
 {
 public:
-    explicit XMLElement(const QString &name);
+    explicit XMLElement(const QString &name = QString());
     virtual ~XMLElement();
 
     inline QString elementName() const { return m_name; }
