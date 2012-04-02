@@ -36,10 +36,6 @@
 #include <PlainTextEditor.h>
 #include <Gui.h>
 
-namespace {
-const char *BOOK_INDEX_ATTRIBUTE = "recindex";
-}
-
 PictureViewerWindow::PictureViewerWindow(QWidget *parent) :
     QDialog(parent, Qt::Window),
     m_graphicsScene(new QGraphicsScene()),
@@ -135,7 +131,7 @@ void PictureViewerWindow::showContextMenuForWidget(const QPoint &pos)
 void PictureViewerWindow::removeImage()
 {
     int currentRow = m_contentsWidget->currentRow();
-    Book::instance().removePicture(currentRow);
+    Book::instance().removePicture(currentRow, true);
     reloadImageList();
     if (currentRow >= m_contentsWidget->count()) {
         currentRow = m_contentsWidget->count() - 1;
@@ -157,12 +153,12 @@ void PictureViewerWindow::findInDocument()
 
         from = element.endPos() + 1;
 
-        if (!element.attributes().contains(BOOK_INDEX_ATTRIBUTE)) {
+        if (!element.hasAttribute(XMLElement::BOOK_INDEX_ATTRIBUTE)) {
             continue;
         }
 
         bool ok = false;
-        int index = element.attributes().value(BOOK_INDEX_ATTRIBUTE).toInt(&ok);
+        int index = element.attribute(XMLElement::BOOK_INDEX_ATTRIBUTE).toInt(&ok);
         if (ok && (index == currentRow)) {
             break;
         }

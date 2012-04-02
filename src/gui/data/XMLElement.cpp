@@ -23,6 +23,8 @@
 #include <QTextStream>
 #include <QDebug>
 
+const char* XMLElement::BOOK_INDEX_ATTRIBUTE = "recindex";
+
 XMLElement::XMLElement(const QString &name) :
     m_name(name),
     m_startPos(-1),

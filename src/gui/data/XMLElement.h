@@ -28,6 +28,8 @@
 class XMLElement
 {
 public:
+    static const char *BOOK_INDEX_ATTRIBUTE;
+
     explicit XMLElement(const QString &name = QString());
     virtual ~XMLElement();
 
@@ -36,8 +38,13 @@ public:
     inline void setStartPos(int startPos) { m_startPos = startPos; }
     inline int endPos() const { return m_endPos; }
     inline void setEndPos(int endPos) { m_endPos = endPos; }
+
     inline QMap<QString, QString> attributes() const { return m_attributes; }
     inline void setAttributes(const QMap<QString, QString> &attributes) { m_attributes = attributes; }
+    inline bool hasAttribute(const QString &name) const { return m_attributes.contains(name); }
+    inline void setAttribute(const QString &name, const QString &value) { m_attributes.insert(name, value); }
+    inline QString attribute(const QString &name) const { return hasAttribute(name) ? m_attributes.value(name) : QString(); }
+
 
     QString formatElement() const;
 

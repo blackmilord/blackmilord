@@ -51,7 +51,7 @@ public:
     //pictures accessors
     int getPicturesCount() const;
     void addPicture(const BookPicture & picture);
-    void removePicture(int index);
+    void removePicture(int index, bool removeFromDocument);
     BookPicture getPicture(int index) const;
 
     //book metadata

@@ -30,6 +30,7 @@
 #include <PlainTextEditor.h>
 #include <StatusBar.h>
 #include <Preferences.h>
+#include <XMLElement.h>
 #include "AbstractBook.h"
 #include "BackupManager.h"
 
@@ -220,9 +221,43 @@ void Book::addPicture(const BookPicture & picture)
     m_pictures.push_back(picture);
 }
 
-void Book::removePicture(int index)
+void Book::removePicture(int index, bool removeFromDocument)
 {
     m_pictures.removeAt(index);
+    if (removeFromDocument)
+    {
+        int from = 0;
+        XMLElement element;
+        do
+        {
+            element = Gui::plainTextEditor()->findXMLElement("img", from);
+            if (element.startPos() == -1 || element.endPos() == -1) {
+                break;
+            }
+
+            from = element.endPos() + 1;
+
+            if (!element.hasAttribute(XMLElement::BOOK_INDEX_ATTRIBUTE)) {
+                continue;
+            }
+
+            bool ok = false;
+            int currentImage = element.attribute(XMLElement::BOOK_INDEX_ATTRIBUTE).toInt(&ok);
+            if (ok) {
+                if (index == currentImage) {
+                    int start = element.startPos();
+                    int length = element.endPos() - element.startPos();
+                    Gui::plainTextEditor()->replace(start, length, QString());
+                }
+                else if (currentImage > index) {
+                    int start = element.startPos();
+                    int length = element.endPos() - element.startPos();
+                    element.setAttribute(XMLElement::BOOK_INDEX_ATTRIBUTE, QString::number(currentImage - 1));
+                    Gui::plainTextEditor()->replace(start, length, element.formatElement());
+                }
+            }
+        } while (true);
+    }
 }
 
 BookPicture Book::getPicture(int index) const
