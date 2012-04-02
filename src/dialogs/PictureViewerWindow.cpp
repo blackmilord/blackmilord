@@ -127,11 +127,8 @@ void PictureViewerWindow::currentRowChanged(int currentRow)
 void PictureViewerWindow::showContextMenuForWidget(const QPoint &pos)
 {
     QMenu contextMenu(tr("Context menu"), this);
-    QAction *action = NULL;
-    action = contextMenu.addAction(tr("&Find in book"), this,
-            SLOT(findInDocument()));
-    action = contextMenu.addAction(tr("&Remove"), this,
-            SLOT(removeImage()));
+    contextMenu.addAction(tr("&Find in book"), this, SLOT(findInDocument()));
+    contextMenu.addAction(tr("&Remove"), this, SLOT(removeImage()));
     contextMenu.exec(mapToGlobal(pos));
 }
 

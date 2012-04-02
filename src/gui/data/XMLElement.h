@@ -39,6 +39,8 @@ public:
     inline QMap<QString, QString> attributes() const { return m_attributes; }
     inline void setAttributes(const QMap<QString, QString> &attributes) { m_attributes = attributes; }
 
+    QString formatElement() const;
+
 private:
     QString m_name;
     QMap<QString, QString> m_attributes;

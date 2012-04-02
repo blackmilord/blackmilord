@@ -20,6 +20,8 @@
  ************************************************************************/
 
 #include "XMLElement.h"
+#include <QTextStream>
+#include <QDebug>
 
 XMLElement::XMLElement(const QString &name) :
     m_name(name),
@@ -30,4 +32,16 @@ XMLElement::XMLElement(const QString &name) :
 
 XMLElement::~XMLElement()
 {
+}
+
+QString XMLElement::formatElement() const
+{
+    QString result;
+    QTextStream str(&result);
+    str << "<" << m_name;
+    foreach(QString key, m_attributes.keys()) {
+        str << " " <<  key << "=\"" << m_attributes.value(key) << "\"";
+    }
+    str << ">";
+    return result;
 }
