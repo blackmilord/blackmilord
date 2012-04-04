@@ -337,10 +337,10 @@ bool MobiFile::readImageRecords(QDataStream &data)
         if (imageData.size() != static_cast<int>(length)) {
             return false;
         }
-        QPixmap image;
-        loaded = image.loadFromData(imageData);
+        //validate image
+        loaded = QPixmap().loadFromData(imageData);
         if (loaded) {
-            Book::instance().addPicture(BookPicture(image));
+            Book::instance().addPicture(BookPicture(imageData));
             ++count;
         }
         ++record;

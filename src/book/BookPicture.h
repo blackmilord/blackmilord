@@ -24,17 +24,21 @@
 
 #include <QString>
 #include <QSharedPointer>
+#include <QByteArray>
 
 class QPixmap;
 
 class BookPicture
 {
 public:
-    explicit BookPicture(const QPixmap &picture);
+    explicit BookPicture(const QByteArray &pictureData);
     virtual ~BookPicture();
-    const QPixmap* getOriginalPicture() const;
-    const QPixmap* getCurrentPicture() const;
+    QPixmap getOriginalPicture() const;
+    QPixmap getCurrentPicture() const;
+    QByteArray getOriginalPictureData() const;
+    QByteArray getCurrentPictureData() const;
     void setPicture(const QPixmap &picture);
+    void setPicture(const QByteArray &pictureData);
     bool isModified() const;
     QString getHtmlIndex() const;
     void setHtmlIndex(const QString &htmlIndex);
@@ -42,8 +46,8 @@ public:
     void setFilePath(const QString &filePath);
 
 private:
-    QSharedPointer<QPixmap> m_original;
-    QSharedPointer<QPixmap> m_current;
+    QSharedPointer<QByteArray> m_original;
+    QSharedPointer<QByteArray> m_current;
     QString m_htmlIndex;
     QString m_filePath;
 };

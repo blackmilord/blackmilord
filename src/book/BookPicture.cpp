@@ -21,10 +21,11 @@
 
 #include "BookPicture.h"
 #include <QPixmap>
+#include <QBuffer>
 
-BookPicture::BookPicture(const QPixmap &picture) :
+BookPicture::BookPicture(const QByteArray &pictureData) :
     m_original(NULL),
-    m_current(new QPixmap(picture))
+    m_current(new QByteArray(pictureData))
 {
 }
 
@@ -33,22 +34,51 @@ BookPicture::~BookPicture()
 }
 
 
-const QPixmap* BookPicture::getOriginalPicture() const
+QPixmap BookPicture::getOriginalPicture() const
 {
-    return m_original.isNull() ? m_current.data() : m_original.data();
+    Q_ASSERT(NULL != m_current.data());
+    QPixmap image;
+    image.loadFromData(m_original.isNull() ? *m_current : *m_original);
+    return image;
 }
 
-const QPixmap* BookPicture::getCurrentPicture() const
+QPixmap BookPicture::getCurrentPicture() const
 {
-    return m_current.data();
+    Q_ASSERT(NULL != m_current.data());
+    QPixmap image;
+    image.loadFromData(*m_current);
+    return image;
 }
+
+QByteArray BookPicture::getOriginalPictureData() const
+{
+    return m_original.isNull() ? *m_current : *m_original;
+}
+
+QByteArray BookPicture::getCurrentPictureData() const
+{
+    return *m_current;
+}
+
 
 void BookPicture::setPicture(const QPixmap &picture)
 {
     if (m_original.isNull()) {
         m_original = m_current;
     }
-    m_current = QSharedPointer<QPixmap>(new QPixmap(picture));
+    m_current = QSharedPointer<QByteArray>(new QByteArray());
+    QBuffer buffer(m_current.data());
+    buffer.open(QIODevice::WriteOnly);
+    //TODO: check if smaller than 63kb
+    picture.save(&buffer, "JPG");
+}
+
+void BookPicture::setPicture(const QByteArray &pictureData)
+{
+    if (m_original.isNull()) {
+        m_original = m_current;
+    }
+    m_current = QSharedPointer<QByteArray>(new QByteArray(pictureData));
 }
 
 bool BookPicture::isModified() const

@@ -116,7 +116,7 @@ void PictureViewerWindow::reloadImageList()
 void PictureViewerWindow::currentRowChanged(int currentRow)
 {
     if (currentRow >= 0) {
-        showImage(*Book::instance().getPicture(currentRow).getCurrentPicture());
+        showImage(Book::instance().getPicture(currentRow).getCurrentPicture());
     }
 }
 
