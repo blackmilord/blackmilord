@@ -82,7 +82,7 @@ private:
     AspellSpeller* m_spellChecker;
     QString m_language;
 
-#ifdef Q_WS_X11
+#if (defined Q_WS_X11 || defined Q_WS_MAC)
     void *m_handle;
 #elif defined Q_WS_WIN
     HMODULE m_handle;

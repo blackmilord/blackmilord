@@ -220,7 +220,7 @@ Preferences::Preferences() :
     m_threadGuard(QThread::currentThread())
 {
     QString configFile;
-#ifdef Q_WS_X11
+#if (defined Q_WS_X11 || defined Q_WS_MAC)
     configFile = getenv("HOME");
     configFile.append( "/.blackmilord/config.ini");
 #elif defined Q_WS_WIN

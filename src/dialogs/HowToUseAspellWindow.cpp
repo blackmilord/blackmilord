@@ -41,6 +41,12 @@ namespace {
         "You can download Aspell Windows port from here: <a href=\"http://aspell.net/win32/\">http://aspell.net/win32/</a>.<br/>"
         "Keep in mind you need to install core program and language pack(s).<br/><br/>"
     ));
+#elif defined Q_WS_MAC
+    const QString labelText(QObject::tr(
+        "You can consider install Aspell program.<br/>"
+        "This will allow you to perform spell checking.<br/>"
+        "Keep in mind you need to install core program and language pack(s).<br/><br/>"
+    ));
 #endif
 }
 

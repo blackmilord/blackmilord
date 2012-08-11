@@ -20,7 +20,7 @@
  ************************************************************************/
 
 #include "AspellWrapper.h"
-#ifdef Q_WS_X11
+#if (defined Q_WS_X11 || defined Q_WS_MAC)
 #  include <dlfcn.h>
 #elif defined Q_WS_WIN
 #  include <windows.h>
@@ -122,11 +122,16 @@ void ASpellWrapper::changeLanguage(const QString &code)
     }
 }
 
-#ifdef Q_WS_X11
+#if (defined Q_WS_X11 || defined Q_WS_MAC)
 bool ASpellWrapper::loadLibrary()
 {
+#ifdef Q_WS_MAC
+    m_handle = dlopen("libaspell.dylib", RTLD_NOW);
+#else
     m_handle = dlopen("libaspell.so", RTLD_NOW);
+#endif
     if (!m_handle) {
+        qDebug() << "Cannot load aspell library";
         return false;
     }
     QMutexLocker lock(&m_mutex);
@@ -285,19 +290,22 @@ bool ASpellWrapper::isLoaded() const
 bool ASpellWrapper::checkWord(const QString &word) const
 {
     QMutexLocker lock(&m_mutex);
+    if (!m_spellChecker) {
+        return true;
+    }
     return 1 == (*m_aspell_speller_check)(m_spellChecker, word.toUtf8().constData(), -1);
 }
 
 bool ASpellWrapper::addWordToSessionDictionary(const QString &word)
 {
-    qDebug() << "adding word to session dict" << word;
+    qDebug() << "Adding word to session dictionary" << word;
     QMutexLocker lock(&m_mutex);
     return 0 != (*m_aspell_speller_add_to_session)(m_spellChecker, word.toUtf8().constData(), -1);
 }
 
 bool ASpellWrapper::addWordToPersonalDictionary(const QString &word)
 {
-    qDebug() << "adding word to personal dict" << word;
+    qDebug() << "Adding word to personal dictionary" << word;
     QMutexLocker lock(&m_mutex);
     if (0 != (*m_aspell_speller_add_to_personal)(m_spellChecker, word.toUtf8().constData(), -1)) {
         return 0 != (*m_aspell_speller_save_all_word_lists)(m_spellChecker);
