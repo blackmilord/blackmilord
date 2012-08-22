@@ -52,10 +52,6 @@ SOURCES += highlighter/HighlightersApplySettingsEvent.cpp
 SOURCES += highlighter/HighlightBlockEvent.cpp
 SOURCES += highlighter/HighlightBlockEventResponse.cpp
 
-#HEADERS += interface/Version.h
-#HEADERS += interface/Plugin.h
-#HEADERS += interface/PluginHighlighter.h
-#HEADERS += interface/IPreferences.h
 HEADERS += gui/Gui.h
 HEADERS += gui/MainWindow.h
 HEADERS += gui/StatusBar.h

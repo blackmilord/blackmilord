@@ -26,8 +26,8 @@
 #include <QCheckBox>
 #include <QtPlugin>
 
-#include <ISpellcheck.h>
-#include <IPreferences.h>
+#include <Spellcheck.h>
+#include <Preferences.h>
 
 namespace {
     const QString GUID = "B70AD074-B926-437f-9720-B6CDF0E422AB";
@@ -37,8 +37,8 @@ namespace {
 Q_EXPORT_PLUGIN2(highlighter_spellcheck, HighlighterSpellcheck)
 
 HighlighterSpellcheck::HighlighterSpellcheck() :
-    PluginHighlighter(IPreferences::instance().getHighlighterValue(GUID, PROP_ENABLED, true).toBool() &&
-                      ISpellcheck::instance().isLoaded())
+    PluginHighlighter(Preferences::instance().getHighlighterValue(GUID, PROP_ENABLED, true).toBool() &&
+                      Spellcheck::instance().isLoaded())
 {
 }
 
@@ -88,7 +88,7 @@ PluginHighlighter::FormatListPtr HighlighterSpellcheck::highlightBlock(const QSt
                 //double spaces
                 result.push_back(AbstractHighlighter::CharFormat(startPos, endPos, errorFormat));
             } else */
-            if (!ISpellcheck::instance().checkWord(word)) {
+            if (!Spellcheck::instance().checkWord(word)) {
                 result->push_back(PluginHighlighter::CharFormat(startPos, endPos, errorFormat));
             }
         }
@@ -124,12 +124,12 @@ QLayout* HighlighterSpellcheck::configurationLayout()
 void HighlighterSpellcheck::resetConfigurationLayout()
 {
     m_enableCB->setChecked(m_enabled);
-    m_enableCB->setEnabled(ISpellcheck::instance().isLoaded());
+    m_enableCB->setEnabled(Spellcheck::instance().isLoaded());
 }
 
 void HighlighterSpellcheck::saveSettings()
 {
-    IPreferences::instance().setHighlighterValue(GUID, PROP_ENABLED, m_enableCB->isChecked());
+    Preferences::instance().setHighlighterValue(GUID, PROP_ENABLED, m_enableCB->isChecked());
 }
 
 QString HighlighterSpellcheck::guid() const
@@ -139,6 +139,6 @@ QString HighlighterSpellcheck::guid() const
 
 void HighlighterSpellcheck::applySettings()
 {
-    m_enabled = IPreferences::instance().getHighlighterValue(GUID, PROP_ENABLED, true).toBool() &&
-                ISpellcheck::instance().isLoaded();
+    m_enabled = Preferences::instance().getHighlighterValue(GUID, PROP_ENABLED, true).toBool() &&
+                Spellcheck::instance().isLoaded();
 }

@@ -19,8 +19,8 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BLACK_MILORD_IPREFERENCES_H
-#define BLACK_MILORD_IPREFERENCES_H
+#ifndef BLACK_MILORD_PREFERENCES_H
+#define BLACK_MILORD_PREFERENCES_H
 
 #include <QObject>
 #include <QSettings>
@@ -31,53 +31,62 @@ class QVariant;
 class QString;
 class QThread;
 
-class IPreferences : public QObject
+class Preferences : public QObject
 {
     Q_OBJECT
+
+    Preferences();
+    ~Preferences();
+
 public:
 
-    virtual ~IPreferences() {}
+    static Preferences& instance();
 
-    static IPreferences& instance();
+    double getVersion() const;
 
-    virtual double getVersion() const = 0;
+    void setMakeBackupBeforeOverwrite(bool makeBackup);
+    bool getMakeBackupBeforeOverwrite() const;
 
-    virtual void setMakeBackupBeforeOverwrite(bool makeBackup) = 0;
-    virtual bool getMakeBackupBeforeOverwrite() const = 0;
+    void setAspellDictionary(const QString &dictionary);
+    QString getAspellDictionary() const;
 
-    virtual void setAspellDictionary(const QString &dictionary) = 0;
-    virtual QString getAspellDictionary() const = 0;
+    void setWindowWidth(int width);
+    int getWindowWidth(int defWidth = 0) const;
 
-    virtual void setWindowWidth(int width) = 0;
-    virtual int getWindowWidth(int defWidth = 0) const = 0;
+    void setWindowHeight(int height);
+    int getWindowHeight(int defHeight = 0) const;
 
-    virtual void setWindowHeight(int height) = 0;
-    virtual int getWindowHeight(int defHeight = 0) const = 0;
+    void setWindowPositionX(int x);
+    int getWindowPositionX(int defX = 0) const;
 
-    virtual void setWindowPositionX(int x) = 0;
-    virtual int getWindowPositionX(int defX = 0) const = 0;
+    void setWindowPositionY(int y);
+    int getWindowPositionY(int defY = 0) const;
 
-    virtual void setWindowPositionY(int y) = 0;
-    virtual int getWindowPositionY(int defY = 0) const = 0;
+    void setWindowMaximized(bool maximized);
+    bool getWindowMaximized() const;
 
-    virtual void setWindowMaximized(bool maximized) = 0;
-    virtual bool getWindowMaximized() const = 0;
+    void setLastUsedDirectory(const QString &dir);
+    QString getLastUsedDirectory() const;
 
-    virtual void setLastUsedDirectory(const QString &dir) = 0;
-    virtual QString getLastUsedDirectory() const = 0;
+    void setEditorFontSize(int size);
+    int getEditorFontSize() const;
 
-    virtual void setEditorFontSize(int size) = 0;
-    virtual int getEditorFontSize() const = 0;
+    void setEditorFontFamily(const QString &family);
+    QString getEditorFontFamily() const;
+    QFont getEditorFont() const;
 
-    virtual void setEditorFontFamily(const QString &family) = 0;
-    virtual QString getEditorFontFamily() const = 0;
-    virtual QFont getEditorFont() const = 0;
+    QVariant getHighlighterValue(const QString &guid, const QString &key, const QVariant defValue);
+    void setHighlighterValue(const QString &guid, const QString &key, const QVariant &value);
 
-    virtual QVariant getHighlighterValue(const QString &guid, const QString &key, const QVariant defValue) = 0;
-    virtual void setHighlighterValue(const QString &guid, const QString &key, const QVariant &value) = 0;
+private:
+    void createDefaultConfig();
+
+    QThread *m_threadGuard;
+    QSettings *m_settings;
 
 signals:
     void settingsChanged();
+
 };
 
-#endif /* BLACK_MILORD_IPREFERENCES_H */
+#endif /* BLACK_MILORD_PREFERENCES_H */

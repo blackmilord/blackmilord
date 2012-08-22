@@ -24,16 +24,17 @@
 
 #include <QStringList>
 
-#include <IDeviceConfiguration.h>
-
-class DeviceConfiguration : public IDeviceConfiguration
+class DeviceConfiguration
 {
-    friend class IDeviceConfiguration;
-
     DeviceConfiguration();
     ~DeviceConfiguration();
+
 public:
+
+    static DeviceConfiguration& instance();
+
     QStringList getValidHTMLTags() const;
+
 private:
     QStringList m_validHTMLTags;
 };

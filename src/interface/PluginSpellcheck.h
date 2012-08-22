@@ -19,31 +19,36 @@
  *                                                                      *
  ************************************************************************/
 
-#include "DeviceConfiguration.h"
-#include <QDebug>
-#include <QFile>
+#ifndef BLACK_MILORD_PLUGIN_SPELLCHECK_H
+#define BLACK_MILORD_PLUGIN_SPELLCHECK_H
 
-DeviceConfiguration::DeviceConfiguration()
+#include <QPair>
+#include <QStringList>
+#include <QString>
+#include "Plugin.h"
+
+class PluginSpellcheck : public Plugin
 {
-    QFile file(":/device/kindle3/HtmlValidation.def");
-     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-         return;
-     }
+public:
 
-     while (!file.atEnd()) {
-         QString line(file.readLine());
-         //TODO: it should be real XML parser.
-         //TODO: every element should also has information about valid attributes.
-         line.remove("<element>").remove("</element>").remove("\r").remove("\n");
-         m_validHTMLTags.push_back(line);
-     }
-}
+    explicit PluginSpellcheck(bool enabled = false) : Plugin(enabled)
+    {
+    }
 
-DeviceConfiguration::~DeviceConfiguration()
-{
-}
+    virtual ~PluginSpellcheck()
+    {
+    }
 
-QStringList DeviceConfiguration::getValidHTMLTags() const
-{
-    return m_validHTMLTags;
-}
+    virtual bool isLoaded() const = 0;
+    virtual bool checkWord(const QString &word) const = 0;
+    virtual bool addWordToSessionDictionary(const QString &word) = 0;
+    virtual bool addWordToPersonalDictionary(const QString &word) = 0;
+    virtual QStringList hints(const QString &word) const = 0;
+    virtual QString language() const = 0;
+    virtual QList<QPair<QString, QString> > availableLanguages() const = 0;
+    virtual void changeLanguage(const QString &code) = 0;
+};
+
+Q_DECLARE_INTERFACE(PluginSpellcheck, "org.blackmilord.Plugin.Spellcheck/1.0");
+
+#endif /* BLACK_MILORD_PLUGIN_SPELLCHECK_H */

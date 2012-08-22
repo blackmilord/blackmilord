@@ -22,19 +22,32 @@
 #ifndef BLACK_MILORD_I_DEVICE_CONFIGURATION_H
 #define BLACK_MILORD_I_DEVICE_CONFIGURATION_H
 
-#include <QObject>
 #include <QStringList>
+#include <QString>
+#include <QList>
+#include <QPair>
+#include <PluginSpellcheck.h>
 
-class IDeviceConfiguration : public QObject
+class Spellcheck
 {
-    Q_OBJECT
+    Spellcheck();
+    virtual ~Spellcheck();
 public:
+    static Spellcheck& instance();
 
-    virtual ~IDeviceConfiguration() {}
+    bool isLoaded() const;
+    bool checkWord(const QString &word) const;
+    bool addWordToSessionDictionary(const QString &word);
+    bool addWordToPersonalDictionary(const QString &word);
+    QStringList hints(const QString &word) const;
+    QString language() const;
+    QList<QPair<QString, QString> > availableLanguages() const;
 
-    static IDeviceConfiguration& instance();
+public slots:
+    void changeLanguage(const QString &code);
 
-    virtual QStringList getValidHTMLTags() const = 0;
+private:
+    PluginSpellcheck *m_instance;
 };
 
 

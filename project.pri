@@ -25,7 +25,6 @@ INCLUDEPATH +=  $$BLACK_MILORD_BUILD_ROOT/src/ \
                 $$BLACK_MILORD_BUILD_ROOT/src/book/ \
                 $$BLACK_MILORD_BUILD_ROOT/src/book/mobi/ \
                 $$BLACK_MILORD_BUILD_ROOT/src/highlighter/ \
-                $$BLACK_MILORD_BUILD_ROOT/src/device/ \
                 $$BLACK_MILORD_BUILD_ROOT/src/gui/ \
                 $$BLACK_MILORD_BUILD_ROOT/src/gui/data
 

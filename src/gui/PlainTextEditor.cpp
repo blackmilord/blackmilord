@@ -30,15 +30,15 @@
 
 #include "Gui.h"
 #include "StatusBar.h"
-#include <ISpellcheck.h>
+#include <Spellcheck.h>
 #include <HighlighterManager.h>
 #include <Book.h>
-#include <IPreferences.h>
+#include <Preferences.h>
 
 PlainTextEditor::PlainTextEditor(QWidget * parent) :
     QPlainTextEdit(parent)
 {
-    connect(&IPreferences::instance(), SIGNAL(settingsChanged()), this, SLOT(applySettings()));
+    connect(&Preferences::instance(), SIGNAL(settingsChanged()), this, SLOT(applySettings()));
     connect(document(), SIGNAL(contentsChange(int, int, int)), this, SLOT(contentsChangeSlot(int, int, int)));
     connect(document(), SIGNAL(contentsChanged()), this, SLOT(contentsChangedSlot()));
     connect(this, SIGNAL(updateRequest(const QRect &, int)), this, SLOT(updateRequestSlot(const QRect &, int)));
@@ -292,12 +292,12 @@ void PlainTextEditor::contextMenuEvent(QContextMenuEvent * event)
 
     QTextCursor cursor = textCursor();
     if (!cursor.hasSelection()) {
-        if (ISpellcheck::instance().isLoaded()) {
+        if (Spellcheck::instance().isLoaded()) {
             cursor = cursorForPosition(event->pos());
             setTextCursor(cursor);
             cursor.select(QTextCursor::WordUnderCursor);
-            if (!ISpellcheck::instance().checkWord(cursor.selectedText())) {
-                const QStringList &hints = ISpellcheck::instance().hints(cursor.selectedText());
+            if (!Spellcheck::instance().checkWord(cursor.selectedText())) {
+                const QStringList &hints = Spellcheck::instance().hints(cursor.selectedText());
                 if (hints.size() > 0) {
                     connect(menu, SIGNAL(triggered(QAction*)), SLOT(applyHintSlot(QAction *)));
                     menu->addSeparator();
@@ -328,7 +328,7 @@ void PlainTextEditor::resizeEvent(QResizeEvent *event)
 
 void PlainTextEditor::applySettings()
 {
-    setFont(IPreferences::instance().getEditorFont());
+    setFont(Preferences::instance().getEditorFont());
 }
 
 void PlainTextEditor::redo()
@@ -385,5 +385,3 @@ void PlainTextEditor::applyHintSlot(QAction *action)
         cursor.insertText(action->text());
     }
 }
-
-

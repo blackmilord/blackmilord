@@ -23,7 +23,7 @@
 #include <QDebug>
 #include <MainWindow.h>
 #include <Book.h>
-#include <IPreferences.h>
+#include <Preferences.h>
 
 void processArguments(int argc, char *argv[])
 {
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setAttribute(Qt::AA_DontShowIconsInMenus, false);
     MainWindow main;
-    if (IPreferences::instance().getWindowMaximized()) {
+    if (Preferences::instance().getWindowMaximized()) {
         main.showMaximized();
     }
     else {

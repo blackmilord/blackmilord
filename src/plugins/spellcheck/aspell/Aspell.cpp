@@ -27,9 +27,12 @@
 #  include <winbase.h>
 #endif
 #include <QDebug>
+#include <QtPlugin>
 #include <QMutexLocker>
 #include <Preferences.h>
 #include <Dictionary.h>
+
+Q_EXPORT_PLUGIN2(spellcheck_aspell, ASpell)
 
 ASpell::ASpell() :
     m_mutex(QMutex::Recursive),
@@ -284,7 +287,7 @@ bool ASpell::isLoaded() const
 bool ASpell::checkWord(const QString &word) const
 {
     QMutexLocker lock(&m_mutex);
-    if (!m_spellChecker || skipSpellCheck(word)) {
+    if (!m_spellChecker) {
         return true;
     }
     return 1 == (*m_aspell_speller_check)(m_spellChecker, word.toUtf8().constData(), -1);
@@ -367,4 +370,35 @@ QList<QPair<QString, QString> > ASpell::availableLanguages() const
     }
     (*m_delete_aspell_dict_info_enumeration)(enumerator);
     return result;
+}
+
+
+QLayout* ASpell::configurationLayout()
+{
+    return NULL;
+}
+
+void ASpell::resetConfigurationLayout()
+{
+
+}
+
+void ASpell::saveSettings()
+{
+
+}
+
+void ASpell::applySettings()
+{
+
+}
+
+QString ASpell::guid() const
+{
+    return "AAA";
+}
+
+QString ASpell::name() const
+{
+    return tr("Aspell");
 }

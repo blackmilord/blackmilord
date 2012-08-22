@@ -19,23 +19,24 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BLACK_MILORD_ASPELL_WRAPPER_H
-#define BLACK_MILORD_ASPELL_WRAPPER_H
+#ifndef BLACK_MILORD_ASPELL_H
+#define BLACK_MILORD_ASPELL_H
 
-#include <QGlobalStatic>
+#include <QObject>
 #ifdef Q_WS_WIN
 #  include <windef.h>
 #endif
 #include <aspell.h>
+
 #include <QMutex>
+#include <PluginSpellcheck.h>
 
-#include <ISpellcheck.h>
-
-class ASpell : public QObject, public ISpellcheck
+class ASpell :
+    public QObject,
+    public PluginSpellcheck
 {
     Q_OBJECT
-
-    friend class ISpellcheck;
+    Q_INTERFACES(PluginSpellcheck)
 
     typedef unsigned int (*aspell_error_number_fun)(const struct AspellCanHaveError*);
     typedef const char* (*aspell_error_message_fun)(const struct AspellCanHaveError*);
@@ -61,12 +62,12 @@ class ASpell : public QObject, public ISpellcheck
     typedef int (*aspell_speller_clear_session_fun)(struct AspellSpeller*);
 
 private:
-    ASpell();
-    ~ASpell();
     bool loadLibrary();
     bool closeLibrary();
 
 public:
+    ASpell();
+    ~ASpell();
     bool isLoaded() const;
     bool checkWord(const QString &word) const;
     bool addWordToSessionDictionary(const QString &word);
@@ -74,6 +75,14 @@ public:
     QStringList hints(const QString &word) const;
     QString language() const;
     QList<QPair<QString, QString> > availableLanguages() const;
+    void changeLanguage(const QString &code);
+
+    QLayout* configurationLayout();
+    void resetConfigurationLayout();
+    void saveSettings();
+    void applySettings();
+    QString guid() const;
+    QString name() const;
 
 private:
     mutable QMutex m_mutex;
@@ -108,9 +117,6 @@ private:
     aspell_speller_error_message_fun m_aspell_speller_error_message;
     aspell_speller_save_all_word_lists_fun m_aspell_speller_save_all_word_lists;
     aspell_speller_clear_session_fun m_aspell_speller_clear_session;
-
-public slots:
-    void changeLanguage(const QString &code);
 };
 
-#endif /* BLACK_MILORD_ASPELL_WRAPPER_H */
+#endif /* BLACK_MILORD_ASPELL_H */

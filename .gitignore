@@ -5,6 +5,8 @@ dist/
 /src/qrc_resource.cpp
 /src/debug/
 /src/release/
+/src/interface/debug/
+/src/interface/release/
 /test/debug/
 /test/release/
 /test/*.rc

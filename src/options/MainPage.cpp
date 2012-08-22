@@ -29,7 +29,7 @@
 #include <QComboBox>
 #include <QLabel>
 
-#include <ISpellcheck.h>
+#include <Spellcheck.h>
 #include <Preferences.h>
 
 MainPage::MainPage(QWidget *parent) :
@@ -43,7 +43,7 @@ MainPage::MainPage(QWidget *parent) :
 
     optionsLayout->addWidget(m_makeBackupOverwrite, 0, 0);
 
-    if (ISpellcheck::instance().isLoaded()) {
+    if (Spellcheck::instance().isLoaded()) {
         m_language = new QComboBox();
         loadLanguages();
         selectLanguageFromPreference();
@@ -78,8 +78,8 @@ void MainPage::registerPage(QListWidget *contentsWidget, QStackedWidget *pagesWi
 void MainPage::apply()
 {
     Preferences::instance().setMakeBackupBeforeOverwrite(m_makeBackupOverwrite->isChecked());
-    if (ISpellcheck::instance().isLoaded()) {
-        ISpellcheck::instance().changeLanguage(
+    if (Spellcheck::instance().isLoaded()) {
+        Spellcheck::instance().changeLanguage(
                 m_language->itemData(m_language->currentIndex(), Qt::UserRole).toString());
     }
 }
@@ -88,7 +88,7 @@ void MainPage::loadLanguages()
 {
     Q_ASSERT(NULL != m_language);
     const QList<QPair<QString, QString> > &lang =
-            ISpellcheck::instance().availableLanguages();
+            Spellcheck::instance().availableLanguages();
     QList<QPair<QString, QString> >::const_iterator it = lang.begin();
     m_language->clear();
     for (; it != lang.end(); ++it) {
@@ -113,7 +113,7 @@ void MainPage::selectLanguageFromPreference()
 
 void MainPage::showEvent(QShowEvent *event)
 {
-    if (ISpellcheck::instance().isLoaded()) {
+    if (Spellcheck::instance().isLoaded()) {
         selectLanguageFromPreference();
     }
     QWidget::showEvent(event);

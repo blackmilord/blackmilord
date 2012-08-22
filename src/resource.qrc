@@ -20,8 +20,6 @@
         <file>resource/icon/menu_redo.png</file>
         <file>resource/icon/menu_undo.png</file>
 
-        <file>device/kindle3/HtmlValidation.def</file>
-
         <file>resource/about.html</file>
         <file>resource/authors.html</file>
         <file>resource/licence.html</file>

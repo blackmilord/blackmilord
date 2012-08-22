@@ -19,38 +19,38 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BLACK_MILORD_I_DEVICE_CONFIGURATION_H
-#define BLACK_MILORD_I_DEVICE_CONFIGURATION_H
+#include "DeviceConfiguration.h"
+#include <QDebug>
+#include <QFile>
 
-#include <QStringList>
-#include <QString>
-#include <QList>
-#include <QPair>
-
-class ISpellcheck
+DeviceConfiguration& DeviceConfiguration::instance()
 {
-public:
+    static DeviceConfiguration instance;
+    return instance;
+}
 
-    virtual ~ISpellcheck() {}
+DeviceConfiguration::DeviceConfiguration()
+{
+    QFile file(":/kindle3/HtmlValidation.def");
+     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+         qDebug() << "Cannot open configuration file";
+         return;
+     }
 
-    static ISpellcheck& instance();
+     while (!file.atEnd()) {
+         QString line(file.readLine());
+         //TODO: it should be real XML parser.
+         //TODO: every element should also has information about valid attributes.
+         line.remove("<element>").remove("</element>").remove("\r").remove("\n");
+         m_validHTMLTags.push_back(line);
+     }
+}
 
-    virtual bool isLoaded() const = 0;
-    virtual bool checkWord(const QString &word) const = 0;
-    virtual bool addWordToSessionDictionary(const QString &word) = 0;
-    virtual bool addWordToPersonalDictionary(const QString &word) = 0;
-    virtual QStringList hints(const QString &word) const = 0;
-    virtual QString language() const = 0;
-    virtual QList<QPair<QString, QString> > availableLanguages() const = 0;
+DeviceConfiguration::~DeviceConfiguration()
+{
+}
 
-public slots:
-    virtual void changeLanguage(const QString &code) = 0;
-
-protected:
-    virtual bool skipSpellCheck(const QString &word) const;
-    static QStringList initWordsToSkipOnSpellCheck();
-    static QStringList m_wordsToSkipOnSpellCheck;
-};
-
-
-#endif /* BLACK_MILORD_DEVICE_CONFIGURATION_H */
+QStringList DeviceConfiguration::getValidHTMLTags() const
+{
+    return m_validHTMLTags;
+}

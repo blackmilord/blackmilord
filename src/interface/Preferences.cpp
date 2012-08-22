@@ -210,6 +210,12 @@ void Preferences::createDefaultConfig()
     setEditorFontSize(12);
 }
 
+Preferences& Preferences::instance()
+{
+    static Preferences instance;
+    return instance;
+}
+
 Preferences::Preferences() :
     m_threadGuard(QThread::currentThread())
 {
