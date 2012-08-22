@@ -19,7 +19,7 @@
  *                                                                      *
  ************************************************************************/
 
-#include "AspellWrapper.h"
+#include "Aspell.h"
 #if (defined Q_WS_X11 || defined Q_WS_MAC)
 #  include <dlfcn.h>
 #elif defined Q_WS_WIN
@@ -31,7 +31,7 @@
 #include <Preferences.h>
 #include <Dictionary.h>
 
-ASpellWrapper::ASpellWrapper() :
+ASpell::ASpell() :
     m_mutex(QMutex::Recursive),
     m_spellConfig(NULL),
     m_spellChecker(NULL),
@@ -72,7 +72,7 @@ ASpellWrapper::ASpellWrapper() :
     qDebug() << "Aspell is loaded";
 }
 
-ASpellWrapper::~ASpellWrapper()
+ASpell::~ASpell()
 {
     if (m_spellChecker) {
         (*m_delete_aspell_speller)(m_spellChecker);
@@ -83,13 +83,7 @@ ASpellWrapper::~ASpellWrapper()
     closeLibrary();
 }
 
-ASpellWrapper& ASpellWrapper::instance()
-{
-    static ASpellWrapper instance;
-    return instance;
-}
-
-void ASpellWrapper::changeLanguage(const QString &code)
+void ASpell::changeLanguage(const QString &code)
 {
     QMutexLocker lock(&m_mutex);
     if (code == m_language) {
@@ -123,7 +117,7 @@ void ASpellWrapper::changeLanguage(const QString &code)
 }
 
 #if (defined Q_WS_X11 || defined Q_WS_MAC)
-bool ASpellWrapper::loadLibrary()
+bool ASpell::loadLibrary()
 {
 #ifdef Q_WS_MAC
     m_handle = dlopen("libaspell.dylib", RTLD_NOW);
@@ -160,7 +154,7 @@ bool ASpellWrapper::loadLibrary()
     return isLoaded();
 }
 
-bool ASpellWrapper::closeLibrary()
+bool ASpell::closeLibrary()
 {
     QMutexLocker lock(&m_mutex);
     m_aspell_error_number = NULL;
@@ -193,7 +187,7 @@ bool ASpellWrapper::closeLibrary()
     return false;
 }
 #else
-bool ASpellWrapper::loadLibrary()
+bool ASpell::loadLibrary()
 {
     const wchar_t *lib = L"C:\\Program Files\\Aspell\\bin\\aspell-15.dll";
     m_handle = LoadLibrary(lib);
@@ -226,7 +220,7 @@ bool ASpellWrapper::loadLibrary()
     return isLoaded();
 }
 
-bool ASpellWrapper::closeLibrary()
+bool ASpell::closeLibrary()
 {
     QMutexLocker lock(&m_mutex);
     m_aspell_error_number = NULL;
@@ -260,7 +254,7 @@ bool ASpellWrapper::closeLibrary()
 }
 #endif
 
-bool ASpellWrapper::isLoaded() const
+bool ASpell::isLoaded() const
 {
     QMutexLocker lock(&m_mutex);
     return  m_aspell_error_number != NULL &&
@@ -287,23 +281,23 @@ bool ASpellWrapper::isLoaded() const
             m_aspell_speller_clear_session != NULL;
 }
 
-bool ASpellWrapper::checkWord(const QString &word) const
+bool ASpell::checkWord(const QString &word) const
 {
     QMutexLocker lock(&m_mutex);
-    if (!m_spellChecker) {
+    if (!m_spellChecker || skipSpellCheck(word)) {
         return true;
     }
     return 1 == (*m_aspell_speller_check)(m_spellChecker, word.toUtf8().constData(), -1);
 }
 
-bool ASpellWrapper::addWordToSessionDictionary(const QString &word)
+bool ASpell::addWordToSessionDictionary(const QString &word)
 {
     qDebug() << "Adding word to session dictionary" << word;
     QMutexLocker lock(&m_mutex);
     return 0 != (*m_aspell_speller_add_to_session)(m_spellChecker, word.toUtf8().constData(), -1);
 }
 
-bool ASpellWrapper::addWordToPersonalDictionary(const QString &word)
+bool ASpell::addWordToPersonalDictionary(const QString &word)
 {
     qDebug() << "Adding word to personal dictionary" << word;
     QMutexLocker lock(&m_mutex);
@@ -313,7 +307,7 @@ bool ASpellWrapper::addWordToPersonalDictionary(const QString &word)
     return false;
 }
 
-QStringList ASpellWrapper::hints(const QString &word) const
+QStringList ASpell::hints(const QString &word) const
 {
     QStringList result;
     QMutexLocker lock(&m_mutex);
@@ -327,13 +321,13 @@ QStringList ASpellWrapper::hints(const QString &word) const
     return result;
 }
 
-QString ASpellWrapper::language() const
+QString ASpell::language() const
 {
     QMutexLocker lock(&m_mutex);
     return m_language;
 }
 
-QList<QPair<QString, QString> > ASpellWrapper::installedDictionaries() const
+QList<QPair<QString, QString> > ASpell::availableLanguages() const
 {
     QList<QPair<QString, QString> > result;
     QMutexLocker lock(&m_mutex);
@@ -361,10 +355,10 @@ QList<QPair<QString, QString> > ASpellWrapper::installedDictionaries() const
         QString readable;
         QStringList splitted = code.split("_");
         if (splitted.size() > 1) {
-            readable = Dictionary::languageCodes()[splitted[0]] + " (" + splitted[1] + ")";
+            readable = Dictionary::languageCode(splitted[0]) + " (" + splitted[1] + ")";
         }
         else {
-            readable = Dictionary::languageCodes()[code];
+            readable = Dictionary::languageCode(code);
         }
         if (!buffer.contains(readable)) {
             result.push_back(qMakePair<QString, QString>(readable, code));

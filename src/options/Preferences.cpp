@@ -202,12 +202,6 @@ void Preferences::setHighlighterValue(const QString &guid, const QString &key, c
     m_settings->setValue(guid + "/" + key, value);
 }
 
-Preferences& Preferences::instance()
-{
-    static Preferences instance;
-    return instance;
-}
-
 void Preferences::createDefaultConfig()
 {
     setMakeBackupBeforeOverwrite(true);

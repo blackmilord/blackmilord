@@ -25,8 +25,8 @@
 #include <QApplication>
 
 #include <PluginHighlighter.h>
-#include <event/HighlightBlockEvent.h>
-#include <event/HighlightBlockEventResponse.h>
+#include "HighlightBlockEvent.h"
+#include "HighlightBlockEventResponse.h"
 #include "HighlighterManager.h"
 
 HighlighterThread::HighlighterThread(QObject * parent) :

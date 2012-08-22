@@ -19,31 +19,37 @@
  *                                                                      *
  ************************************************************************/
 
-#include "DeviceConfiguration.h"
-#include <QDebug>
-#include <QFile>
+#include <ISpellcheck.h>
+#include "Aspell.h"
 
-DeviceConfiguration::DeviceConfiguration()
+QStringList ISpellcheck::m_wordsToSkipOnSpellCheck = initWordsToSkipOnSpellCheck();
+
+ISpellcheck& ISpellcheck::instance()
 {
-    QFile file(":/device/kindle3/HtmlValidation.def");
-     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-         return;
-     }
-
-     while (!file.atEnd()) {
-         QString line(file.readLine());
-         //TODO: it should be real XML parser.
-         //TODO: every element should also has information about valid attributes.
-         line.remove("<element>").remove("</element>").remove("\r").remove("\n");
-         m_validHTMLTags.push_back(line);
-     }
+    static ASpell instance;
+    return instance;
 }
 
-DeviceConfiguration::~DeviceConfiguration()
+bool ISpellcheck::skipSpellCheck(const QString &word) const
 {
+    if (m_wordsToSkipOnSpellCheck.contains(word)) {
+        return true;
+    }
+    bool ok = false;
+    word.toInt(&ok, 10);
+    return ok;
 }
 
-QStringList DeviceConfiguration::getValidHTMLTags() const
+QStringList ISpellcheck::initWordsToSkipOnSpellCheck()
 {
-    return m_validHTMLTags;
+    QStringList result;
+    result.push_back("\"");
+    result.push_back(".");
+    result.push_back(",");
+    result.push_back("!");
+    result.push_back("?");
+    result.push_back(" ");
+    result.push_back("<");
+    result.push_back(">");
+    return result;
 }

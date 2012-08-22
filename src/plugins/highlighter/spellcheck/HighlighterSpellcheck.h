@@ -23,14 +23,18 @@
 #define BLACK_MILORD_HIGHLIGHTER_SPELLING_ERROR_H
 
 #include <QTextBoundaryFinder>
-#include "PluginHighlighter.h"
+
+#include <PluginHighlighter.h>
 
 class QString;
 class QCheckBox;
 
 class HighlighterSpellcheck :
+    public QObject,
     public PluginHighlighter
 {
+    Q_OBJECT
+    Q_INTERFACES(PluginHighlighter)
 public:
     HighlighterSpellcheck();
     virtual ~HighlighterSpellcheck();

@@ -29,7 +29,7 @@
 #include <Gui.h>
 #include <PlainTextEditor.h>
 #include <StatusBar.h>
-#include <Preferences.h>
+#include <IPreferences.h>
 #include <XMLElement.h>
 #include "AbstractBook.h"
 #include "BackupManager.h"
@@ -69,7 +69,7 @@ bool Book::saveFile()
     if (m_fileName.isEmpty()) {
         return false;
     }
-    if (QFile::exists(m_fileName) && Preferences::instance().getMakeBackupBeforeOverwrite()) {
+    if (QFile::exists(m_fileName) && IPreferences::instance().getMakeBackupBeforeOverwrite()) {
         if (!BackupManager::create(m_fileName)) {
             m_why = tr("Cannot create backup file.");
             return false;

@@ -35,7 +35,7 @@
 #include "Gui.h"
 #include <StatusBar.h>
 #include <PlainTextEditor.h>
-#include <AspellWrapper.h>
+#include <ISpellcheck.h>
 #include <Book.h>
 #include <FindReplaceWindow.h>
 #include <HowToUseAspellWindow.h>
@@ -45,7 +45,7 @@
 #include <MetaDataWindow.h>
 #include <AboutWindow.h>
 #include <PictureViewerWindow.h>
-#include <Preferences.h>
+#include <IPreferences.h>
 
 namespace {
     QString PROGRAM_TITLE = QObject::tr("BlackMilord eBook editor");
@@ -108,7 +108,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     action = menu->addAction(QIcon(":/resource/icon/menu_find_and_replace.png"), "&Find and Replace",
             this, SLOT(showFindReplaceWindow()), QKeySequence::Find);
     action->setObjectName("enable_on_open");
-    if (ASpellWrapper::instance().isLoaded()) {
+    if (ISpellcheck::instance().isLoaded()) {
         action = menu->addAction(QIcon(":/resource/icon/menu_spell_check.png"), tr("&Spell check "),
                 this, SLOT(showSpellCheckingWindow()), QKeySequence(Qt::Key_F7));
         action->setObjectName("enable_on_open");
@@ -142,7 +142,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
             this, SLOT(fileSaved()));
     connect(&Book::instance(), SIGNAL(fileCreated()),
             this, SLOT(fileCreated()));
-    connect(&Preferences::instance(), SIGNAL(settingsChanged()),
+    connect(&IPreferences::instance(), SIGNAL(settingsChanged()),
             this, SLOT(applySettings()));
     connect(Gui::plainTextEditor()->asObject(), SIGNAL(modificationChanged(bool)), this, SLOT(setWindowTitle(bool)));
     connect(Gui::plainTextEditor()->asObject(), SIGNAL(redoAvailable(bool)), redoAction, SLOT(setEnabled(bool)));
@@ -163,10 +163,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags flags) :
     int defY = (available.height() - defHeight) / 2;
     setMinimumSize(defWidth, defHeight);
     setGeometry(
-        Preferences::instance().getWindowPositionX(defX),
-        Preferences::instance().getWindowPositionY(defY),
-        Preferences::instance().getWindowWidth(defWidth),
-        Preferences::instance().getWindowHeight(defHeight));
+        IPreferences::instance().getWindowPositionX(defX),
+        IPreferences::instance().getWindowPositionY(defY),
+        IPreferences::instance().getWindowWidth(defWidth),
+        IPreferences::instance().getWindowHeight(defHeight));
     if (QDesktopWidget().screenNumber(this) == -1) {
         //reset position if not visible;
         setGeometry(0, 0, 300, 300);
@@ -210,13 +210,13 @@ void MainWindow::openMobiFile()
     QString fileName = QFileDialog::getOpenFileName(
             this,
             tr("Open file"),
-            Preferences::instance().getLastUsedDirectory(),
+            IPreferences::instance().getLastUsedDirectory(),
             allFiles + ";;" + mobiFiles,
             &mobiFiles);
     if (fileName.isNull()) {
         return;
     }
-    Preferences::instance().setLastUsedDirectory(fileName);
+    IPreferences::instance().setLastUsedDirectory(fileName);
     if (!Book::instance().openFile(fileName)) {
         QMessageBox::warning(this,
                 tr("Cannot open file"),
@@ -242,11 +242,11 @@ void MainWindow::saveFile()
         fileName = QFileDialog::getSaveFileName(
                 this,
                 tr("Save file"),
-                Preferences::instance().getLastUsedDirectory());
+                IPreferences::instance().getLastUsedDirectory());
         if (fileName.isEmpty()) {
             return;
         }
-        Preferences::instance().setLastUsedDirectory(fileName);
+        IPreferences::instance().setLastUsedDirectory(fileName);
         Book::instance().setFileName(fileName);
     }
     if (!Book::instance().saveFile())
@@ -262,11 +262,11 @@ void MainWindow::saveFileAs()
     QString fileName = QFileDialog::getSaveFileName(
             this,
             tr("Save file as..."),
-            Preferences::instance().getLastUsedDirectory());
+            IPreferences::instance().getLastUsedDirectory());
     if (fileName.isEmpty()) {
         return;
     }
-    Preferences::instance().setLastUsedDirectory(fileName);
+    IPreferences::instance().setLastUsedDirectory(fileName);
     Book::instance().setFileName(fileName);
     saveFile();
 }
@@ -310,7 +310,7 @@ void MainWindow::fileClosed()
 void MainWindow::showHowToUseAspellWindow()
 {
     if (!m_howToUseAspellWindow) {
-        Q_ASSERT(!ASpellWrapper::instance().isLoaded());
+        Q_ASSERT(!ISpellcheck::instance().isLoaded());
         m_howToUseAspellWindow = new HowToUseAspellWindow(this);
         m_howToUseAspellWindow->setModal(true);
     }
@@ -320,7 +320,7 @@ void MainWindow::showHowToUseAspellWindow()
 void MainWindow::showSpellCheckingWindow()
 {
     if (!m_spellCheckingWindow) {
-        Q_ASSERT(ASpellWrapper::instance().isLoaded());
+        Q_ASSERT(ISpellcheck::instance().isLoaded());
         m_spellCheckingWindow = new SpellCheckingWindow(this);
     }
     m_spellCheckingWindow->show();
@@ -393,18 +393,18 @@ void MainWindow::quit()
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    if (!Preferences::instance().getWindowMaximized()) {
-        Preferences::instance().setWindowWidth(event->size().width());
-        Preferences::instance().setWindowHeight(event->size().height());
+    if (!IPreferences::instance().getWindowMaximized()) {
+        IPreferences::instance().setWindowWidth(event->size().width());
+        IPreferences::instance().setWindowHeight(event->size().height());
     }
     event->ignore();
 }
 
 void MainWindow::moveEvent(QMoveEvent *event)
 {
-    if (!Preferences::instance().getWindowMaximized()) {
-        Preferences::instance().setWindowWidth(event->pos().x());
-        Preferences::instance().setWindowHeight(event->pos().y());
+    if (!IPreferences::instance().getWindowMaximized()) {
+        IPreferences::instance().setWindowWidth(event->pos().x());
+        IPreferences::instance().setWindowHeight(event->pos().y());
     }
     event->ignore();
 }
@@ -412,7 +412,7 @@ void MainWindow::moveEvent(QMoveEvent *event)
 void MainWindow::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::WindowStateChange) {
-        Preferences::instance().setWindowMaximized(isMaximized());
+        IPreferences::instance().setWindowMaximized(isMaximized());
     }
     event->ignore();
 }

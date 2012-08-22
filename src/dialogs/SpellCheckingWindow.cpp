@@ -37,8 +37,8 @@
 #include <Gui.h>
 #include <PlainTextEditor.h>
 #include <Dictionary.h>
-#include <AspellWrapper.h>
-#include <Preferences.h>
+#include <ISpellcheck.h>
+#include <IPreferences.h>
 
 namespace {
     const QString BUTTON_LABEL_IGNORE_ONCE(QObject::tr("Ignore Once"));
@@ -171,8 +171,8 @@ void SpellCheckingWindow::findNextWord()
             else if (word == ">") {
                 insideTag = false;
             }
-        } while (insideTag || Dictionary::skipSpellCheck(word));
-    } while (ASpellWrapper::instance().checkWord(word));
+        } while (insideTag);
+    } while (ISpellcheck::instance().checkWord(word));
     m_currentWord = word;
     qDebug() << "not found word" << word;
     fillWindow();
@@ -181,12 +181,12 @@ void SpellCheckingWindow::findNextWord()
 void SpellCheckingWindow::loadLanguages()
 {
     const QList<QPair<QString, QString> > &lang =
-            ASpellWrapper::instance().installedDictionaries();
+            ISpellcheck::instance().availableLanguages();
     if (lang.size() == m_language->count()) {
         return;
     }
     QList<QPair<QString, QString> >::const_iterator it = lang.begin();
-    QString propertiesDictionary = Preferences::instance().getAspellDictionary();
+    QString propertiesDictionary = IPreferences::instance().getAspellDictionary();
     m_language->clear();
     for (; it != lang.end(); ++it) {
         QString display = it->first;
@@ -223,7 +223,7 @@ void SpellCheckingWindow::fillWindow()
     m_textContext->setHtml(m_undoEditText);
     m_textContext->blockSignals(false);
 
-    m_suggestions->setStringList(ASpellWrapper::instance().hints(m_currentWord));
+    m_suggestions->setStringList(ISpellcheck::instance().hints(m_currentWord));
     m_editMode = false;
     applyEditMode();
 }
@@ -259,13 +259,13 @@ void SpellCheckingWindow::ignoreOnce()
 
 void SpellCheckingWindow::ignoreAll()
 {
-    ASpellWrapper::instance().addWordToSessionDictionary(m_currentWord);
+    ISpellcheck::instance().addWordToSessionDictionary(m_currentWord);
     findNextWord();
 }
 
 void SpellCheckingWindow::addToDictionary()
 {
-    ASpellWrapper::instance().addWordToPersonalDictionary(m_currentWord);
+    ISpellcheck::instance().addWordToPersonalDictionary(m_currentWord);
     findNextWord();
 }
 
@@ -387,6 +387,6 @@ void SpellCheckingWindow::textContextChanged()
 
 void SpellCheckingWindow::changeLanguage(int index)
 {
-    ASpellWrapper::instance().changeLanguage(
+    ISpellcheck::instance().changeLanguage(
             m_language->itemData(index, Qt::UserRole).toString());
 }

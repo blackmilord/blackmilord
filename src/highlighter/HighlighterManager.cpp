@@ -23,17 +23,17 @@
 #include <QDebug>
 #include <QApplication>
 #include <QTextBlock>
+#include <QDir>
+#include <QPluginLoader>
 
 #include <PlainTextEditor.h>
 #include <BlockData.h>
 #include <Gui.h>
-#include <event/HighlightBlockEvent.h>
-#include <event/HighlightBlockEventResponse.h>
-#include <event/HighlightersApplySettingsEvent.h>
-#include "HighlighterHTMLTags.h"
-#include "HighlighterSpellcheck.h"
+#include <qvector.h>
+#include "HighlightBlockEvent.h"
+#include "HighlightBlockEventResponse.h"
+#include "HighlightersApplySettingsEvent.h"
 #include "HighlighterThread.h"
-#include "DatabaseHeader.h"
 
 HighlighterManager* HighlighterManager::m_instance = NULL;
 
@@ -43,11 +43,34 @@ HighlighterManager::HighlighterManager(QTextDocument *document) :
     m_highlighterThread(new HighlighterThread(this)),
     m_preparedFormatting(NULL)
 {
-    m_highlighters.push_back(new HighlighterHTMLTags());
-    m_highlighters.push_back(new HighlighterSpellcheck());
     m_highlighterThread->start();
-    foreach(PluginHighlighter* highlighter, m_highlighters) {
-        highlighter->applySettings();
+
+    QDir pluginsDir(qApp->applicationDirPath());
+    PluginHighlighter *highlighter;
+    qDebug() << "Loading highlighters from " << pluginsDir.absolutePath();
+    foreach(QString fileName, pluginsDir.entryList(QDir::Files))
+    {
+        qDebug() << "Trying" << pluginsDir.absoluteFilePath(fileName);
+        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
+        QObject *plugin = pluginLoader.instance();
+        if (plugin)
+        {
+            highlighter = qobject_cast<PluginHighlighter*>(plugin);
+            if (highlighter)
+            {
+                m_highlighters.push_back(highlighter);
+                highlighter->applySettings();
+                qDebug() << "...OK";
+            }
+            else
+            {
+                qDebug() << "...failed";
+            }
+        }
+        else
+        {
+            qDebug() << "...failed";
+        }
     }
 }
 
@@ -56,9 +79,6 @@ HighlighterManager::~HighlighterManager()
     cancelHighlighting();
     m_highlighterThread->quit();
     m_highlighterThread->wait();
-    foreach(PluginHighlighter* highlighter, m_highlighters) {
-        delete highlighter;
-    }
 }
 
 void HighlighterManager::createInstance(QTextDocument *document)

@@ -20,23 +20,25 @@
  ************************************************************************/
 
 #include "HighlighterSpellcheck.h"
-#include "FindReplaceWindow.h"
 #include <QDebug>
 #include <QString>
 #include <QVBoxLayout>
 #include <QCheckBox>
+#include <QtPlugin>
 
-#include <Preferences.h>
-#include <AspellWrapper.h>
-#include <Dictionary.h>
+#include <ISpellcheck.h>
+#include <IPreferences.h>
 
 namespace {
+    const QString GUID = "B70AD074-B926-437f-9720-B6CDF0E422AB";
     const QString PROP_ENABLED = "enabled";
 }
 
+Q_EXPORT_PLUGIN2(highlighter_spellcheck, HighlighterSpellcheck)
+
 HighlighterSpellcheck::HighlighterSpellcheck() :
-    PluginHighlighter(Preferences::instance().getHighlighterValue(guid(), PROP_ENABLED, true).toBool() &&
-                        ASpellWrapper::instance().isLoaded())
+    PluginHighlighter(IPreferences::instance().getHighlighterValue(GUID, PROP_ENABLED, true).toBool() &&
+                      ISpellcheck::instance().isLoaded())
 {
 }
 
@@ -86,10 +88,8 @@ PluginHighlighter::FormatListPtr HighlighterSpellcheck::highlightBlock(const QSt
                 //double spaces
                 result.push_back(AbstractHighlighter::CharFormat(startPos, endPos, errorFormat));
             } else */
-            if (!Dictionary::skipSpellCheck(word)) {
-                if (!ASpellWrapper::instance().checkWord(word)) {
-                    result->push_back(PluginHighlighter::CharFormat(startPos, endPos, errorFormat));
-                }
+            if (!ISpellcheck::instance().checkWord(word)) {
+                result->push_back(PluginHighlighter::CharFormat(startPos, endPos, errorFormat));
             }
         }
         if (finder.boundaryReasons() & QTextBoundaryFinder::StartWord) {
@@ -124,21 +124,21 @@ QLayout* HighlighterSpellcheck::configurationLayout()
 void HighlighterSpellcheck::resetConfigurationLayout()
 {
     m_enableCB->setChecked(m_enabled);
-    m_enableCB->setEnabled(ASpellWrapper::instance().isLoaded());
+    m_enableCB->setEnabled(ISpellcheck::instance().isLoaded());
 }
 
 void HighlighterSpellcheck::saveSettings()
 {
-    Preferences::instance().setHighlighterValue(guid(), PROP_ENABLED, m_enableCB->isChecked());
+    IPreferences::instance().setHighlighterValue(GUID, PROP_ENABLED, m_enableCB->isChecked());
 }
 
 QString HighlighterSpellcheck::guid() const
 {
-    return "B70AD074-B926-437f-9720-B6CDF0E422AB";
+    return GUID;
 }
 
 void HighlighterSpellcheck::applySettings()
 {
-    m_enabled = Preferences::instance().getHighlighterValue(guid(), PROP_ENABLED, true).toBool() &&
-                ASpellWrapper::instance().isLoaded();
+    m_enabled = IPreferences::instance().getHighlighterValue(GUID, PROP_ENABLED, true).toBool() &&
+                ISpellcheck::instance().isLoaded();
 }

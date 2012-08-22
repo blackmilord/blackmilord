@@ -36,6 +36,7 @@ class HighlighterHTMLTags :
     public PluginHighlighter
 {
     Q_OBJECT
+    Q_INTERFACES(PluginHighlighter)
 public:
     HighlighterHTMLTags();
     virtual ~HighlighterHTMLTags();

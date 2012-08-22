@@ -20,30 +20,9 @@
  ************************************************************************/
 
 #include "DeviceConfiguration.h"
-#include <QDebug>
-#include <QFile>
 
-DeviceConfiguration::DeviceConfiguration()
+IDeviceConfiguration& IDeviceConfiguration::instance()
 {
-    QFile file(":/device/kindle3/HtmlValidation.def");
-     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-         return;
-     }
-
-     while (!file.atEnd()) {
-         QString line(file.readLine());
-         //TODO: it should be real XML parser.
-         //TODO: every element should also has information about valid attributes.
-         line.remove("<element>").remove("</element>").remove("\r").remove("\n");
-         m_validHTMLTags.push_back(line);
-     }
-}
-
-DeviceConfiguration::~DeviceConfiguration()
-{
-}
-
-QStringList DeviceConfiguration::getValidHTMLTags() const
-{
-    return m_validHTMLTags;
+    static DeviceConfiguration instance;
+    return instance;
 }

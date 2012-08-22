@@ -1,4 +1,9 @@
 TEMPLATE = subdirs
 CONFIG += ordered debug_and_release
-SUBDIRS = src
+
+include(project.pri)
+
+SUBDIRS += src/interface
+SUBDIRS += src
+SUBDIRS += src/plugins
 #SUBDIRS += test

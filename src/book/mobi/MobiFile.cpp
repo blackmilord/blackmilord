@@ -32,7 +32,6 @@
 #include <QDateTime>
 #include <QPixmap>
 
-#include <Preferences.h>
 #include <Book.h>
 #include <Dictionary.h>
 #include <Formatting.h>

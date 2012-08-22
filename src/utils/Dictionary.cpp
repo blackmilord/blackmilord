@@ -20,23 +20,13 @@
  ************************************************************************/
 
 #include "Dictionary.h"
-#include <QStringList>
+#include <QObject>
 #include <QString>
 
-QStringList Dictionary::m_wordsToSkipOnSpellCheck = initWordsToSkipOnSpellCheck();
-QMap<QString, QString> Dictionary::m_languageCodes = initLanguageCodes();
-
-bool Dictionary::skipSpellCheck(const QString &word)
+namespace Dictionary
 {
-    if (m_wordsToSkipOnSpellCheck.contains(word)) {
-        return true;
-    }
-    bool ok = false;
-    word.toInt(&ok, 10);
-    return ok;
-}
 
-QString Dictionary::bookMetaDataLabel(MetaData metadata)
+QString bookMetaDataLabel(MetaData metadata)
 {
     switch(metadata) {
     case METADATA_AUTHOR:
@@ -66,169 +56,152 @@ QString Dictionary::bookMetaDataLabel(MetaData metadata)
     return QString();
 }
 
-const QStringList& Dictionary::wordsToSkipOnSpellCheck()
+QString languageCode(const QString &code)
 {
-    return m_wordsToSkipOnSpellCheck;
+
+#define CHECK_LANG_CODE(codeStr, resultStr) if (code == codeStr) return QString(resultStr);
+
+    CHECK_LANG_CODE("en", "English")
+    CHECK_LANG_CODE("ab", "Abkhazian")
+    CHECK_LANG_CODE("aa", "Afar")
+    CHECK_LANG_CODE("af", "Afrikaans")
+    CHECK_LANG_CODE("sq", "Albanian")
+    CHECK_LANG_CODE("am", "Amharic")
+    CHECK_LANG_CODE("ar", "Arabic")
+    CHECK_LANG_CODE("hy", "Armenian")
+    CHECK_LANG_CODE("as", "Assamese")
+    CHECK_LANG_CODE("ay", "Aymara")
+    CHECK_LANG_CODE("az", "Azerbaijani")
+    CHECK_LANG_CODE("ba", "Bashkir")
+    CHECK_LANG_CODE("eu", "Basque")
+    CHECK_LANG_CODE("bn", "Bengali")
+    CHECK_LANG_CODE("bh", "Bihari")
+    CHECK_LANG_CODE("bi", "Bislama")
+    CHECK_LANG_CODE("be", "Breton")
+    CHECK_LANG_CODE("bg", "Bulgarian")
+    CHECK_LANG_CODE("my", "Burmese")
+    CHECK_LANG_CODE("be", "Byelorussian")
+    CHECK_LANG_CODE("ca", "Catalan")
+    CHECK_LANG_CODE("zh", "Chinese")
+    CHECK_LANG_CODE("co", "Corsican")
+    CHECK_LANG_CODE("hr", "Croatian")
+    CHECK_LANG_CODE("cs", "Czech")
+    CHECK_LANG_CODE("da", "Danish")
+    CHECK_LANG_CODE("nl", "Dutch")
+    CHECK_LANG_CODE("dz", "Dzongkha")
+    CHECK_LANG_CODE("eo", "Esperanto")
+    CHECK_LANG_CODE("et", "Estonian")
+    CHECK_LANG_CODE("fo", "Faroese")
+    CHECK_LANG_CODE("fj", "Fijian")
+    CHECK_LANG_CODE("fi", "Finnish")
+    CHECK_LANG_CODE("fr", "French")
+    CHECK_LANG_CODE("fy", "Frisian")
+    CHECK_LANG_CODE("gl", "Gallegan")
+    CHECK_LANG_CODE("ka", "Georgian")
+    CHECK_LANG_CODE("de", "German")
+    CHECK_LANG_CODE("el", "Greek, Modern (1453-)")
+    CHECK_LANG_CODE("kl", "Greenlandic")
+    CHECK_LANG_CODE("gn", "Guarani")
+    CHECK_LANG_CODE("gu", "Gujarati")
+    CHECK_LANG_CODE("ha", "Hausa")
+    CHECK_LANG_CODE("he", "Hebrew")
+    CHECK_LANG_CODE("hi", "Hindi")
+    CHECK_LANG_CODE("hu", "Hungarian")
+    CHECK_LANG_CODE("is", "Icelandic")
+    CHECK_LANG_CODE("id", "Indonesian")
+    CHECK_LANG_CODE("ia", "Interlingua (International Auxiliary language Association)")
+    CHECK_LANG_CODE("iu", "Inuktitut")
+    CHECK_LANG_CODE("ik", "Inupiak")
+    CHECK_LANG_CODE("ga", "Irish")
+    CHECK_LANG_CODE("it", "Italian")
+    CHECK_LANG_CODE("ja", "Japanese")
+    CHECK_LANG_CODE("jv", "Javanese")
+    CHECK_LANG_CODE("jw", "Javanese")
+    CHECK_LANG_CODE("kn", "Kannada")
+    CHECK_LANG_CODE("ks", "Kashmiri")
+    CHECK_LANG_CODE("kk", "Kazakh")
+    CHECK_LANG_CODE("km", "Khmer")
+    CHECK_LANG_CODE("rw", "Kinyarwanda")
+    CHECK_LANG_CODE("ky", "Kirghiz")
+    CHECK_LANG_CODE("ko", "Korean")
+    CHECK_LANG_CODE("ku", "Kurdish")
+    CHECK_LANG_CODE("oc", "Langue d'Oc (post 1500)")
+    CHECK_LANG_CODE("lo", "Lao")
+    CHECK_LANG_CODE("la", "Latin")
+    CHECK_LANG_CODE("lv", "Latvian")
+    CHECK_LANG_CODE("ln", "Lingala")
+    CHECK_LANG_CODE("lt", "Lithuanian")
+    CHECK_LANG_CODE("mk", "Macedonian")
+    CHECK_LANG_CODE("mg", "Malagasy")
+    CHECK_LANG_CODE("ms", "Malay")
+    CHECK_LANG_CODE("ml", "Maltese")
+    CHECK_LANG_CODE("mi", "Maori")
+    CHECK_LANG_CODE("mr", "Marathi")
+    CHECK_LANG_CODE("mo", "Moldavian")
+    CHECK_LANG_CODE("mn", "Mongolian")
+    CHECK_LANG_CODE("na", "Nauru")
+    CHECK_LANG_CODE("ne", "Nepali")
+    CHECK_LANG_CODE("no", "Norwegian")
+    CHECK_LANG_CODE("or", "Oriya")
+    CHECK_LANG_CODE("om", "Oromo")
+    CHECK_LANG_CODE("pa", "Panjabi")
+    CHECK_LANG_CODE("fa", "Persian")
+    CHECK_LANG_CODE("pl", "Polish")
+    CHECK_LANG_CODE("pt", "Portuguese")
+    CHECK_LANG_CODE("ps", "Pushto")
+    CHECK_LANG_CODE("qu", "Quechua")
+    CHECK_LANG_CODE("rm", "Rhaeto-Romance")
+    CHECK_LANG_CODE("ro", "Romanian")
+    CHECK_LANG_CODE("rn", "Rundi")
+    CHECK_LANG_CODE("ru", "Russian")
+    CHECK_LANG_CODE("sm", "Samoan")
+    CHECK_LANG_CODE("sg", "Sango")
+    CHECK_LANG_CODE("sa", "Sanskrit")
+    CHECK_LANG_CODE("sr", "Serbian")
+    CHECK_LANG_CODE("sh", "Serbo-Croatian")
+    CHECK_LANG_CODE("sn", "Shona")
+    CHECK_LANG_CODE("sd", "Sindhi")
+    CHECK_LANG_CODE("si", "Singhalese")
+    CHECK_LANG_CODE("ss", "Siswant")
+    CHECK_LANG_CODE("sk", "Slovak")
+    CHECK_LANG_CODE("sl", "Slovenian")
+    CHECK_LANG_CODE("so", "Somali")
+    CHECK_LANG_CODE("st", "Sotho, Southern")
+    CHECK_LANG_CODE("es", "Spanish")
+    CHECK_LANG_CODE("su", "Sudanese")
+    CHECK_LANG_CODE("sw", "Swahili")
+    CHECK_LANG_CODE("sv", "Swedish")
+    CHECK_LANG_CODE("tl", "Tagalog")
+    CHECK_LANG_CODE("tg", "Tajik")
+    CHECK_LANG_CODE("ta", "Tamil")
+    CHECK_LANG_CODE("tt", "Tatar")
+    CHECK_LANG_CODE("te", "Telugu")
+    CHECK_LANG_CODE("th", "Thai")
+    CHECK_LANG_CODE("bo", "Tibetan")
+    CHECK_LANG_CODE("ti", "Tigrinya")
+    CHECK_LANG_CODE("to", "Tonga (Nyasa)")
+    CHECK_LANG_CODE("ts", "Tsonga")
+    CHECK_LANG_CODE("tn", "Tswana")
+    CHECK_LANG_CODE("tr", "Turkish")
+    CHECK_LANG_CODE("tk", "Turkmen")
+    CHECK_LANG_CODE("tw", "Twi")
+    CHECK_LANG_CODE("ug", "Uighur")
+    CHECK_LANG_CODE("uk", "Ukrainian")
+    CHECK_LANG_CODE("ur", "Urdu")
+    CHECK_LANG_CODE("uz", "Uzbek")
+    CHECK_LANG_CODE("vi", "Vietnamese")
+    CHECK_LANG_CODE("vo", "Volapük")
+    CHECK_LANG_CODE("cy", "Welsh")
+    CHECK_LANG_CODE("wo", "Wolof")
+    CHECK_LANG_CODE("xh", "Xhosa")
+    CHECK_LANG_CODE("yi", "Yiddish")
+    CHECK_LANG_CODE("yo", "Yoruba")
+    CHECK_LANG_CODE("za", "Zhuang")
+    CHECK_LANG_CODE("zu", "Zulu")
+
+#undef CHECK_LANG_CODE
+
+    return "Unknown";
 }
 
-const QMap<QString, QString>& Dictionary::languageCodes()
-{
-    return m_languageCodes;
-}
-
-QStringList Dictionary::initWordsToSkipOnSpellCheck()
-{
-    QStringList result;
-    result.push_back("\"");
-    result.push_back(".");
-    result.push_back(",");
-    result.push_back("!");
-    result.push_back("?");
-    result.push_back(" ");
-    result.push_back("<");
-    result.push_back(">");
-    return result;
-}
-
-QMap<QString, QString> Dictionary::initLanguageCodes()
-{
-    QMap<QString, QString> result;
-    result["ab"] = QObject::tr("Abkhazian");
-    result["aa"] = QObject::tr("Afar");
-    result["af"] = QObject::tr("Afrikaans");
-    result["sq"] = QObject::tr("Albanian");
-    result["am"] = QObject::tr("Amharic");
-    result["ar"] = QObject::tr("Arabic");
-    result["hy"] = QObject::tr("Armenian");
-    result["as"] = QObject::tr("Assamese");
-    result["ay"] = QObject::tr("Aymara");
-    result["az"] = QObject::tr("Azerbaijani");
-    result["ba"] = QObject::tr("Bashkir");
-    result["eu"] = QObject::tr("Basque");
-    result["bn"] = QObject::tr("Bengali");
-    result["bh"] = QObject::tr("Bihari");
-    result["bi"] = QObject::tr("Bislama");
-    result["be"] = QObject::tr("Breton");
-    result["bg"] = QObject::tr("Bulgarian");
-    result["my"] = QObject::tr("Burmese");
-    result["be"] = QObject::tr("Byelorussian");
-    result["ca"] = QObject::tr("Catalan");
-    result["zh"] = QObject::tr("Chinese");
-    result["co"] = QObject::tr("Corsican");
-    result["hr"] = QObject::tr("Croatian");
-    result["cs"] = QObject::tr("Czech");
-    result["da"] = QObject::tr("Danish");
-    result["nl"] = QObject::tr("Dutch");
-    result["dz"] = QObject::tr("Dzongkha");
-    result["en"] = QObject::tr("English");
-    result["eo"] = QObject::tr("Esperanto");
-    result["et"] = QObject::tr("Estonian");
-    result["fo"] = QObject::tr("Faroese");
-    result["fj"] = QObject::tr("Fijian");
-    result["fi"] = QObject::tr("Finnish");
-    result["fr"] = QObject::tr("French");
-    result["fy"] = QObject::tr("Frisian");
-    result["gl"] = QObject::tr("Gallegan");
-    result["ka"] = QObject::tr("Georgian");
-    result["de"] = QObject::tr("German");
-    result["el"] = QObject::tr("Greek, Modern (1453-)");
-    result["kl"] = QObject::tr("Greenlandic");
-    result["gn"] = QObject::tr("Guarani");
-    result["gu"] = QObject::tr("Gujarati");
-    result["ha"] = QObject::tr("Hausa");
-    result["he"] = QObject::tr("Hebrew");
-    result["hi"] = QObject::tr("Hindi");
-    result["hu"] = QObject::tr("Hungarian");
-    result["is"] = QObject::tr("Icelandic");
-    result["id"] = QObject::tr("Indonesian");
-    result["ia"] = QObject::tr("Interlingua (International Auxiliary language Association)");
-    result["iu"] = QObject::tr("Inuktitut");
-    result["ik"] = QObject::tr("Inupiak");
-    result["ga"] = QObject::tr("Irish");
-    result["it"] = QObject::tr("Italian");
-    result["ja"] = QObject::tr("Japanese");
-    result["jv"] = QObject::tr("Javanese");
-    result["jw"] = QObject::tr("Javanese");
-    result["kn"] = QObject::tr("Kannada");
-    result["ks"] = QObject::tr("Kashmiri");
-    result["kk"] = QObject::tr("Kazakh");
-    result["km"] = QObject::tr("Khmer");
-    result["rw"] = QObject::tr("Kinyarwanda");
-    result["ky"] = QObject::tr("Kirghiz");
-    result["ko"] = QObject::tr("Korean");
-    result["ku"] = QObject::tr("Kurdish");
-    result["oc"] = QObject::tr("Langue d'Oc (post 1500)");
-    result["lo"] = QObject::tr("Lao");
-    result["la"] = QObject::tr("Latin");
-    result["lv"] = QObject::tr("Latvian");
-    result["ln"] = QObject::tr("Lingala");
-    result["lt"] = QObject::tr("Lithuanian");
-    result["mk"] = QObject::tr("Macedonian");
-    result["mg"] = QObject::tr("Malagasy");
-    result["ms"] = QObject::tr("Malay");
-    result["ml"] = QObject::tr("Maltese");
-    result["mi"] = QObject::tr("Maori");
-    result["mr"] = QObject::tr("Marathi");
-    result["mo"] = QObject::tr("Moldavian");
-    result["mn"] = QObject::tr("Mongolian");
-    result["na"] = QObject::tr("Nauru");
-    result["ne"] = QObject::tr("Nepali");
-    result["no"] = QObject::tr("Norwegian");
-    result["or"] = QObject::tr("Oriya");
-    result["om"] = QObject::tr("Oromo");
-    result["pa"] = QObject::tr("Panjabi");
-    result["fa"] = QObject::tr("Persian");
-    result["pl"] = QObject::tr("Polish");
-    result["pt"] = QObject::tr("Portuguese");
-    result["ps"] = QObject::tr("Pushto");
-    result["qu"] = QObject::tr("Quechua");
-    result["rm"] = QObject::tr("Rhaeto-Romance");
-    result["ro"] = QObject::tr("Romanian");
-    result["rn"] = QObject::tr("Rundi");
-    result["ru"] = QObject::tr("Russian");
-    result["sm"] = QObject::tr("Samoan");
-    result["sg"] = QObject::tr("Sango");
-    result["sa"] = QObject::tr("Sanskrit");
-    result["sr"] = QObject::tr("Serbian");
-    result["sh"] = QObject::tr("Serbo-Croatian");
-    result["sn"] = QObject::tr("Shona");
-    result["sd"] = QObject::tr("Sindhi");
-    result["si"] = QObject::tr("Singhalese");
-    result["ss"] = QObject::tr("Siswant");
-    result["sk"] = QObject::tr("Slovak");
-    result["sl"] = QObject::tr("Slovenian");
-    result["so"] = QObject::tr("Somali");
-    result["st"] = QObject::tr("Sotho, Southern");
-    result["es"] = QObject::tr("Spanish");
-    result["su"] = QObject::tr("Sudanese");
-    result["sw"] = QObject::tr("Swahili");
-    result["sv"] = QObject::tr("Swedish");
-    result["tl"] = QObject::tr("Tagalog");
-    result["tg"] = QObject::tr("Tajik");
-    result["ta"] = QObject::tr("Tamil");
-    result["tt"] = QObject::tr("Tatar");
-    result["te"] = QObject::tr("Telugu");
-    result["th"] = QObject::tr("Thai");
-    result["bo"] = QObject::tr("Tibetan");
-    result["ti"] = QObject::tr("Tigrinya");
-    result["to"] = QObject::tr("Tonga (Nyasa)");
-    result["ts"] = QObject::tr("Tsonga");
-    result["tn"] = QObject::tr("Tswana");
-    result["tr"] = QObject::tr("Turkish");
-    result["tk"] = QObject::tr("Turkmen");
-    result["tw"] = QObject::tr("Twi");
-    result["ug"] = QObject::tr("Uighur");
-    result["uk"] = QObject::tr("Ukrainian");
-    result["ur"] = QObject::tr("Urdu");
-    result["uz"] = QObject::tr("Uzbek");
-    result["vi"] = QObject::tr("Vietnamese");
-    result["vo"] = QObject::tr("Volapük");
-    result["cy"] = QObject::tr("Welsh");
-    result["wo"] = QObject::tr("Wolof");
-    result["xh"] = QObject::tr("Xhosa");
-    result["yi"] = QObject::tr("Yiddish");
-    result["yo"] = QObject::tr("Yoruba");
-    result["za"] = QObject::tr("Zhuang");
-    result["zu"] = QObject::tr("Zulu");
-    return result;
 }

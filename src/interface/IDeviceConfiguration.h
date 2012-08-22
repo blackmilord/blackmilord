@@ -19,29 +19,23 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BLACK_MILORD_EXTRA_RULES_H
-#define BLACK_MILORD_EXTRA_RULES_H
+#ifndef BLACK_MILORD_I_DEVICE_CONFIGURATION_H
+#define BLACK_MILORD_I_DEVICE_CONFIGURATION_H
 
-#include <QMap>
-#include <MetadataEnum.h>
+#include <QObject>
+#include <QStringList>
 
-class QStringList;
-class QString;
-
-class Dictionary
+class IDeviceConfiguration : public QObject
 {
+    Q_OBJECT
 public:
-    static const QStringList& wordsToSkipOnSpellCheck();
-    static const QMap<QString, QString>& languageCodes();
-    static bool skipSpellCheck(const QString &word);
-    static QString bookMetaDataLabel(MetaData metadata);
 
-private:
-    static QStringList m_wordsToSkipOnSpellCheck;
-    static QMap<QString, QString> m_languageCodes;
+    virtual ~IDeviceConfiguration() {}
 
-    static QStringList initWordsToSkipOnSpellCheck();
-    static QMap<QString, QString> initLanguageCodes();
+    static IDeviceConfiguration& instance();
+
+    virtual QStringList getValidHTMLTags() const = 0;
 };
 
-#endif /* BLACK_MILORD_EXTRA_RULES_H */
+
+#endif /* BLACK_MILORD_DEVICE_CONFIGURATION_H */

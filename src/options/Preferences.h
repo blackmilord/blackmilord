@@ -25,21 +25,21 @@
 #include <QObject>
 #include <QSettings>
 #include <QMap>
+#include <IPreferences.h>
 
 class QFont;
 class QVariant;
 class QString;
 class QThread;
 
-class Preferences : public QObject
+class Preferences : public IPreferences
 {
-    Q_OBJECT
+    friend class IPreferences;
+
     Preferences();
     ~Preferences();
 
 public:
-
-    static Preferences& instance();
 
     double getVersion() const;
 
@@ -83,8 +83,6 @@ private:
     QThread *m_threadGuard;
     QSettings *m_settings;
 
-signals:
-    void settingsChanged();
 };
 
 #endif /* BLACK_MILORD_PREFERENCES_H */

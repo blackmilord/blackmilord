@@ -20,7 +20,6 @@
  ************************************************************************/
 
 #include "HighlighterHTMLTags.h"
-#include "SpellCheckingWindow.h"
 #include <QDebug>
 #include <QString>
 #include <QRegExp>
@@ -30,11 +29,13 @@
 #include <QCheckBox>
 #include <QColorDialog>
 #include <QPushButton>
+#include <QtPlugin>
 
-#include <Preferences.h>
-#include <DeviceConfiguration.h>
+#include <IPreferences.h>
+#include <IDeviceConfiguration.h>
 
 namespace {
+    const QString GUID = "12E0DE8E-A82E-4674-9C08-B42FBD292509";
     const QString PROP_ENABLED = "enabled";
     const QString PROP_NORMAL_FOREGROUND = "normal_foreground_color";
     const QString PROP_NORMAL_BACKGROUND = "normal_background_color";
@@ -46,8 +47,10 @@ namespace {
     const QString PROP_INVALID_BACKGROUND_ENABLED = "invalid_background_color_enabled";
 }
 
+Q_EXPORT_PLUGIN2(highlighter_html, HighlighterHTMLTags)
+
 HighlighterHTMLTags::HighlighterHTMLTags() :
-    PluginHighlighter(Preferences::instance().getHighlighterValue(guid(), PROP_ENABLED, true).toBool())
+    PluginHighlighter(IPreferences::instance().getHighlighterValue(GUID, PROP_ENABLED, true).toBool())
 {
 }
 
@@ -76,7 +79,7 @@ PluginHighlighter::FormatListPtr HighlighterHTMLTags::highlightBlock(const QStri
     QRegExp rx("<\\s*/?\\s*([^\\s>/]*)\\s*([A-Za-z]+\\s*=\\s*\"[ A-Za-z0-9]*\"\\s*)*/?\\s*>");
     rx.setMinimal(true);
 
-    const QStringList &validTags = DeviceConfiguration::instance().getValidHTMLTags();
+    const QStringList &validTags = IDeviceConfiguration::instance().getValidHTMLTags();
     int index = text.indexOf(rx);
     while (index >= 0) {
         int length = rx.matchedLength();
@@ -187,32 +190,31 @@ void HighlighterHTMLTags::updateConfigurationLayoutColors()
 
 void HighlighterHTMLTags::saveSettings()
 {
-    Preferences::instance().setHighlighterValue(guid(), PROP_ENABLED, m_enableCB->isChecked());
-    Preferences::instance().setHighlighterValue(guid(), PROP_INVALID_BACKGROUND_ENABLED, m_colorBackgroundInvalidCB->isChecked());
-    Preferences::instance().setHighlighterValue(guid(), PROP_INVALID_FOREGROUND_ENABLED, m_colorForegroundInvalidCB->isChecked());
-    Preferences::instance().setHighlighterValue(guid(), PROP_NORMAL_BACKGROUND_ENABLED, m_colorBackgroundNormalCB->isChecked());
-    Preferences::instance().setHighlighterValue(guid(), PROP_NORMAL_FOREGROUND_ENABLED, m_colorForegroundNormalCB->isChecked());
-    Preferences::instance().setHighlighterValue(guid(), PROP_NORMAL_FOREGROUND, m_foregroundNormal.name());
-    Preferences::instance().setHighlighterValue(guid(), PROP_NORMAL_BACKGROUND, m_backgroundNormal.name());
-    Preferences::instance().setHighlighterValue(guid(), PROP_INVALID_FOREGROUND, m_foregroundInvalid.name());
-    Preferences::instance().setHighlighterValue(guid(), PROP_INVALID_BACKGROUND, m_backgroundInvalid.name());
+    IPreferences::instance().setHighlighterValue(GUID, PROP_ENABLED, m_enableCB->isChecked());
+    IPreferences::instance().setHighlighterValue(GUID, PROP_INVALID_BACKGROUND_ENABLED, m_colorBackgroundInvalidCB->isChecked());
+    IPreferences::instance().setHighlighterValue(GUID, PROP_INVALID_FOREGROUND_ENABLED, m_colorForegroundInvalidCB->isChecked());
+    IPreferences::instance().setHighlighterValue(GUID, PROP_NORMAL_BACKGROUND_ENABLED, m_colorBackgroundNormalCB->isChecked());
+    IPreferences::instance().setHighlighterValue(GUID, PROP_NORMAL_FOREGROUND_ENABLED, m_colorForegroundNormalCB->isChecked());
+    IPreferences::instance().setHighlighterValue(GUID, PROP_NORMAL_FOREGROUND, m_foregroundNormal.name());
+    IPreferences::instance().setHighlighterValue(GUID, PROP_NORMAL_BACKGROUND, m_backgroundNormal.name());
+    IPreferences::instance().setHighlighterValue(GUID, PROP_INVALID_FOREGROUND, m_foregroundInvalid.name());
+    IPreferences::instance().setHighlighterValue(GUID, PROP_INVALID_BACKGROUND, m_backgroundInvalid.name());
 }
 
 QString HighlighterHTMLTags::guid() const
 {
-    return "12E0DE8E-A82E-4674-9C08-B42FBD292509";
+    return GUID;
 }
 
 void HighlighterHTMLTags::applySettings()
 {
-    m_enabled = Preferences::instance().getHighlighterValue(guid(), PROP_ENABLED, true).toBool();
-    m_hasForegroundNormal = Preferences::instance().getHighlighterValue(guid(), PROP_NORMAL_FOREGROUND_ENABLED, true).toBool();
-    m_hasBackgroundNormal = Preferences::instance().getHighlighterValue(guid(), PROP_NORMAL_BACKGROUND_ENABLED, false).toBool();
-    m_hasForegroundInvalid = Preferences::instance().getHighlighterValue(guid(), PROP_INVALID_FOREGROUND_ENABLED, true).toBool();
-    m_hasBackgroundInvalid = Preferences::instance().getHighlighterValue(guid(), PROP_INVALID_BACKGROUND_ENABLED, false).toBool();
-    m_foregroundNormal = QColor(Preferences::instance().getHighlighterValue(guid(), PROP_NORMAL_FOREGROUND, "#0000FF").toString());
-    m_backgroundNormal = QColor(Preferences::instance().getHighlighterValue(guid(), PROP_NORMAL_BACKGROUND, "#FFFFFF").toString());
-    m_foregroundInvalid = QColor(Preferences::instance().getHighlighterValue(guid(), PROP_INVALID_FOREGROUND, "#FF0000").toString());
-    m_backgroundInvalid = QColor(Preferences::instance().getHighlighterValue(guid(), PROP_INVALID_BACKGROUND, "#FFFFFF").toString());
-
+    m_enabled = IPreferences::instance().getHighlighterValue(GUID, PROP_ENABLED, true).toBool();
+    m_hasForegroundNormal = IPreferences::instance().getHighlighterValue(GUID, PROP_NORMAL_FOREGROUND_ENABLED, true).toBool();
+    m_hasBackgroundNormal = IPreferences::instance().getHighlighterValue(GUID, PROP_NORMAL_BACKGROUND_ENABLED, false).toBool();
+    m_hasForegroundInvalid = IPreferences::instance().getHighlighterValue(GUID, PROP_INVALID_FOREGROUND_ENABLED, true).toBool();
+    m_hasBackgroundInvalid = IPreferences::instance().getHighlighterValue(GUID, PROP_INVALID_BACKGROUND_ENABLED, false).toBool();
+    m_foregroundNormal = QColor(IPreferences::instance().getHighlighterValue(GUID, PROP_NORMAL_FOREGROUND, "#0000FF").toString());
+    m_backgroundNormal = QColor(IPreferences::instance().getHighlighterValue(GUID, PROP_NORMAL_BACKGROUND, "#FFFFFF").toString());
+    m_foregroundInvalid = QColor(IPreferences::instance().getHighlighterValue(GUID, PROP_INVALID_FOREGROUND, "#FF0000").toString());
+    m_backgroundInvalid = QColor(IPreferences::instance().getHighlighterValue(GUID, PROP_INVALID_BACKGROUND, "#FFFFFF").toString());
 }

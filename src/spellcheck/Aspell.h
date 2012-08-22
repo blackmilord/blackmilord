@@ -27,15 +27,15 @@
 #  include <windef.h>
 #endif
 #include <aspell.h>
-#include <QString>
-#include <QStringList>
-#include <QList>
-#include <QPair>
 #include <QMutex>
 
-class ASpellWrapper : public QObject
+#include <ISpellcheck.h>
+
+class ASpell : public QObject, public ISpellcheck
 {
     Q_OBJECT
+
+    friend class ISpellcheck;
 
     typedef unsigned int (*aspell_error_number_fun)(const struct AspellCanHaveError*);
     typedef const char* (*aspell_error_message_fun)(const struct AspellCanHaveError*);
@@ -61,20 +61,19 @@ class ASpellWrapper : public QObject
     typedef int (*aspell_speller_clear_session_fun)(struct AspellSpeller*);
 
 private:
-    ASpellWrapper();
-    ~ASpellWrapper();
+    ASpell();
+    ~ASpell();
     bool loadLibrary();
     bool closeLibrary();
 
 public:
-    static ASpellWrapper& instance();
     bool isLoaded() const;
     bool checkWord(const QString &word) const;
     bool addWordToSessionDictionary(const QString &word);
     bool addWordToPersonalDictionary(const QString &word);
     QStringList hints(const QString &word) const;
     QString language() const;
-    QList<QPair<QString, QString> > installedDictionaries() const;
+    QList<QPair<QString, QString> > availableLanguages() const;
 
 private:
     mutable QMutex m_mutex;
