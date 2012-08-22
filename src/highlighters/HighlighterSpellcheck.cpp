@@ -35,7 +35,7 @@ namespace {
 }
 
 HighlighterSpellcheck::HighlighterSpellcheck() :
-    AbstractHighlighter(Preferences::instance().getHighlighterValue(guid(), PROP_ENABLED, true).toBool() &&
+    PluginHighlighter(Preferences::instance().getHighlighterValue(guid(), PROP_ENABLED, true).toBool() &&
                         ASpellWrapper::instance().isLoaded())
 {
 }
@@ -44,7 +44,7 @@ HighlighterSpellcheck::~HighlighterSpellcheck()
 {
 }
 
-AbstractHighlighter::FormatListPtr HighlighterSpellcheck::highlightBlock(const QString &text)
+PluginHighlighter::FormatListPtr HighlighterSpellcheck::highlightBlock(const QString &text)
 {
     FormatListPtr result(new FormatList());
     QTextCharFormat errorFormat;
@@ -88,7 +88,7 @@ AbstractHighlighter::FormatListPtr HighlighterSpellcheck::highlightBlock(const Q
             } else */
             if (!Dictionary::skipSpellCheck(word)) {
                 if (!ASpellWrapper::instance().checkWord(word)) {
-                    result->push_back(AbstractHighlighter::CharFormat(startPos, endPos, errorFormat));
+                    result->push_back(PluginHighlighter::CharFormat(startPos, endPos, errorFormat));
                 }
             }
         }

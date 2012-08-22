@@ -24,10 +24,10 @@
 #include <QEvent>
 #include <QApplication>
 
+#include <PluginHighlighter.h>
 #include <event/HighlightBlockEvent.h>
 #include <event/HighlightBlockEventResponse.h>
 #include "HighlighterManager.h"
-#include "AbstractHighlighter.h"
 
 HighlighterThread::HighlighterThread(QObject * parent) :
     QThread(parent),
@@ -79,15 +79,15 @@ void HighlighterWorker::customEvent(QEvent *event)
         //create response event
         HighlightBlockEventResponse *responseEvent =
             new HighlightBlockEventResponse(highlightEvent->getBlockIndex(), text.length());
-        AbstractHighlighter::FormatListPtr result = responseEvent->getResults();
+        PluginHighlighter::FormatListPtr result = responseEvent->getResults();
 
         //get highlighters
-        QVector<AbstractHighlighter*> highlighters =
+        QVector<PluginHighlighter*> highlighters =
             HighlighterManager::instance().getHighlighters();
 
         //call all highlighters
-        QVector<AbstractHighlighter::FormatListPtr> results;
-        foreach(AbstractHighlighter* highlighter, highlighters) {
+        QVector<PluginHighlighter::FormatListPtr> results;
+        foreach(PluginHighlighter* highlighter, highlighters) {
             if (highlighter->isEnabled()) {
                 results.push_back(highlighter->highlightBlock(text));
             }
@@ -98,8 +98,8 @@ void HighlighterWorker::customEvent(QEvent *event)
         //calculate all steps
         QSet<int> steps;
         steps << 0 << text.length();
-        foreach(const AbstractHighlighter::FormatListPtr &formats, results) {
-            foreach(const AbstractHighlighter::CharFormat &format, *formats.data()) {
+        foreach(const PluginHighlighter::FormatListPtr &formats, results) {
+            foreach(const PluginHighlighter::CharFormat &format, *formats.data()) {
                 steps << format.m_start << format.m_end;
             }
         }
@@ -117,8 +117,8 @@ void HighlighterWorker::customEvent(QEvent *event)
             end = stepList.takeFirst();
             QTextCharFormat newFormat;
             newFormatSet = false;
-            foreach(const AbstractHighlighter::FormatListPtr &formats, results) {
-                foreach(const AbstractHighlighter::CharFormat &format, *formats.data()) {
+            foreach(const PluginHighlighter::FormatListPtr &formats, results) {
+                foreach(const PluginHighlighter::CharFormat &format, *formats.data()) {
                     if (format.m_start <= start && format.m_end >= end) {
                         if (!newFormatSet) {
                             newFormat = format.m_format;
@@ -143,7 +143,7 @@ void HighlighterWorker::customEvent(QEvent *event)
                 else {
                     lastStoredEnd = end;
                     lastStoredFormat = newFormat;
-                    result->push_back(AbstractHighlighter::CharFormat(start, end, newFormat));
+                    result->push_back(PluginHighlighter::CharFormat(start, end, newFormat));
                 }
             }
         }

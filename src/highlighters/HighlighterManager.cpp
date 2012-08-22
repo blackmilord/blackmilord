@@ -30,7 +30,6 @@
 #include <event/HighlightBlockEvent.h>
 #include <event/HighlightBlockEventResponse.h>
 #include <event/HighlightersApplySettingsEvent.h>
-#include "AbstractHighlighter.h"
 #include "HighlighterHTMLTags.h"
 #include "HighlighterSpellcheck.h"
 #include "HighlighterThread.h"
@@ -47,7 +46,7 @@ HighlighterManager::HighlighterManager(QTextDocument *document) :
     m_highlighters.push_back(new HighlighterHTMLTags());
     m_highlighters.push_back(new HighlighterSpellcheck());
     m_highlighterThread->start();
-    foreach(AbstractHighlighter* highlighter, m_highlighters) {
+    foreach(PluginHighlighter* highlighter, m_highlighters) {
         highlighter->applySettings();
     }
 }
@@ -57,7 +56,7 @@ HighlighterManager::~HighlighterManager()
     cancelHighlighting();
     m_highlighterThread->quit();
     m_highlighterThread->wait();
-    foreach(AbstractHighlighter* highlighter, m_highlighters) {
+    foreach(PluginHighlighter* highlighter, m_highlighters) {
         delete highlighter;
     }
 }
@@ -77,7 +76,7 @@ HighlighterManager& HighlighterManager::instance()
 void HighlighterManager::applySettings()
 {
     if (0 == m_inProgress) {
-        foreach(AbstractHighlighter* highlighter, m_highlighters) {
+        foreach(PluginHighlighter* highlighter, m_highlighters) {
             highlighter->applySettings();
         }
         rehighlight();
@@ -90,7 +89,7 @@ void HighlighterManager::applySettings()
 
 void HighlighterManager::saveSettings()
 {
-    foreach(AbstractHighlighter* highlighter, m_highlighters) {
+    foreach(PluginHighlighter* highlighter, m_highlighters) {
         highlighter->saveSettings();
     }
 }
@@ -173,7 +172,7 @@ void HighlighterManager::rehighlight()
     }
 }
 
-QVector<AbstractHighlighter*> HighlighterManager::getHighlighters() const
+QVector<PluginHighlighter*> HighlighterManager::getHighlighters() const
 {
     return m_highlighters;
 }
@@ -188,7 +187,7 @@ void HighlighterManager::highlightBlock(const QString &text)
         return;
     }
     //apply formatting
-    foreach(const AbstractHighlighter::CharFormat &format, *m_preparedFormatting->getResults().data()) {
+    foreach(const PluginHighlighter::CharFormat &format, *m_preparedFormatting->getResults().data()) {
         setFormat(format.m_start, format.m_end - format.m_start, format.m_format);
     }
 }

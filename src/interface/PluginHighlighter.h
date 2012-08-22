@@ -19,18 +19,60 @@
  *                                                                      *
  ************************************************************************/
 
-#include "AbstractHighlighter.h"
+#ifndef BLACK_MILORD_PLUGIN_HIGHLIGHTER_H
+#define BLACK_MILORD_PLUGIN_HIGHLIGHTER_H
 
-AbstractHighlighter::AbstractHighlighter(bool enabled) :
-    m_enabled(enabled)
-{
-}
+#include <QTextCharFormat>
 
-AbstractHighlighter::~AbstractHighlighter()
-{
-}
+#include "Plugin.h"
 
-bool AbstractHighlighter::isEnabled()
+class PluginHighlighter : public Plugin
 {
-    return m_enabled;
-}
+public:
+
+    struct CharFormat
+    {
+        CharFormat()
+        {
+            Q_ASSERT(false);
+        }
+
+        CharFormat(int start, int end, const QTextCharFormat &format) :
+            m_format(format),
+            m_start(start),
+            m_end(end)
+        {
+        }
+
+        QTextCharFormat m_format;
+        int m_start;
+        int m_end;
+    };
+
+    typedef QVector<CharFormat> FormatList;
+    typedef QSharedPointer<FormatList> FormatListPtr;
+
+    explicit PluginHighlighter(bool enabled = false) : Plugin(enabled)
+    {
+    }
+
+    virtual ~PluginHighlighter()
+    {
+    }
+
+    /**
+     * This function is called every time a line of text needs highlighting.
+     * WARNING: This function is called from non-main thread.
+     *          It should base only on internal settings.
+     *          This function should not call anything.
+     *          It is quaranted @see applySettins() is not called
+     *          during execution of this function.
+     * @param text Text to highlight.
+     * @return List of text formatting.
+     */
+    virtual FormatListPtr highlightBlock(const QString &text) = 0;
+};
+
+Q_DECLARE_INTERFACE(PluginHighlighter, "org.blackmilord.Plugin.Highlighter/1.0");
+
+#endif /* BLACK_MILORD_PLUGIN_HIGHLIGHTER_H */

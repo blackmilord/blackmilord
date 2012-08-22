@@ -47,7 +47,7 @@ namespace {
 }
 
 HighlighterHTMLTags::HighlighterHTMLTags() :
-    AbstractHighlighter(Preferences::instance().getHighlighterValue(guid(), PROP_ENABLED, true).toBool())
+    PluginHighlighter(Preferences::instance().getHighlighterValue(guid(), PROP_ENABLED, true).toBool())
 {
 }
 
@@ -55,7 +55,7 @@ HighlighterHTMLTags::~HighlighterHTMLTags()
 {
 }
 
-AbstractHighlighter::FormatListPtr HighlighterHTMLTags::highlightBlock(const QString &text)
+PluginHighlighter::FormatListPtr HighlighterHTMLTags::highlightBlock(const QString &text)
 {
     FormatListPtr result(new FormatList());
     QTextCharFormat htmlFormat;
@@ -81,11 +81,11 @@ AbstractHighlighter::FormatListPtr HighlighterHTMLTags::highlightBlock(const QSt
     while (index >= 0) {
         int length = rx.matchedLength();
         if (validTags.contains(rx.capturedTexts().at(1), Qt::CaseInsensitive)) {
-            result->push_back(AbstractHighlighter::CharFormat(index, index + length, htmlFormat));
+            result->push_back(PluginHighlighter::CharFormat(index, index + length, htmlFormat));
         }
         else {
             qDebug() << rx.capturedTexts().at(1);
-            result->push_back(AbstractHighlighter::CharFormat(index, index + length, htmlInvalidFormat));
+            result->push_back(PluginHighlighter::CharFormat(index, index + length, htmlInvalidFormat));
         }
         index = text.indexOf(rx, index + length);
     }

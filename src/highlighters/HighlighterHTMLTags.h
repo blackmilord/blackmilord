@@ -22,9 +22,10 @@
 #ifndef BLACK_MILORD_HIGHLIGHTER_HTML_H
 #define BLACK_MILORD_HIGHLIGHTER_HTML_H
 
-#include "AbstractHighlighter.h"
 #include <QObject>
 #include <QColor>
+
+#include <PluginHighlighter.h>
 
 class QString;
 class QCheckBox;
@@ -32,7 +33,7 @@ class QPushButton;
 
 class HighlighterHTMLTags :
     public QObject,
-    public AbstractHighlighter
+    public PluginHighlighter
 {
     Q_OBJECT
 public:

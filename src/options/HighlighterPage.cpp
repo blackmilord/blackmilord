@@ -29,16 +29,16 @@
 
 #include "Preferences.h"
 #include <HighlighterManager.h>
-#include <AbstractHighlighter.h>
+#include <PluginHighlighter.h>
 
 HighlighterPage::HighlighterPage(QWidget *parent) :
     QWidget(parent)
 {
     QVBoxLayout *mainLayout = new QVBoxLayout();
 
-    const QVector<AbstractHighlighter*> &highlighters =
+    const QVector<PluginHighlighter*> &highlighters =
             HighlighterManager::instance().getHighlighters();
-    foreach(AbstractHighlighter* highlighter, highlighters) {
+    foreach(PluginHighlighter* highlighter, highlighters) {
         QGroupBox *groupBox = new QGroupBox(highlighter->name());
         groupBox->setLayout(highlighter->configurationLayout());
         mainLayout->addWidget(groupBox);
@@ -70,9 +70,9 @@ void HighlighterPage::apply()
 
 void HighlighterPage::showEvent(QShowEvent *event)
 {
-    const QVector<AbstractHighlighter*> &highlighters =
+    const QVector<PluginHighlighter*> &highlighters =
             HighlighterManager::instance().getHighlighters();
-    foreach(AbstractHighlighter* highlighter, highlighters) {
+    foreach(PluginHighlighter* highlighter, highlighters) {
         highlighter->resetConfigurationLayout();
     }
     QWidget::showEvent(event);

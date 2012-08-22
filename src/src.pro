@@ -30,6 +30,7 @@ win32 {
 }
 
 INCLUDEPATH +=  . \
+                interface/ \
                 options/ \
                 dialogs/ \
                 utils/ \
@@ -69,7 +70,6 @@ SOURCES += dialogs/MetaDataWindow.cpp
 SOURCES += dialogs/AboutWindow.cpp
 SOURCES += dialogs/PictureViewerWindow.cpp
 SOURCES += highlighters/HighlighterManager.cpp
-SOURCES += highlighters/AbstractHighlighter.cpp
 SOURCES += highlighters/HighlighterHTMLTags.cpp
 SOURCES += highlighters/HighlighterSpellcheck.cpp
 SOURCES += highlighters/HighlighterThread.cpp
@@ -84,6 +84,8 @@ SOURCES += options/Preferences.cpp
 SOURCES += device/DeviceConfiguration.cpp
 
 HEADERS += Version.h
+HEADERS += interface/Plugin.h
+HEADERS += interface/PluginHighlighter.h
 HEADERS += gui/Gui.h
 HEADERS += gui/MainWindow.h
 HEADERS += gui/StatusBar.h
@@ -94,6 +96,7 @@ HEADERS += book/Book.h
 HEADERS += book/BookPicture.h
 HEADERS += book/AbstractBook.h
 HEADERS += book/BackupManager.h
+HEADERS += book/MetadataEnum.h
 HEADERS += book/mobi/MobiFile.h
 HEADERS += book/mobi/DatabaseRecordInfoEntry.h
 HEADERS += book/mobi/DatabaseHeader.h
@@ -112,7 +115,6 @@ HEADERS += dialogs/MetaDataWindow.h
 HEADERS += dialogs/AboutWindow.h
 HEADERS += dialogs/PictureViewerWindow.h
 HEADERS += highlighters/HighlighterManager.h
-HEADERS += highlighters/AbstractHighlighter.h
 HEADERS += highlighters/HighlighterHTMLTags.h
 HEADERS += highlighters/HighlighterSpellcheck.h
 HEADERS += highlighters/HighlighterThread.h

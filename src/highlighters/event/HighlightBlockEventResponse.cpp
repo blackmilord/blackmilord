@@ -29,7 +29,7 @@ HighlightBlockEventResponse::HighlightBlockEventResponse(int blockIndex, int blo
     QEvent(m_type),
     m_blockIndex(blockIndex),
     m_blockLength(blockLength),
-    m_results(new AbstractHighlighter::FormatList())
+    m_results(new PluginHighlighter::FormatList())
 {
 }
 
@@ -38,7 +38,7 @@ HighlightBlockEventResponse::~HighlightBlockEventResponse()
     HighlighterManager::instance().m_inProgress.deref();
 }
 
-AbstractHighlighter::FormatListPtr HighlightBlockEventResponse::getResults() const
+PluginHighlighter::FormatListPtr HighlightBlockEventResponse::getResults() const
 {
     return m_results;
 }

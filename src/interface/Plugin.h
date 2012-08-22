@@ -19,57 +19,23 @@
  *                                                                      *
  ************************************************************************/
 
-#ifndef BLACK_MILORD_ABSTRACT_HIGHLIGHTER_H
-#define BLACK_MILORD_ABSTRACT_HIGHLIGHTER_H
-
-#include <QObject>
-#include <QTextCharFormat>
-#include <QMutex>
-#include <Preferences.h>
+#ifndef BLACK_MILORD_PLUGIN_H
+#define BLACK_MILORD_PLUGIN_H
 
 class QString;
 class QLayout;
 
-class AbstractHighlighter
+class Plugin
 {
 public:
-
-    struct CharFormat
+    explicit Plugin(bool enabled = false) :
+        m_enabled(enabled)
     {
-        CharFormat()
-        {
-            Q_ASSERT(false);
-        }
+    }
 
-        CharFormat(int start, int end, const QTextCharFormat &format) :
-            m_format(format),
-            m_start(start),
-            m_end(end)
-        {
-        }
-
-        QTextCharFormat m_format;
-        int m_start;
-        int m_end;
-    };
-
-    typedef QVector<CharFormat> FormatList;
-    typedef QSharedPointer<FormatList> FormatListPtr;
-
-    explicit AbstractHighlighter(bool enabled = false);
-    virtual ~AbstractHighlighter();
-
-    /**
-     * This function is called every time a line of text needs highlighting.
-     * WARNING: This function is called from non-main thread.
-     *          It should base only on internal settings.
-     *          This function should not call anything.
-     *          It is quaranted @see applySettins() is not called
-     *          during execution of this function.
-     * @param text Text to highlight.
-     * @return List of text formatting.
-     */
-    virtual FormatListPtr highlightBlock(const QString &text) = 0;
+    virtual ~Plugin()
+    {
+    }
 
     /**
      * This funcion provides inteface to configure a highlighter.
@@ -97,7 +63,10 @@ public:
      */
     virtual void applySettings() = 0;
 
-    virtual bool isEnabled();
+    virtual bool isEnabled()
+    {
+        return m_enabled;
+    }
 
     /**
      * Function provides unique highlighter's GUID.
@@ -115,4 +84,6 @@ protected:
     bool m_enabled;
 };
 
-#endif /* BLACK_MILORD_ABSTRACT_HIGHLIGHTER_H */
+Q_DECLARE_INTERFACE(Plugin, "org.blackmilord.Plugin/1.0");
+
+#endif /* BLACK_MILORD_PLUGIN_H */

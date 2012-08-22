@@ -33,6 +33,7 @@
 #include <AspellWrapper.h>
 #include <HighlighterManager.h>
 #include <Book.h>
+#include <Preferences.h>
 
 PlainTextEditor::PlainTextEditor(QWidget * parent) :
     QPlainTextEdit(parent)

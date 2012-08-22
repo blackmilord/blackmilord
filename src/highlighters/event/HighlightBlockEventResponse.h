@@ -27,7 +27,7 @@
 #include <QVector>
 #include <QSharedPointer>
 
-#include <AbstractHighlighter.h>
+#include <PluginHighlighter.h>
 
 class HighlightBlockEventResponse :
     public QEvent
@@ -43,12 +43,12 @@ public:
     {
         return m_blockLength;
     }
-    AbstractHighlighter::FormatListPtr getResults() const;
+    PluginHighlighter::FormatListPtr getResults() const;
     static QEvent::Type getType() { return m_type; }
 private:
     int m_blockIndex;
     int m_blockLength;
-    AbstractHighlighter::FormatListPtr m_results;
+    PluginHighlighter::FormatListPtr m_results;
 protected:
     static QEvent::Type m_type;
 };

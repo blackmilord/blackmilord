@@ -28,7 +28,8 @@
 #include <QEvent>
 #include <QAtomicInt>
 #include <QSyntaxHighlighter>
-#include "AbstractHighlighter.h"
+
+#include <PluginHighlighter.h>
 
 class QTextBlock;
 class PlainTextEditor;
@@ -53,7 +54,7 @@ public:
     void invalidateBlock(const QTextBlock &block);
     void cancelHighlighting();
     void rehighlight();
-    QVector<AbstractHighlighter*> getHighlighters() const;
+    QVector<PluginHighlighter*> getHighlighters() const;
 
 protected:
     void customEvent(QEvent *event);
@@ -62,7 +63,7 @@ protected:
 private:
     static HighlighterManager *m_instance;
     QAtomicInt m_inProgress;
-    QVector<AbstractHighlighter*> m_highlighters;
+    QVector<PluginHighlighter*> m_highlighters;
     HighlighterThread *m_highlighterThread;
 
     HighlightBlockEventResponse *m_preparedFormatting;

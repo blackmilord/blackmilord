@@ -24,7 +24,6 @@
 
 #include <QPlainTextEdit>
 #include <XMLElement.h>
-#include <AbstractHighlighter.h>
 
 class QLayout;
 
