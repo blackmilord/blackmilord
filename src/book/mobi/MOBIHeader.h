@@ -127,9 +127,27 @@ public:
 
     quint32 getDRMFlags() const;
 
-    quint16 getExtraDataFlags() const;
+    quint16 getFirstContentRecord() const;
+
+    quint16 getLastContentRecord() const;
+    void setLastContentRecord(quint16 lastContentRecord);
+
+    quint32 getFcisRecordIndex() const;
+    void setFcisRecordIndex(quint32 fcisRecordIndex);
+
+    quint32 getFcisRecordCount();
+
+    quint32 getFlisRecordIndex() const;
+    void setFlisRecordIndex(quint32 flisRecordIndex);
+
+    quint32 getFlisRecordCount();
+
+    quint32 getExtraDataFlags() const;
 
     quint32 getIndexRecordOffset() const;
+
+protected:
+    void initForRead();
 
 private:
     char m_identifier[MOBI_HEADER_INDENTIFIER_SIZE+1];
@@ -165,7 +183,23 @@ private:
     quint32 m_DRMCount;
     quint32 m_DRMSize;
     quint32 m_DRMFlags;
-    quint16 m_extraDataFlags;
+    quint32 m_unknown1;  //use 0x00000000 on save
+    quint32 m_unknown2;  //use 0x00000000 on save
+    quint32 m_unknown3;  //use 0x00000000 on save
+    quint16 m_firstContentRecord;
+    quint16 m_lastContentRecord;
+    quint32 m_unknown4;  //use 0x00000001 on save
+    quint32 m_fcisRecordIndex;
+    quint32 m_fcisRecordCount;
+    quint32 m_flisRecordIndex;
+    quint32 m_flisRecordCount;
+    quint32 m_unknown5;  //use 0x00000000 on save
+    quint32 m_unknown6;  //use 0x00000000 on save
+    quint32 m_unknown7;  //use 0xFFFFFFFF on save
+    quint32 m_unknown8;  //use 0x00000000 on save
+    quint32 m_unknown9;  //use 0xFFFFFFFF on save
+    quint32 m_unknown10; //use 0xFFFFFFFF on save
+    quint32 m_extraDataFlags;
     quint32 m_indexRecordOffset;
 
     QString m_why;

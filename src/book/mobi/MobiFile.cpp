@@ -178,6 +178,7 @@ bool MobiFile::saveFile(const QString &fileName)
         m_MOBIHeader.setFullNameLength(fullNameSize);
         m_MOBIHeader.setFirstImageRecordIndex(1 + textRecords.size());
         m_MOBIHeader.setFirstNonTextRecordIndex(1 + textRecords.size());
+        m_MOBIHeader.setLastContentRecord(1 + textRecords.size() + Book::instance().getPicturesCount());
 
         //Write Database header
         if (!m_databaseHeader.write(data)) {

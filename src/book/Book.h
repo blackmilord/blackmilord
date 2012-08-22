@@ -47,10 +47,10 @@ public:
 
     //text accessors
     QString getText() const;
-    void setText(const QString& text);
+    void setText(const QString &text);
     //pictures accessors
     int getPicturesCount() const;
-    void addPicture(const BookPicture & picture);
+    void addPicture(const BookPicture &picture);
     void removePicture(int index, bool removeFromDocument);
     BookPicture getPicture(int index) const;
 
@@ -58,7 +58,7 @@ public:
     QVariant getMetadata(MetaData metadata) const;
 
     QString getFileName() const;
-    void setFileName(const QString fileName);
+    void setFileName(const QString &fileName);
 
     QString getWhy() const;
 

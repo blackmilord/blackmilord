@@ -271,7 +271,7 @@ QString Book::getFileName() const
     return m_fileName;
 }
 
-void Book::setFileName(const QString fileName)
+void Book::setFileName(const QString &fileName)
 {
     m_fileName = fileName;
 }
