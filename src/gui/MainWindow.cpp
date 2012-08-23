@@ -403,8 +403,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::moveEvent(QMoveEvent *event)
 {
     if (!Preferences::instance().getWindowMaximized()) {
-        Preferences::instance().setWindowWidth(event->pos().x());
-        Preferences::instance().setWindowHeight(event->pos().y());
+        Preferences::instance().setWindowPositionX(event->pos().x());
+        Preferences::instance().setWindowPositionY(event->pos().y());
     }
     event->ignore();
 }
