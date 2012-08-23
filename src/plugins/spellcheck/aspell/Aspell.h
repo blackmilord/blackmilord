@@ -38,33 +38,6 @@ class ASpell :
     Q_OBJECT
     Q_INTERFACES(PluginSpellcheck)
 
-    typedef unsigned int (*aspell_error_number_fun)(const struct AspellCanHaveError*);
-    typedef const char* (*aspell_error_message_fun)(const struct AspellCanHaveError*);
-    typedef struct AspellConfig* (*new_aspell_config_fun)();
-    typedef void (*delete_aspell_config_fun)(struct AspellConfig*);
-    typedef int (*aspell_config_replace_fun)(struct AspellConfig*, const char *, const char *);
-    typedef struct AspellCanHaveError* (*new_aspell_speller_fun)(struct AspellConfig*);
-    typedef struct AspellSpeller* (*to_aspell_speller_fun)(struct AspellCanHaveError*);
-    typedef void (*delete_aspell_speller_fun)(struct AspellSpeller*);
-    typedef int (*aspell_speller_check_fun)(struct AspellSpeller*, const char*, int);
-    typedef void (*delete_aspell_string_enumeration_fun)(struct AspellStringEnumeration*);
-    typedef const char* (*aspell_string_enumeration_next_fun)(struct AspellStringEnumeration*);
-    typedef struct AspellStringEnumeration* (*aspell_word_list_elements_fun)(const struct AspellWordList*);
-    typedef const struct AspellWordList* (*aspell_speller_suggest_fun)(struct AspellSpeller*, const char*, int);
-    typedef struct AspellDictInfoList* (*get_aspell_dict_info_list_fun)(struct AspellConfig*);
-    typedef struct AspellDictInfoEnumeration* (*aspell_dict_info_list_elements_fun)(const struct AspellDictInfoList*);
-    typedef const struct AspellDictInfo* (*aspell_dict_info_enumeration_next_fun)(struct AspellDictInfoEnumeration*);
-    typedef void (*delete_aspell_dict_info_enumeration_fun)(struct AspellDictInfoEnumeration*);
-    typedef int (*aspell_speller_add_to_personal_fun)(struct AspellSpeller*, const char*, int);
-    typedef int (*aspell_speller_add_to_session_fun)(struct AspellSpeller*, const char*, int);
-    typedef const char* (*aspell_speller_error_message_fun)(const struct AspellSpeller*);
-    typedef int (*aspell_speller_save_all_word_lists_fun)(struct AspellSpeller*);
-    typedef int (*aspell_speller_clear_session_fun)(struct AspellSpeller*);
-
-private:
-    bool loadLibrary();
-    bool closeLibrary();
-
 public:
     ASpell();
     ~ASpell();
@@ -95,28 +68,6 @@ private:
 #elif defined Q_WS_WIN
     HMODULE m_handle;
 #endif
-    aspell_error_number_fun m_aspell_error_number;
-    aspell_error_message_fun m_aspell_error_message;
-    new_aspell_config_fun m_new_aspell_config;
-    delete_aspell_config_fun m_delete_aspell_config;
-    aspell_config_replace_fun m_aspell_config_replace;
-    new_aspell_speller_fun m_new_aspell_speller;
-    to_aspell_speller_fun m_to_aspell_speller;
-    delete_aspell_speller_fun m_delete_aspell_speller;
-    aspell_speller_check_fun m_aspell_speller_check;
-    delete_aspell_string_enumeration_fun m_delete_aspell_string_enumeration;
-    aspell_string_enumeration_next_fun m_aspell_string_enumeration_next;
-    aspell_word_list_elements_fun m_aspell_word_list_elements;
-    aspell_speller_suggest_fun m_aspell_speller_suggest;
-    get_aspell_dict_info_list_fun m_get_aspell_dict_info_list;
-    aspell_dict_info_list_elements_fun m_aspell_dict_info_list_elements;
-    aspell_dict_info_enumeration_next_fun m_aspell_dict_info_enumeration_next;
-    delete_aspell_dict_info_enumeration_fun m_delete_aspell_dict_info_enumeration;
-    aspell_speller_add_to_personal_fun m_aspell_speller_add_to_personal;
-    aspell_speller_add_to_session_fun m_aspell_speller_add_to_session;
-    aspell_speller_error_message_fun m_aspell_speller_error_message;
-    aspell_speller_save_all_word_lists_fun m_aspell_speller_save_all_word_lists;
-    aspell_speller_clear_session_fun m_aspell_speller_clear_session;
 };
 
 #endif /* BLACK_MILORD_ASPELL_H */

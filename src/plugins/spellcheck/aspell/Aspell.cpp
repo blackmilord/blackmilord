@@ -37,37 +37,9 @@ Q_EXPORT_PLUGIN2(spellcheck_aspell, ASpell)
 ASpell::ASpell() :
     m_mutex(QMutex::Recursive),
     m_spellConfig(NULL),
-    m_spellChecker(NULL),
-    m_aspell_error_number(NULL),
-    m_aspell_error_message(NULL),
-    m_new_aspell_config(NULL),
-    m_delete_aspell_config(NULL),
-    m_aspell_config_replace(NULL),
-    m_new_aspell_speller(NULL),
-    m_to_aspell_speller(NULL),
-    m_delete_aspell_speller(NULL),
-    m_aspell_speller_check(NULL),
-    m_delete_aspell_string_enumeration(NULL),
-    m_aspell_string_enumeration_next(NULL),
-    m_aspell_word_list_elements(NULL),
-    m_aspell_speller_suggest(NULL),
-    m_get_aspell_dict_info_list(NULL),
-    m_aspell_dict_info_list_elements(NULL),
-    m_aspell_dict_info_enumeration_next(NULL),
-    m_delete_aspell_dict_info_enumeration(NULL),
-    m_aspell_speller_add_to_personal(NULL),
-    m_aspell_speller_add_to_session(NULL),
-    m_aspell_speller_error_message(NULL),
-    m_aspell_speller_save_all_word_lists(NULL),
-    m_aspell_speller_clear_session(NULL)
-
+    m_spellChecker(NULL)
 {
-    if (!loadLibrary())
-    {
-        qDebug() << "No aspell library found";
-        return;
-    }
-    m_spellConfig = (*m_new_aspell_config)();
+    m_spellConfig = new_aspell_config();
     if (!m_spellConfig) {
         return;
     }
@@ -78,12 +50,11 @@ ASpell::ASpell() :
 ASpell::~ASpell()
 {
     if (m_spellChecker) {
-        (*m_delete_aspell_speller)(m_spellChecker);
+        delete_aspell_speller(m_spellChecker);
     }
     if (m_spellConfig) {
-        (*m_delete_aspell_config)(m_spellConfig);
+        delete_aspell_config(m_spellConfig);
     }
-    closeLibrary();
 }
 
 void ASpell::changeLanguage(const QString &code)
@@ -93,219 +64,60 @@ void ASpell::changeLanguage(const QString &code)
         return;
     }
     if (m_spellChecker) {
-        (*m_delete_aspell_speller)(m_spellChecker);
+        delete_aspell_speller(m_spellChecker);
         m_spellChecker = NULL;
     }
-    if (!(*m_aspell_config_replace)(m_spellConfig, "lang", code.toUtf8().constData()))
+    if (!aspell_config_replace(m_spellConfig, "lang", code.toUtf8().constData()))
     {
         qDebug() << "Cannot set language";
         return;
     }
-    if (!(*m_aspell_config_replace)(m_spellConfig, "encoding", "utf-8"))
+    if (!aspell_config_replace(m_spellConfig, "encoding", "utf-8"))
     {
         qDebug() << "Cannot set encoding";
         return;
     }
 
-    AspellCanHaveError *possibleErr = (*m_new_aspell_speller)(m_spellConfig);
-    if ((*m_aspell_error_number)(possibleErr) != 0) {
-        qDebug() << (*m_aspell_error_message)(possibleErr);
+    AspellCanHaveError *possibleErr = new_aspell_speller(m_spellConfig);
+    if (aspell_error_number(possibleErr) != 0) {
+        qDebug() << aspell_error_message(possibleErr);
         m_language.clear();
     }
     else {
-        m_spellChecker = (*m_to_aspell_speller)(possibleErr);
+        m_spellChecker = to_aspell_speller(possibleErr);
         m_language = code;
         Preferences::instance().setAspellDictionary(m_language);
     }
 }
 
-#if (defined Q_WS_X11 || defined Q_WS_MAC)
-bool ASpell::loadLibrary()
-{
-#ifdef Q_WS_MAC
-    m_handle = dlopen("libaspell.dylib", RTLD_NOW);
-#else
-    m_handle = dlopen("libaspell.so", RTLD_NOW);
-#endif
-    if (!m_handle) {
-        qDebug() << "Cannot load aspell library";
-        return false;
-    }
-    QMutexLocker lock(&m_mutex);
-    m_aspell_error_number                 = reinterpret_cast<aspell_error_number_fun>(dlsym(m_handle, "aspell_error_number"));
-    m_aspell_error_message                = reinterpret_cast<aspell_error_message_fun>(dlsym(m_handle, "aspell_error_message"));
-    m_new_aspell_config                   = reinterpret_cast<new_aspell_config_fun>(dlsym(m_handle, "new_aspell_config"));
-    m_delete_aspell_config                = reinterpret_cast<delete_aspell_config_fun>(dlsym(m_handle, "delete_aspell_config"));
-    m_aspell_config_replace               = reinterpret_cast<aspell_config_replace_fun>(dlsym(m_handle, "aspell_config_replace"));
-    m_new_aspell_speller                  = reinterpret_cast<new_aspell_speller_fun>(dlsym(m_handle, "new_aspell_speller"));
-    m_to_aspell_speller                   = reinterpret_cast<to_aspell_speller_fun>(dlsym(m_handle, "to_aspell_speller"));
-    m_delete_aspell_speller               = reinterpret_cast<delete_aspell_speller_fun>(dlsym(m_handle, "delete_aspell_speller"));
-    m_aspell_speller_check                = reinterpret_cast<aspell_speller_check_fun>(dlsym(m_handle, "aspell_speller_check"));
-    m_delete_aspell_string_enumeration    = reinterpret_cast<delete_aspell_string_enumeration_fun>(dlsym(m_handle, "delete_aspell_string_enumeration"));
-    m_aspell_string_enumeration_next      = reinterpret_cast<aspell_string_enumeration_next_fun>(dlsym(m_handle, "aspell_string_enumeration_next"));
-    m_aspell_word_list_elements           = reinterpret_cast<aspell_word_list_elements_fun>(dlsym(m_handle, "aspell_word_list_elements"));
-    m_aspell_speller_suggest              = reinterpret_cast<aspell_speller_suggest_fun>(dlsym(m_handle, "aspell_speller_suggest"));
-    m_get_aspell_dict_info_list           = reinterpret_cast<get_aspell_dict_info_list_fun>(dlsym(m_handle, "get_aspell_dict_info_list"));
-    m_aspell_dict_info_list_elements      = reinterpret_cast<aspell_dict_info_list_elements_fun>(dlsym(m_handle, "aspell_dict_info_list_elements"));
-    m_aspell_dict_info_enumeration_next   = reinterpret_cast<aspell_dict_info_enumeration_next_fun>(dlsym(m_handle, "aspell_dict_info_enumeration_next"));
-    m_delete_aspell_dict_info_enumeration = reinterpret_cast<delete_aspell_dict_info_enumeration_fun>(dlsym(m_handle, "delete_aspell_dict_info_enumeration"));
-    m_aspell_speller_add_to_personal      = reinterpret_cast<aspell_speller_add_to_personal_fun>(dlsym(m_handle, "aspell_speller_add_to_personal"));
-    m_aspell_speller_add_to_session       = reinterpret_cast<aspell_speller_add_to_session_fun>(dlsym(m_handle, "aspell_speller_add_to_session"));
-    m_aspell_speller_error_message        = reinterpret_cast<aspell_speller_error_message_fun>(dlsym(m_handle, "aspell_speller_error_message"));
-    m_aspell_speller_save_all_word_lists  = reinterpret_cast<aspell_speller_save_all_word_lists_fun>(dlsym(m_handle, "aspell_speller_save_all_word_lists"));
-    m_aspell_speller_clear_session        = reinterpret_cast<aspell_speller_clear_session_fun>(dlsym(m_handle, "aspell_speller_clear_session"));
-    return isLoaded();
-}
-
-bool ASpell::closeLibrary()
-{
-    QMutexLocker lock(&m_mutex);
-    m_aspell_error_number = NULL;
-    m_aspell_error_message = NULL;
-    m_new_aspell_config = NULL;
-    m_delete_aspell_config = NULL;
-    m_aspell_config_replace = NULL;
-    m_new_aspell_speller = NULL;
-    m_to_aspell_speller = NULL;
-    m_delete_aspell_speller = NULL;
-    m_aspell_speller_check = NULL;
-    m_delete_aspell_string_enumeration = NULL;
-    m_aspell_string_enumeration_next = NULL;
-    m_aspell_word_list_elements = NULL;
-    m_aspell_speller_suggest = NULL;
-    m_get_aspell_dict_info_list = NULL;
-    m_aspell_dict_info_list_elements = NULL;
-    m_aspell_dict_info_enumeration_next = NULL;
-    m_delete_aspell_dict_info_enumeration = NULL;
-    m_aspell_speller_add_to_personal = NULL;
-    m_aspell_speller_add_to_session = NULL;
-    m_aspell_speller_error_message = NULL;
-    m_aspell_speller_save_all_word_lists = NULL;
-    m_aspell_speller_clear_session = NULL;
-    if (m_handle) {
-        if (0 == dlclose(m_handle)) {
-            return true;
-        }
-    }
-    return false;
-}
-#else
-bool ASpell::loadLibrary()
-{
-    const wchar_t *lib = L"C:\\Program Files\\Aspell\\bin\\aspell-15.dll";
-    m_handle = LoadLibrary(lib);
-    if (!m_handle) {
-        return false;
-    }
-    QMutexLocker lock(&m_mutex);
-    m_aspell_error_number                 = reinterpret_cast<aspell_error_number_fun>(GetProcAddress(m_handle, "aspell_error_number"));
-    m_aspell_error_message                = reinterpret_cast<aspell_error_message_fun>(GetProcAddress(m_handle, "aspell_error_message"));
-    m_new_aspell_config                   = reinterpret_cast<new_aspell_config_fun>(GetProcAddress(m_handle, "new_aspell_config"));
-    m_delete_aspell_config                = reinterpret_cast<delete_aspell_config_fun>(GetProcAddress(m_handle, "delete_aspell_config"));
-    m_aspell_config_replace               = reinterpret_cast<aspell_config_replace_fun>(GetProcAddress(m_handle, "aspell_config_replace"));
-    m_new_aspell_speller                  = reinterpret_cast<new_aspell_speller_fun>(GetProcAddress(m_handle, "new_aspell_speller"));
-    m_to_aspell_speller                   = reinterpret_cast<to_aspell_speller_fun>(GetProcAddress(m_handle, "to_aspell_speller"));
-    m_delete_aspell_speller               = reinterpret_cast<delete_aspell_speller_fun>(GetProcAddress(m_handle, "delete_aspell_speller"));
-    m_aspell_speller_check                = reinterpret_cast<aspell_speller_check_fun>(GetProcAddress(m_handle, "aspell_speller_check"));
-    m_delete_aspell_string_enumeration    = reinterpret_cast<delete_aspell_string_enumeration_fun>(GetProcAddress(m_handle, "delete_aspell_string_enumeration"));
-    m_aspell_string_enumeration_next      = reinterpret_cast<aspell_string_enumeration_next_fun>(GetProcAddress(m_handle, "aspell_string_enumeration_next"));
-    m_aspell_word_list_elements           = reinterpret_cast<aspell_word_list_elements_fun>(GetProcAddress(m_handle, "aspell_word_list_elements"));
-    m_aspell_speller_suggest              = reinterpret_cast<aspell_speller_suggest_fun>(GetProcAddress(m_handle, "aspell_speller_suggest"));
-    m_get_aspell_dict_info_list           = reinterpret_cast<get_aspell_dict_info_list_fun>(GetProcAddress(m_handle, "get_aspell_dict_info_list"));
-    m_aspell_dict_info_list_elements      = reinterpret_cast<aspell_dict_info_list_elements_fun>(GetProcAddress(m_handle, "aspell_dict_info_list_elements"));
-    m_aspell_dict_info_enumeration_next   = reinterpret_cast<aspell_dict_info_enumeration_next_fun>(GetProcAddress(m_handle, "aspell_dict_info_enumeration_next"));
-    m_delete_aspell_dict_info_enumeration = reinterpret_cast<delete_aspell_dict_info_enumeration_fun>(GetProcAddress(m_handle, "delete_aspell_dict_info_enumeration"));
-    m_aspell_speller_add_to_personal      = reinterpret_cast<aspell_speller_add_to_personal_fun>(GetProcAddress(m_handle, "aspell_speller_add_to_personal"));
-    m_aspell_speller_add_to_session       = reinterpret_cast<aspell_speller_add_to_session_fun>(GetProcAddress(m_handle, "aspell_speller_add_to_session"));
-    m_aspell_speller_error_message        = reinterpret_cast<aspell_speller_error_message_fun>(GetProcAddress(m_handle, "aspell_speller_error_message"));
-    m_aspell_speller_save_all_word_lists  = reinterpret_cast<aspell_speller_save_all_word_lists_fun>(GetProcAddress(m_handle, "aspell_speller_save_all_word_lists"));
-    m_aspell_speller_clear_session        = reinterpret_cast<aspell_speller_clear_session_fun>(GetProcAddress(m_handle, "aspell_speller_clear_session"));
-    return isLoaded();
-}
-
-bool ASpell::closeLibrary()
-{
-    QMutexLocker lock(&m_mutex);
-    m_aspell_error_number = NULL;
-    m_aspell_error_message = NULL;
-    m_new_aspell_config = NULL;
-    m_delete_aspell_config = NULL;
-    m_aspell_config_replace = NULL;
-    m_new_aspell_speller = NULL;
-    m_to_aspell_speller = NULL;
-    m_delete_aspell_speller = NULL;
-    m_aspell_speller_check = NULL;
-    m_delete_aspell_string_enumeration = NULL;
-    m_aspell_string_enumeration_next = NULL;
-    m_aspell_word_list_elements = NULL;
-    m_aspell_speller_suggest = NULL;
-    m_get_aspell_dict_info_list = NULL;
-    m_aspell_dict_info_list_elements = NULL;
-    m_aspell_dict_info_enumeration_next = NULL;
-    m_delete_aspell_dict_info_enumeration = NULL;
-    m_aspell_speller_add_to_personal = NULL;
-    m_aspell_speller_add_to_session = NULL;
-    m_aspell_speller_error_message = NULL;
-    m_aspell_speller_save_all_word_lists = NULL;
-    m_aspell_speller_clear_session = NULL;
-    if (m_handle) {
-        if (FreeLibrary(m_handle)) {
-            return true;
-        }
-    }
-    return false;
-}
-#endif
-
 bool ASpell::isLoaded() const
 {
     QMutexLocker lock(&m_mutex);
-    return  m_aspell_error_number != NULL &&
-            m_aspell_error_message != NULL &&
-            m_new_aspell_config != NULL &&
-            m_delete_aspell_config != NULL &&
-            m_aspell_config_replace != NULL &&
-            m_new_aspell_speller != NULL &&
-            m_to_aspell_speller != NULL &&
-            m_delete_aspell_speller != NULL &&
-            m_aspell_speller_check != NULL &&
-            m_delete_aspell_string_enumeration != NULL &&
-            m_aspell_string_enumeration_next != NULL &&
-            m_aspell_word_list_elements != NULL &&
-            m_aspell_speller_suggest != NULL &&
-            m_get_aspell_dict_info_list != NULL &&
-            m_aspell_dict_info_list_elements != NULL &&
-            m_aspell_dict_info_enumeration_next != NULL &&
-            m_delete_aspell_dict_info_enumeration != NULL &&
-            m_aspell_speller_add_to_personal != NULL &&
-            m_aspell_speller_add_to_session != NULL &&
-            m_aspell_speller_error_message != NULL &&
-            m_aspell_speller_save_all_word_lists != NULL &&
-            m_aspell_speller_clear_session != NULL;
+    return m_spellConfig != NULL;
 }
 
 bool ASpell::checkWord(const QString &word) const
 {
     QMutexLocker lock(&m_mutex);
-    if (!m_spellChecker) {
+    if (!isLoaded()) {
         return true;
     }
-    return 1 == (*m_aspell_speller_check)(m_spellChecker, word.toUtf8().constData(), -1);
+    return 1 ==  aspell_speller_check(m_spellChecker, word.toUtf8().constData(), -1);
 }
 
 bool ASpell::addWordToSessionDictionary(const QString &word)
 {
     qDebug() << "Adding word to session dictionary" << word;
     QMutexLocker lock(&m_mutex);
-    return 0 != (*m_aspell_speller_add_to_session)(m_spellChecker, word.toUtf8().constData(), -1);
+    return 0 != aspell_speller_add_to_session(m_spellChecker, word.toUtf8().constData(), -1);
 }
 
 bool ASpell::addWordToPersonalDictionary(const QString &word)
 {
     qDebug() << "Adding word to personal dictionary" << word;
     QMutexLocker lock(&m_mutex);
-    if (0 != (*m_aspell_speller_add_to_personal)(m_spellChecker, word.toUtf8().constData(), -1)) {
-        return 0 != (*m_aspell_speller_save_all_word_lists)(m_spellChecker);
+    if (0 != aspell_speller_add_to_personal(m_spellChecker, word.toUtf8().constData(), -1)) {
+        return 0 != aspell_speller_save_all_word_lists(m_spellChecker);
     }
     return false;
 }
@@ -314,13 +126,13 @@ QStringList ASpell::hints(const QString &word) const
 {
     QStringList result;
     QMutexLocker lock(&m_mutex);
-    const AspellWordList *suggestions = (*m_aspell_speller_suggest)(m_spellChecker, word.toUtf8().constData(), -1);
-    AspellStringEnumeration *elements = (*m_aspell_word_list_elements)(suggestions);
+    const AspellWordList *suggestions = aspell_speller_suggest(m_spellChecker, word.toUtf8().constData(), -1);
+    AspellStringEnumeration *elements = aspell_word_list_elements(suggestions);
     const char *hint;
-    while ((hint = (*m_aspell_string_enumeration_next)(elements)) != NULL) {
+    while ((hint = aspell_string_enumeration_next(elements)) != NULL) {
         result.push_back(QString::fromUtf8(hint));
     }
-    (*m_delete_aspell_string_enumeration)(elements);
+    delete_aspell_string_enumeration(elements);
     return result;
 }
 
@@ -339,13 +151,13 @@ QList<QPair<QString, QString> > ASpell::availableLanguages() const
         return result;
     }
     AspellDictInfoList *dictionaryList =
-            (*m_get_aspell_dict_info_list)(m_spellConfig);
+            get_aspell_dict_info_list(m_spellConfig);
     if (!dictionaryList) {
         qDebug() << "Cannot obtain dictionary list";
         return result;
     }
     AspellDictInfoEnumeration *enumerator =
-            (*m_aspell_dict_info_list_elements)(dictionaryList);
+            aspell_dict_info_list_elements(dictionaryList);
     if (!enumerator) {
         qDebug() << "Cannot obtain dictionary list";
         return result;
@@ -353,7 +165,7 @@ QList<QPair<QString, QString> > ASpell::availableLanguages() const
 
     QStringList buffer;
     const AspellDictInfo *entry = NULL;
-    while ((entry = (*m_aspell_dict_info_enumeration_next)(enumerator)) != 0)  {
+    while ((entry = aspell_dict_info_enumeration_next(enumerator)) != 0)  {
         QString code = entry->code;
         QString readable;
         QStringList splitted = code.split("_");
@@ -368,7 +180,7 @@ QList<QPair<QString, QString> > ASpell::availableLanguages() const
             buffer.push_back(readable);
         }
     }
-    (*m_delete_aspell_dict_info_enumeration)(enumerator);
+    delete_aspell_dict_info_enumeration(enumerator);
     return result;
 }
 

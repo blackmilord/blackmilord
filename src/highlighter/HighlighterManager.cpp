@@ -47,10 +47,8 @@ HighlighterManager::HighlighterManager(QTextDocument *document) :
 
     QDir pluginsDir(qApp->applicationDirPath());
     PluginHighlighter *highlighter;
-    qDebug() << "Loading highlighters from " << pluginsDir.absolutePath();
-    foreach(QString fileName, pluginsDir.entryList(QDir::Files))
+    foreach(QString fileName, pluginsDir.entryList(QStringList("libhighlighter_*"), QDir::Files))
     {
-        qDebug() << "Trying" << pluginsDir.absoluteFilePath(fileName);
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = pluginLoader.instance();
         if (plugin)
@@ -60,16 +58,16 @@ HighlighterManager::HighlighterManager(QTextDocument *document) :
             {
                 m_highlighters.push_back(highlighter);
                 highlighter->applySettings();
-                qDebug() << "...OK";
+                qDebug() << "Loading highlighter from " << pluginsDir.absolutePath() << fileName << "OK";
             }
             else
             {
-                qDebug() << "...failed";
+                qDebug() << "Loading highlighter from " << pluginsDir.absolutePath() << fileName << "FAILED";
             }
         }
         else
         {
-            qDebug() << "...failed";
+            qDebug() << "Loading highlighter from " << pluginsDir.absolutePath() << fileName << "FAILED";
         }
     }
 }

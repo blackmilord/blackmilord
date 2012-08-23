@@ -31,10 +31,8 @@ Spellcheck::Spellcheck() :
 {
     QDir pluginsDir(qApp->applicationDirPath());
     PluginSpellcheck *spellcheck;
-    qDebug() << "Loading spellcheck from " << pluginsDir.absolutePath();
-    foreach(QString fileName, pluginsDir.entryList(QDir::Files))
+    foreach(QString fileName, pluginsDir.entryList(QStringList("libspellcheck_*"), QDir::Files))
     {
-        qDebug() << "Trying" << pluginsDir.absoluteFilePath(fileName);
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = pluginLoader.instance();
         if (plugin)
@@ -43,17 +41,19 @@ Spellcheck::Spellcheck() :
             if (spellcheck)
             {
                 m_instance = spellcheck;
-                qDebug() << "...OK";
+                qDebug() << "Loading spellcheck from " << pluginsDir.absolutePath() << fileName << "OK";
                 break;
             }
             else
             {
-                qDebug() << "...failed (cannot cast to PluginSpellcheck object)";
+                qDebug() << "Loading spellcheck from " << pluginsDir.absolutePath() << fileName <<
+                            "FAILED (cannot cast to PluginSpellcheck object)";
             }
         }
         else
         {
-            qDebug() << "...failed" << pluginLoader.errorString();
+            qDebug() << "Loading spellcheck from " << pluginsDir.absolutePath() << fileName <<
+                        "FAILED" << pluginLoader.errorString();
         }
     }
 }
